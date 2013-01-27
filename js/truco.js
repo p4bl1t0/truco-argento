@@ -1,5 +1,5 @@
 (function(window, undefined) {
-	"use strict";
+	'use strict';
 	//Funciones Primitivas
 	function getRandomInt (min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -36,6 +36,14 @@
 		this.cartasJugadas = new Array();
 		this.esHumano = true;
 		this.nombre = '';
+	}
+	
+	Jugador.prototype.sayCartasEnMano = function () {
+		var _log = document.getElementById('log');
+		_log.innerHTML += '<br /><strong>' + this.nombre + ':</strong> ';
+		for (var i = 0; i < this.cartasEnMano.length; i++) {
+			_log.innerHTML +=  ' ' + this.cartasEnMano[i].getNombre() + ' ';
+		}
 	}
 	
 	Jugador.prototype.getPuntosDeEnvido = function () {
@@ -76,8 +84,13 @@
 		return puntos;
 	}
 	
-	Jugador.prototype.jugarCarta =  function (numeroDeCarta) {
-		
+	Jugador.prototype.jugarCarta =  function (indice) {
+		if(indice !== null && indice !== undefined && this.cartasEnMano.length > indice) {
+			this.cartasJugadas.push(this.cartasEnMano[indice]);
+			this.cartasEnMano.splice(indice,1);
+		} else {
+			//Logica para que la máquina juegue una carta
+		}
 	}
 	
 	function Partida () {
@@ -93,26 +106,45 @@
 		};
 	}
 	
-	Partida.prototype.iniciar = function () {
+	Partida.prototype.iniciar = function (nombreJugadorUno, nombreJugadorDos) {
 		var jugador1 = new Jugador();
+		if(nombreJugadorUno !== null && nombreJugadorUno !== undefined && nombreJugadorUno !== '') {
+			jugador1.nombre = nombreJugadorUno;
+		} else {
+			jugador1.nombre = 'Jugador 1';
+		}
 		this.equipoPrimero.jugador = jugador1;
 		var maquina = new Jugador();
 		maquina.esHumano = false;
+		if(nombreJugadorDos !== null && nombreJugadorDos !== undefined && nombreJugadorDos !== '') {
+			maquina.nombre = nombreJugadorDos;
+		} else {
+			maquina.nombre = 'Maquina';
+		}
 		this.equipoSegundo.jugador = maquina;
 		
-		this.repartirCartas(jugador1, maquina);
+		var c = this.repartirCartas(jugador1, maquina);
 		
-		var _log = document.getElementById("log");
-		_log.innerHTML = "<strong>Jugador 1:</strong> ";
-		for (var i = 0; i < jugador1.cartas.length; i++) {
-			_log.innerHTML +=  " " + jugador1.cartas[i].getNombre() + " ";
-		}
-		_log.innerHTML += "  Puntos para el envido: " + jugador1.getPuntosDeEnvido();
-		_log.innerHTML += "<br /><strong>Maquina:</strong> ";
-		for (i = 0; i < maquina.cartas.length; i++) {
-			_log.innerHTML +=  " " + maquina.cartas[i].getNombre() + " ";
-		}
-		_log.innerHTML += "  Puntos para el envido: " + maquina.getPuntosDeEnvido();
+		var _log = document.getElementById('log');
+		_log.innerHTML += '<strong>Número de cartas en el maos:</strong> ' + c +' naipes. <br />';
+		jugador1.sayCartasEnMano();
+		_log.innerHTML += '  Puntos para el envido: ' + jugador1.getPuntosDeEnvido();
+		maquina.sayCartasEnMano();
+		_log.innerHTML += '  Puntos para el envido: ' + maquina.getPuntosDeEnvido();
+		jugador1.jugarCarta(1);
+		jugador1.sayCartasEnMano();
+		jugador1.jugarCarta(0);
+		jugador1.sayCartasEnMano();
+		jugador1.jugarCarta(0);
+		jugador1.sayCartasEnMano();
+		
+		maquina.jugarCarta(2);
+		maquina.sayCartasEnMano();
+		maquina.jugarCarta(1);
+		maquina.sayCartasEnMano();
+		maquina.jugarCarta(0);
+		maquina.sayCartasEnMano();
+		
 	}
 	
 	Partida.prototype.repartirCartas = function(j1, j2) {
@@ -127,11 +159,14 @@
 			var index = getRandomInt(0, maso.length);
 			if(i % 2 === 0) {
 				j2.cartas.push(maso[index]);
+				j2.cartasEnMano.push(maso[index]);
 			} else {
 				j1.cartas.push(maso[index]);
+				j1.cartasEnMano.push(maso[index]);
 			}
 			maso.splice(index, 1);
 		}
+		return maso.length;
 		
 	}
 	
@@ -183,7 +218,8 @@
 	$(document).ready(function (){
 		//Comienza la acción
 		var partida = new Partida();
-		partida.iniciar();	
+		partida.iniciar('Pablo', 'Computadora');
+		
 	});
 		
 })(window);
