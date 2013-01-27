@@ -93,66 +93,29 @@
 		}
 	}
 	
-	function Partida () {
-		this.equipoPrimero = {
-			jugador: {},
-			puntos: 0,
-			esMano: true
-		};
-		this.equipoSegundo = {
-			jugador: {},
-			puntos: 0,
-			esMano: false
-		};
+	function Ronda (equipo1, equipo2) {
+		this.equipoPrimero = equipo1;
+		this.equipoSegundo = equipo2;
 	}
 	
-	Partida.prototype.iniciar = function (nombreJugadorUno, nombreJugadorDos) {
-		var jugador1 = new Jugador();
-		if(nombreJugadorUno !== null && nombreJugadorUno !== undefined && nombreJugadorUno !== '') {
-			jugador1.nombre = nombreJugadorUno;
-		} else {
-			jugador1.nombre = 'Jugador 1';
-		}
-		this.equipoPrimero.jugador = jugador1;
-		var maquina = new Jugador();
-		maquina.esHumano = false;
-		if(nombreJugadorDos !== null && nombreJugadorDos !== undefined && nombreJugadorDos !== '') {
-			maquina.nombre = nombreJugadorDos;
-		} else {
-			maquina.nombre = 'Maquina';
-		}
-		this.equipoSegundo.jugador = maquina;
-		
-		var c = this.repartirCartas(jugador1, maquina);
-		
+	Ronda.prototype.iniciar = function () {
 		var _log = document.getElementById('log');
+		var c = this.repartirCartas(this.equipoPrimero.jugador, this.equipoSegundo.jugador);
 		_log.innerHTML += '<strong>Número de cartas en el maos:</strong> ' + c +' naipes. <br />';
-		jugador1.sayCartasEnMano();
-		_log.innerHTML += '  Puntos para el envido: ' + jugador1.getPuntosDeEnvido();
-		maquina.sayCartasEnMano();
-		_log.innerHTML += '  Puntos para el envido: ' + maquina.getPuntosDeEnvido();
-		jugador1.jugarCarta(1);
-		jugador1.sayCartasEnMano();
-		jugador1.jugarCarta(0);
-		jugador1.sayCartasEnMano();
-		jugador1.jugarCarta(0);
-		jugador1.sayCartasEnMano();
-		
-		maquina.jugarCarta(2);
-		maquina.sayCartasEnMano();
-		maquina.jugarCarta(1);
-		maquina.sayCartasEnMano();
-		maquina.jugarCarta(0);
-		maquina.sayCartasEnMano();
-		
 	}
 	
-	Partida.prototype.repartirCartas = function(j1, j2) {
+	Ronda.prototype.repartirCartas = function(j1, j2) {
 		if(j1 === null || j1 === undefined) {
 			j1 = this.equipoPrimero.jugador;
 		}
 		if(j2 === null || j2 === undefined) {
 			j2 = this.equipoSegundo.jugador;
+		}
+		if(j2.esMano) {
+			var swap = j1;
+			j1 = j2;
+			j2 = swap;
+			swap = null;
 		}
 		var maso = this.generarBaraja();
 		for (var i = 1; i <= 6; i++) {
@@ -170,7 +133,7 @@
 		
 	}
 	
-	Partida.prototype.generarBaraja = function () {
+	Ronda.prototype.generarBaraja = function () {
 		var baraja = new Array();
 		baraja.push(new Naipe(14, 1, 1, 'Espada'));
 		baraja.push(new Naipe(13, 1, 1, 'Basto'));
@@ -214,6 +177,71 @@
 		baraja.push(new Naipe(1, 4, 4, 'Copa'));
 		return baraja;
 	}
+	
+	function Partida () {
+		this.equipoPrimero = {
+			jugador: {},
+			puntos: 0,
+			esMano: true
+		};
+		this.equipoSegundo = {
+			jugador: {},
+			puntos: 0,
+			esMano: false
+		};
+	}
+	
+	Partida.prototype.iniciar = function (nombreJugadorUno, nombreJugadorDos) {
+		var jugador1 = new Jugador();
+		if(nombreJugadorUno !== null && nombreJugadorUno !== undefined && nombreJugadorUno !== '') {
+			jugador1.nombre = nombreJugadorUno;
+		} else {
+			jugador1.nombre = 'Jugador 1';
+		}
+		this.equipoPrimero.jugador = jugador1;
+		var maquina = new Jugador();
+		maquina.esHumano = false;
+		if(nombreJugadorDos !== null && nombreJugadorDos !== undefined && nombreJugadorDos !== '') {
+			maquina.nombre = nombreJugadorDos;
+		} else {
+			maquina.nombre = 'Maquina';
+		}
+		this.equipoSegundo.jugador = maquina;
+		
+		var ronda = new Ronda(this.equipoPrimero, this.equipoSegundo);
+		ronda.iniciar();
+				
+		var _log = document.getElementById('log');
+		jugador1.sayCartasEnMano();
+		
+		_log.innerHTML += '  Puntos para el envido: ' + jugador1.getPuntosDeEnvido();
+		
+		maquina.sayCartasEnMano();
+		_log.innerHTML += '  Puntos para el envido: ' + maquina.getPuntosDeEnvido();
+		
+		jugador1.jugarCarta(1);
+		jugador1.sayCartasEnMano();
+		
+		maquina.jugarCarta(2);
+		maquina.sayCartasEnMano();
+		
+		
+		
+		jugador1.jugarCarta(0);
+		jugador1.sayCartasEnMano();
+		
+		
+		maquina.jugarCarta(1);
+		maquina.sayCartasEnMano();
+		
+		
+		jugador1.jugarCarta(0);
+		jugador1.sayCartasEnMano();
+		maquina.jugarCarta(0);
+		maquina.sayCartasEnMano();
+		
+	}
+	
 	
 	$(document).ready(function (){
 		//Comienza la acción
