@@ -40,10 +40,11 @@
 	
 	Jugador.prototype.sayCartasEnMano = function () {
 		var _log = document.getElementById('log');
-		_log.innerHTML += '<br /><strong>' + this.nombre + ':</strong> ';
+		_log.innerHTML += '<br /><strong>' + this.nombre + ':</strong><ol> ';
 		for (var i = 0; i < this.cartasEnMano.length; i++) {
-			_log.innerHTML +=  ' ' + this.cartasEnMano[i].getNombre() + ' ';
+			_log.innerHTML +=  '<li> ' + this.cartasEnMano[i].getNombre() + '<li> ';
 		}
+		_log.innerHTML += '</ol>';
 	}
 	
 	Jugador.prototype.getPuntosDeEnvido = function () {
@@ -86,6 +87,8 @@
 	
 	Jugador.prototype.jugarCarta =  function (indice) {
 		if(indice !== null && indice !== undefined && this.cartasEnMano.length > indice) {
+			var _log = document.getElementById('log');
+			_log.innerHTML += '<br /> <b>' + this.nombre + ' juega un :</b> ' + this.cartasEnMano[indice].getNombre();
 			this.cartasJugadas.push(this.cartasEnMano[indice]);
 			this.cartasEnMano.splice(indice,1);
 		} else {
@@ -178,16 +181,58 @@
 		return baraja;
 	}
 	
+	Ronda.prototype.determinarGanadorMano = function (indice) {
+		var j1 = this.equipoPrimero.jugador;
+		var j2 = this.equipoSegundo.jugador;
+		if (j1.cartasJugadas[indice].valor > j2.cartasJugadas[indice].valor) {
+			this.equipoPrimero.manos = this.equipoPrimero.manos + 1;
+			return 'Gana ' + j1.nombre;
+		} else {
+			if (j1.cartasJugadas[indice].valor < j2.cartasJugadas[indice].valor) {
+				this.equipoSegundo.manos = this.equipoSegundo.manos + 1;
+				return 'Gana ' + j2.nombre;
+			} else {
+				this.equipoPrimero.manos = this.equipoPrimero.manos + 1;
+				this.equipoSegundo.manos = this.equipoSegundo.manos + 1;
+				return 'Parda';
+			}
+		}
+	}
+	Ronda.prototype.determinarGanadorRonda = function () {
+		var e1 = this.equipoPrimero;
+		var e2 = this.equipoSegundo;
+		if(e1.manos >= 2 && e2.manos < e1.manos) {
+			return 'Gana la ronda: ' + e1.jugador.nombre;
+		} else {
+			if(e2.manos >= 2 && e1.manos < e2.manos) {
+				return 'Gana la ronda: ' + e2.jugador.nombre;
+			} else {
+				if(e1.manos == e2.manos === 3) {
+					//Pardamos las tres, que complicado
+					if(e1.esMano) {
+						return 'Gana la ronda: ' + e1.jugador.nombre;
+					} else {
+						return 'Gana la ronda: ' + e2.jugador.nombre;
+					}
+				} else {
+					return 'Sin ganador todavía';
+				}
+				
+			}
+		}
+	}
 	function Partida () {
 		this.equipoPrimero = {
 			jugador: {},
 			puntos: 0,
-			esMano: true
+			esMano: true,
+			manos: 0
 		};
 		this.equipoSegundo = {
 			jugador: {},
 			puntos: 0,
-			esMano: false
+			esMano: false,
+			manos: 0
 		};
 	}
 	
@@ -220,25 +265,36 @@
 		_log.innerHTML += '  Puntos para el envido: ' + maquina.getPuntosDeEnvido();
 		
 		jugador1.jugarCarta(1);
-		jugador1.sayCartasEnMano();
+		//jugador1.sayCartasEnMano();
 		
 		maquina.jugarCarta(2);
-		maquina.sayCartasEnMano();
+		//maquina.sayCartasEnMano();
 		
+		_log.innerHTML += '<br />  Resultado Jugada: ' + ronda.determinarGanadorMano(0);
 		
+		_log.innerHTML += '<br />  ' + ronda.determinarGanadorRonda();
 		
 		jugador1.jugarCarta(0);
-		jugador1.sayCartasEnMano();
+		//jugador1.sayCartasEnMano();
 		
 		
 		maquina.jugarCarta(1);
-		maquina.sayCartasEnMano();
+		//maquina.sayCartasEnMano();
 		
+		
+		_log.innerHTML += ' <br /> Resultado Jugada: ' + ronda.determinarGanadorMano(1);
+		
+		_log.innerHTML += '<br /> ' + ronda.determinarGanadorRonda();
 		
 		jugador1.jugarCarta(0);
-		jugador1.sayCartasEnMano();
+		//jugador1.sayCartasEnMano();
 		maquina.jugarCarta(0);
-		maquina.sayCartasEnMano();
+		//maquina.sayCartasEnMano();
+		
+		
+		_log.innerHTML += '<br />  Resultado Jugada: ' + ronda.determinarGanadorMano(2);
+		
+		_log.innerHTML += '<br />  ' + ronda.determinarGanadorRonda();
 		
 	}
 	
