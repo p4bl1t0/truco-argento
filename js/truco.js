@@ -42,7 +42,9 @@
 		var _log = document.getElementById('log');
 		_log.innerHTML += '<br /><strong>' + this.nombre + ':</strong><ol> ';
 		for (var i = 0; i < this.cartasEnMano.length; i++) {
-			_log.innerHTML +=  '<li> ' + this.cartasEnMano[i].getNombre() + '<li> ';
+			if(this.cartasEnMano[i] !== undefined) {
+				_log.innerHTML +=  '<li> ' + this.cartasEnMano[i].getNombre() + '<li> ';
+			}
 		}
 		_log.innerHTML += '</ol>';
 	}
@@ -56,7 +58,9 @@
 		};
 		for (var i = 0; i < this.cartas.length; i++) {
 			var carta = this.cartas[i];
-			pares[carta.palo].push(carta.puntosEnvido);
+			if(carta !== undefined) {
+				pares[carta.palo].push(carta.puntosEnvido);
+			}
 		}
 		var puntos = 0; 
 		var prop;
@@ -122,7 +126,8 @@
 		}
 		var maso = this.generarBaraja();
 		for (var i = 1; i <= 6; i++) {
-			var index = getRandomInt(0, maso.length);
+			var _log = document.getElementById('log');
+			var index = getRandomInt(0, (maso.length - 1));
 			if(i % 2 === 0) {
 				j2.cartas.push(maso[index]);
 				j2.cartasEnMano.push(maso[index]);
@@ -131,6 +136,7 @@
 				j1.cartasEnMano.push(maso[index]);
 			}
 			maso.splice(index, 1);
+			
 		}
 		return maso.length;
 		
@@ -186,36 +192,56 @@
 		var j2 = this.equipoSegundo.jugador;
 		if (j1.cartasJugadas[indice].valor > j2.cartasJugadas[indice].valor) {
 			this.equipoPrimero.manos = this.equipoPrimero.manos + 1;
-			return 'Gana ' + j1.nombre;
+			return j1;
 		} else {
 			if (j1.cartasJugadas[indice].valor < j2.cartasJugadas[indice].valor) {
 				this.equipoSegundo.manos = this.equipoSegundo.manos + 1;
-				return 'Gana ' + j2.nombre;
+				return j2;
 			} else {
 				this.equipoPrimero.manos = this.equipoPrimero.manos + 1;
 				this.equipoSegundo.manos = this.equipoSegundo.manos + 1;
-				return 'Parda';
+				return null;
 			}
 		}
 	}
 	Ronda.prototype.determinarGanadorRonda = function () {
 		var e1 = this.equipoPrimero;
 		var e2 = this.equipoSegundo;
+		if(e1.manos == e2.manos && e1.manos == 3) {
+			//PARDAMOS las tres, gana el mano
+			if(e1.esMano) {
+				return e1.jugador;
+			} else {
+				return e2.jugador;
+			}	
+		} else {
+			if(e1.manos == 2 && e1.manos > e2.manos) {
+				return e1.jugador;
+			} else {
+				if(e2.manos == 2 && e2.manos > e1.manos) {
+					return e2.jugador;
+				} else {
+					//Sin ganador
+					return null;
+				}
+			}
+		}
+		
 		if(e1.manos >= 2 && e2.manos < e1.manos) {
-			return 'Gana la ronda: ' + e1.jugador.nombre;
+			return e1.jugador;
 		} else {
 			if(e2.manos >= 2 && e1.manos < e2.manos) {
-				return 'Gana la ronda: ' + e2.jugador.nombre;
+				return e2.jugador;
 			} else {
 				if(e1.manos == e2.manos === 3) {
 					//Pardamos las tres, que complicado
 					if(e1.esMano) {
-						return 'Gana la ronda: ' + e1.jugador.nombre;
+						return e1.jugador;
 					} else {
-						return 'Gana la ronda: ' + e2.jugador.nombre;
+						return e2.jugador;
 					}
 				} else {
-					return 'Sin ganador todavía';
+					return null;
 				}
 				
 			}
@@ -265,36 +291,34 @@
 		_log.innerHTML += '  Puntos para el envido: ' + maquina.getPuntosDeEnvido();
 		
 		jugador1.jugarCarta(1);
-		//jugador1.sayCartasEnMano();
 		
 		maquina.jugarCarta(2);
-		//maquina.sayCartasEnMano();
+		var ganadorMano = ronda.determinarGanadorMano(0);
+		_log.innerHTML += '<br />  Resultado Jugada: ' + (ganadorMano !== null ? ganadorMano.nombre : 'PARDA');
 		
-		_log.innerHTML += '<br />  Resultado Jugada: ' + ronda.determinarGanadorMano(0);
+		var ganador = ronda.determinarGanadorRonda();
 		
-		_log.innerHTML += '<br />  ' + ronda.determinarGanadorRonda();
+		if(ganador === null) {
 		
-		jugador1.jugarCarta(0);
-		//jugador1.sayCartasEnMano();
-		
-		
-		maquina.jugarCarta(1);
-		//maquina.sayCartasEnMano();
-		
-		
-		_log.innerHTML += ' <br /> Resultado Jugada: ' + ronda.determinarGanadorMano(1);
-		
-		_log.innerHTML += '<br /> ' + ronda.determinarGanadorRonda();
-		
-		jugador1.jugarCarta(0);
-		//jugador1.sayCartasEnMano();
-		maquina.jugarCarta(0);
-		//maquina.sayCartasEnMano();
-		
-		
-		_log.innerHTML += '<br />  Resultado Jugada: ' + ronda.determinarGanadorMano(2);
-		
-		_log.innerHTML += '<br />  ' + ronda.determinarGanadorRonda();
+			jugador1.jugarCarta(0);
+			maquina.jugarCarta(1);
+			var ganadorMano = ronda.determinarGanadorMano(1);
+			_log.innerHTML += ' <br /> Resultado Jugada: ' + (ganadorMano !== null ? ganadorMano.nombre : 'PARDA');
+			ganador = ronda.determinarGanadorRonda();
+			if(ganador === null) {
+								
+				jugador1.jugarCarta(0);
+				maquina.jugarCarta(0);
+				
+				var ganadorMano = ronda.determinarGanadorMano(0);
+				_log.innerHTML += '<br />  Resultado Jugada: ' + (ganadorMano !== null ? ganadorMano.nombre : 'PARDA');
+				
+			}
+		}
+		ganador = ronda.determinarGanadorRonda();
+		if(ganador !== null) {
+			_log.innerHTML += '<br />  Resultado Ronda: ' + ronda.determinarGanadorRonda().nombre;
+		}	
 		
 	}
 	
