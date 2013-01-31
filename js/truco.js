@@ -1,9 +1,12 @@
 (function(window, undefined) {
 	'use strict';
+	var _log = document.getElementById('log');
+	var _rondaActual = null;
+	var _partidaActual = null;
 	//Funciones Primitivas
 	function getRandomInt (min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
-	}	
+	}
 	
 	//Objetos
 	function Naipe (v, p, n, t) {
@@ -43,7 +46,11 @@
 		_log.innerHTML += '<br /><strong>' + this.nombre + ':</strong><ol> ';
 		for (var i = 0; i < this.cartasEnMano.length; i++) {
 			if(this.cartasEnMano[i] !== undefined) {
-				_log.innerHTML +=  '<li> ' + this.cartasEnMano[i].getNombre() + '<li> ';
+				if(!this.esHumano) {
+					_log.innerHTML +=  '<li> ' + this.cartasEnMano[i].getNombre() + '</li>';
+				} else {
+				    _log.innerHTML += '<li><a href="#" class="naipe naipe-humano" data-naipe-index="' + i +'">' + this.cartasEnMano[i].getNombre() + '</a></li>';
+				}
 			}
 		}
 		_log.innerHTML += '</ol>';
@@ -91,7 +98,6 @@
 	
 	Jugador.prototype.jugarCarta =  function (indice) {
 		if(indice !== null && indice !== undefined && this.cartasEnMano.length > indice) {
-			var _log = document.getElementById('log');
 			_log.innerHTML += '<br /> <b>' + this.nombre + ' juega un :</b> ' + this.cartasEnMano[indice].getNombre();
 			this.cartasJugadas.push(this.cartasEnMano[indice]);
 			this.cartasEnMano.splice(indice,1);
@@ -103,12 +109,90 @@
 	function Ronda (equipo1, equipo2) {
 		this.equipoPrimero = equipo1;
 		this.equipoSegundo = equipo2;
+		this.numeroDeMano = 0;
+		this.jugadasEnMano = 0;
+		this.equipoEnTurno = null;
+		this.enEspera = false;
 	}
 	
 	Ronda.prototype.iniciar = function () {
-		var _log = document.getElementById('log');
+		this.equipoPrimero.manos = 0;
+		this.equipoSegundo.manos = 0;
 		var c = this.repartirCartas(this.equipoPrimero.jugador, this.equipoSegundo.jugador);
-		_log.innerHTML += '<strong>Número de cartas en el maos:</strong> ' + c +' naipes. <br />';
+		if(this.equipoPrimero.esMano) {
+			this.equipoPrimero.esSuTurno = true;
+			this.equipoEnTurno = this.equipoPrimero;
+		} else {
+			this.equipoSegundo.esSuTurno = true;
+			this.equipoEnTurno = this.equipoSegundo;
+		}
+		//#LOG
+		_log.innerHTML += '<strong>Número de cartas en el mazo:</strong> ' + c +' naipes. <br />';
+		this.equipoPrimero.jugador.sayCartasEnMano();
+		_log.innerHTML += '  Puntos para el envido: ' + this.equipoPrimero.jugador.getPuntosDeEnvido();
+		this.equipoSegundo.jugador.sayCartasEnMano();
+		_log.innerHTML += '  Puntos para el envido: ' + this.equipoSegundo.jugador.getPuntosDeEnvido();
+		//---------------------------------
+		this.continuarRonda();
+		
+	}
+	
+	Ronda.prototype.continuarRonda = function () {
+		var ganador = null;
+		while (ganador === null) {
+			if(this.jugadasEnMano === 2) {
+				this.jugadasEnMano = 0;
+				this.equipoEnTurno = this.determinarGanadorMano(this.numeroDeMano);
+				ganador = this.determinarGanadorRonda();
+				this.numeroDeMano = this.numeroDeMano + 1;
+				if(this.numeroDeMano > 2) {
+					break;
+				}
+			}
+			if(this.equipoEnTurno !== null) {
+				if(this.equipoEnTurno.jugador.esHumano) {
+					//Debería esperar de la persona
+					//----------------------------------
+					this.enEspera = true;
+					_rondaActual = this;
+					$('.naipe-humano').unbind('click.jugar').not('naipe-jugado').bind('click', function (event) {
+					    event.preventDefault();
+					    var $naipe = $(this);
+					    $naipe.addClass('naipe-jugado');
+					    var index = parseInt($(this).attr('data-naipe-index'), 10);
+					    index = index - _rondaActual.numeroDeMano;
+					    if(index < 0) {
+					        index = 0;
+					    }
+					    _rondaActual.enEspera = false;
+					    _rondaActual.equipoEnTurno.jugador.jugarCarta(index);
+					    if(_rondaActual.equipoEnTurno === _rondaActual.equipoPrimero) {
+						_rondaActual.equipoEnTurno = _rondaActual.equipoSegundo;
+                        } else {
+                            _rondaActual.equipoEnTurno = _rondaActual.equipoPrimero;
+                        }
+                        _rondaActual.jugadasEnMano = _rondaActual.jugadasEnMano + 1;
+					    _rondaActual.continuarRonda();
+					});
+					break;
+				} else {
+					//Le digo a la maquina que mueva
+					//Por ahora mueve aleatoriamente
+					this.equipoEnTurno.jugador.jugarCarta(getRandomInt(0, (this.equipoEnTurno.jugador.cartasEnMano.length - 1)));
+					if(this.equipoEnTurno === this.equipoPrimero) {
+						this.equipoEnTurno = this.equipoSegundo;
+					} else {
+						this.equipoEnTurno = this.equipoPrimero;
+					}
+					this.jugadasEnMano = this.jugadasEnMano + 1;
+				}
+			}
+			
+		}
+		if(ganador !== null) {
+			_log.innerHTML += '<br />  Resultado Ronda: <b><i>' + ganador.nombre + '</i></b>';
+			_partidaActual.continuar();
+		}	
 	}
 	
 	Ronda.prototype.repartirCartas = function(j1, j2) {
@@ -124,6 +208,13 @@
 			j2 = swap;
 			swap = null;
 		}
+		j1.cartas = new Array();
+		j1.cartasEnMano = new Array();
+		j1.cartasJugadas = new Array();
+		j2.cartas = new Array();
+		j2.cartasEnMano = new Array();
+		j2.cartasJugadas = new Array();
+		
 		var maso = this.generarBaraja();
 		for (var i = 1; i <= 6; i++) {
 			var _log = document.getElementById('log');
@@ -192,73 +283,73 @@
 		var j2 = this.equipoSegundo.jugador;
 		if (j1.cartasJugadas[indice].valor > j2.cartasJugadas[indice].valor) {
 			this.equipoPrimero.manos = this.equipoPrimero.manos + 1;
-			return j1;
+			_log.innerHTML += '<br />Resultado de la mano: <i>GANADOR ' + this.equipoPrimero.jugador.nombre + '</i><br />';
+			//return j1;
+			return this.equipoPrimero;
 		} else {
 			if (j1.cartasJugadas[indice].valor < j2.cartasJugadas[indice].valor) {
 				this.equipoSegundo.manos = this.equipoSegundo.manos + 1;
-				return j2;
+				_log.innerHTML += '<br />Resultado de la mano: <i>GANADOR ' + this.equipoSegundo.jugador.nombre + '</i><br />';
+				//return j2;
+				return this.equipoSegundo;
 			} else {
 				this.equipoPrimero.manos = this.equipoPrimero.manos + 1;
 				this.equipoSegundo.manos = this.equipoSegundo.manos + 1;
-				return null;
+				_log.innerHTML += '<br />Resultado de la mano: <i>PARDA</i><br />';
+				if(this.equipoPrimero.esMano) {
+					return this.equipoPrimero;
+				} else {
+					return this.equipoSegundo;
+				}
+				//return null;
 			}
 		}
 	}
+	
 	Ronda.prototype.determinarGanadorRonda = function () {
 		var e1 = this.equipoPrimero;
 		var e2 = this.equipoSegundo;
-		if(e1.manos == e2.manos && e1.manos == 3) {
+		if(e1.manos === e2.manos && (e1.manos === 3 || e1.manos === 2)) {
 			//PARDAMOS las tres, gana el mano
 			if(e1.esMano) {
+				e1.puntos = e1.puntos + 1;
 				return e1.jugador;
 			} else {
+				e2.puntos = e2.puntos + 1;
 				return e2.jugador;
 			}	
 		} else {
 			if(e1.manos == 2 && e1.manos > e2.manos) {
+				e1.puntos = e1.puntos + 1;
 				return e1.jugador;
 			} else {
 				if(e2.manos == 2 && e2.manos > e1.manos) {
+					e2.puntos = e2.puntos + 1;
 					return e2.jugador;
 				} else {
 					//Sin ganador
+					console.log("j1: " + e1.manos + "j2: " + e2.manos);
 					return null;
 				}
 			}
 		}
 		
-		if(e1.manos >= 2 && e2.manos < e1.manos) {
-			return e1.jugador;
-		} else {
-			if(e2.manos >= 2 && e1.manos < e2.manos) {
-				return e2.jugador;
-			} else {
-				if(e1.manos == e2.manos === 3) {
-					//Pardamos las tres, que complicado
-					if(e1.esMano) {
-						return e1.jugador;
-					} else {
-						return e2.jugador;
-					}
-				} else {
-					return null;
-				}
-				
-			}
-		}
 	}
+	
 	function Partida () {
 		this.equipoPrimero = {
 			jugador: {},
 			puntos: 0,
 			esMano: true,
-			manos: 0
+			manos: 0,
+			esSuTurno: true
 		};
 		this.equipoSegundo = {
 			jugador: {},
 			puntos: 0,
 			esMano: false,
-			manos: 0
+			manos: 0,
+			esSuTurno: false
 		};
 	}
 	
@@ -279,54 +370,27 @@
 		}
 		this.equipoSegundo.jugador = maquina;
 		
-		var ronda = new Ronda(this.equipoPrimero, this.equipoSegundo);
-		ronda.iniciar();
-				
-		var _log = document.getElementById('log');
-		jugador1.sayCartasEnMano();
-		
-		_log.innerHTML += '  Puntos para el envido: ' + jugador1.getPuntosDeEnvido();
-		
-		maquina.sayCartasEnMano();
-		_log.innerHTML += '  Puntos para el envido: ' + maquina.getPuntosDeEnvido();
-		
-		jugador1.jugarCarta(1);
-		
-		maquina.jugarCarta(2);
-		var ganadorMano = ronda.determinarGanadorMano(0);
-		_log.innerHTML += '<br />  Resultado Jugada: ' + (ganadorMano !== null ? ganadorMano.nombre : 'PARDA');
-		
-		var ganador = ronda.determinarGanadorRonda();
-		
-		if(ganador === null) {
-		
-			jugador1.jugarCarta(0);
-			maquina.jugarCarta(1);
-			var ganadorMano = ronda.determinarGanadorMano(1);
-			_log.innerHTML += ' <br /> Resultado Jugada: ' + (ganadorMano !== null ? ganadorMano.nombre : 'PARDA');
-			ganador = ronda.determinarGanadorRonda();
-			if(ganador === null) {
-								
-				jugador1.jugarCarta(0);
-				maquina.jugarCarta(0);
-				
-				var ganadorMano = ronda.determinarGanadorMano(0);
-				_log.innerHTML += '<br />  Resultado Jugada: ' + (ganadorMano !== null ? ganadorMano.nombre : 'PARDA');
-				
-			}
-		}
-		ganador = ronda.determinarGanadorRonda();
-		if(ganador !== null) {
-			_log.innerHTML += '<br />  Resultado Ronda: ' + ronda.determinarGanadorRonda().nombre;
-		}	
-		
+		this.continuar();
 	}
 	
+	Partida.prototype.continuar = function () {
+	    while (this.equipoPrimero.puntos < 5 && this.equipoSegundo.puntos < 5) {
+			_log.innerHTML += '<br /> Puntaje parcial : ' + this.equipoPrimero.jugador.nombre + ' ' + this.equipoPrimero.puntos + ' - '+ this.equipoSegundo.jugador.nombre + ' ' + this.equipoSegundo.puntos + '<hr />';
+			var ronda = new Ronda(this.equipoPrimero, this.equipoSegundo);
+			ronda.iniciar();
+			if(ronda.enEspera) {
+			    break;
+			}
+		}
+		if(!(this.equipoPrimero.puntos < 5 && this.equipoSegundo.puntos < 5)) {
+		    _log.innerHTML += '<br /> PUNTAJE FINAL : ' + this.equipoPrimero.jugador.nombre + ' ' + this.equipoPrimero.puntos + ' - '+ this.equipoSegundo.jugador.nombre + ' ' + this.equipoSegundo.puntos + '<hr />';
+		}
+	}
 	
 	$(document).ready(function (){
 		//Comienza la acción
-		var partida = new Partida();
-		partida.iniciar('Pablo', 'Computadora');
+		_partidaActual = new Partida();
+		_partidaActual.iniciar('Pablo', 'Computadora');
 		
 	});
 		
