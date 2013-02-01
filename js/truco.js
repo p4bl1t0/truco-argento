@@ -42,18 +42,18 @@
 	}
 	
 	Jugador.prototype.sayCartasEnMano = function () {
-		var _log = document.getElementById('log');
-		_log.innerHTML += '<br /><strong>' + this.nombre + ':</strong><ol> ';
+		var html = '<br /><strong>' + this.nombre + ':</strong><ul>';
 		for (var i = 0; i < this.cartasEnMano.length; i++) {
 			if(this.cartasEnMano[i] !== undefined) {
 				if(!this.esHumano) {
-					_log.innerHTML +=  '<li> ' + this.cartasEnMano[i].getNombre() + '</li>';
+					html += '<li> ' + this.cartasEnMano[i].getNombre() + '</li>';
 				} else {
-				    _log.innerHTML += '<li><a href="#" class="naipe naipe-humano" data-naipe-index="' + i +'">' + this.cartasEnMano[i].getNombre() + '</a></li>';
+				    html += '<li><a href="#" class="naipe naipe-humano" data-naipe-index="' + i +'">' + this.cartasEnMano[i].getNombre() + '</a></li>';
 				}
 			}
 		}
-		_log.innerHTML += '</ol>';
+		html += '</ul>';
+		_log.innerHTML += html;
 	}
 	
 	Jugador.prototype.getPuntosDeEnvido = function () {

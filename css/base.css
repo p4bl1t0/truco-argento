@@ -525,3 +525,19 @@ table {
     border-collapse: collapse;
     border-spacing: 0;
 }
+body {
+	background: #3C1E13 url('../images/bg.jpg');
+	color:white;
+	font-family:Kavoon, Helvetica;
+}
+ul li {
+    display:inline-block!important;
+}
+.naipe {
+    height:221px;
+    width:145px;
+    background: url('../images/naipe.png');
+    display:inline-block;
+    margin-right:2em;
+}
+
