@@ -28,6 +28,26 @@
 		}
 		
 	}
+	Naipe.prototype.getCSS = function () {
+		var x = 97.5;
+		var y = 150;
+		switch (this.palo) {
+			case 'Oro':
+				y = y * 0;
+				break;
+			case 'Copa':
+				y = y * -1;
+				break;
+			case 'Espada':
+				y = y * -2;
+				break;
+			case 'Basto':
+				y = y * -3;
+				break; 
+		}
+		x = x * -1 * (this.numero - 1);
+		return x.toString() + 'px ' + y.toString() + 'px'; 
+	}
 	
 	Naipe.prototype.getNombre = function () {
 		return this.numero + ' de ' + this.palo;
@@ -42,18 +62,25 @@
 	}
 	
 	Jugador.prototype.sayCartasEnMano = function () {
-		var html = '<br /><strong>' + this.nombre + ':</strong><ul>';
+		var html = '';
+		//var html = '<br /><strong>' + this.nombre + ':</strong><ul>';
 		for (var i = 0; i < this.cartasEnMano.length; i++) {
 			if(this.cartasEnMano[i] !== undefined) {
 				if(!this.esHumano) {
-					html += '<li> ' + this.cartasEnMano[i].getNombre() + '</li>';
+					html += '<li class="naipe naipe-boca-abajo"></li>';
 				} else {
-				    html += '<li><a href="#" class="naipe naipe-humano" data-naipe-index="' + i +'">' + this.cartasEnMano[i].getNombre() + '</a></li>';
+					var estilo = ' style="background-position: ' + this.cartasEnMano[i].getCSS() + ';"';
+				    html += '<li><a href="#" class="naipe naipe-humano" data-naipe-index="' + i +'" ' + estilo +'></a></li>';
 				}
 			}
 		}
-		html += '</ul>';
-		_log.innerHTML += html;
+		if(this.esHumano) {
+			$('#player-one').find('.player-cards').html(html);
+		} else {
+			$('#player-two').find('.player-cards').html(html);
+		}
+		//html += '</ul>';
+		//_log.innerHTML += html;
 	}
 	
 	Jugador.prototype.getPuntosDeEnvido = function () {
@@ -98,11 +125,11 @@
 	
 	Jugador.prototype.jugarCarta =  function (indice) {
 		if(indice !== null && indice !== undefined && this.cartasEnMano.length > indice) {
-			_log.innerHTML += '<br /> <b>' + this.nombre + ' juega un :</b> ' + this.cartasEnMano[indice].getNombre();
-			this.cartasJugadas.push(this.cartasEnMano[indice]);
+			var carta = this.cartasEnMano[indice];
+			_log.innerHTML = '<b>' + this.nombre + ' juega un :</b> ' + carta.getNombre() + '<br /> ' + _log.innerHTML ;
+			this.cartasJugadas.push(carta);
 			this.cartasEnMano.splice(indice,1);
-		} else {
-			//Logica para que la máquina juegue una carta
+			return carta;
 		}
 	}
 	
@@ -127,11 +154,11 @@
 			this.equipoEnTurno = this.equipoSegundo;
 		}
 		//#LOG
-		_log.innerHTML += '<strong>Número de cartas en el mazo:</strong> ' + c +' naipes. <br />';
+		_log.innerHTML = '<strong>Número de cartas en el mazo:</strong> ' + c +' naipes. <br />' + _log.innerHTML ;
 		this.equipoPrimero.jugador.sayCartasEnMano();
-		_log.innerHTML += '  Puntos para el envido: ' + this.equipoPrimero.jugador.getPuntosDeEnvido();
+		_log.innerHTML = this.equipoPrimero.jugador.nombre + ' puntos para el envido: ' + this.equipoPrimero.jugador.getPuntosDeEnvido() + '<br />' + _log.innerHTML ;
 		this.equipoSegundo.jugador.sayCartasEnMano();
-		_log.innerHTML += '  Puntos para el envido: ' + this.equipoSegundo.jugador.getPuntosDeEnvido();
+		_log.innerHTML = this.equipoSegundo.jugador.nombre + ' puntos para el envido: ' + this.equipoSegundo.jugador.getPuntosDeEnvido() + '<br />'  + _log.innerHTML ;
 		//---------------------------------
 		this.continuarRonda();
 		
@@ -145,8 +172,8 @@
 				this.equipoEnTurno = this.determinarGanadorMano(this.numeroDeMano);
 				ganador = this.determinarGanadorRonda();
 				this.numeroDeMano = this.numeroDeMano + 1;
-				if(this.numeroDeMano > 2) {
-					break;
+				if(this.numeroDeMano === 3) {
+					//break;
 				}
 			}
 			if(this.equipoEnTurno !== null) {
@@ -178,7 +205,8 @@
 				} else {
 					//Le digo a la maquina que mueva
 					//Por ahora mueve aleatoriamente
-					this.equipoEnTurno.jugador.jugarCarta(getRandomInt(0, (this.equipoEnTurno.jugador.cartasEnMano.length - 1)));
+					var carta = this.equipoEnTurno.jugador.jugarCarta(getRandomInt(0, (this.equipoEnTurno.jugador.cartasEnMano.length - 1)));
+					$('#player-two').find('li:eq(' + (this.equipoEnTurno.jugador.cartasJugadas.length - 1).toString() +')').css('background-position', carta.getCSS());
 					if(this.equipoEnTurno === this.equipoPrimero) {
 						this.equipoEnTurno = this.equipoSegundo;
 					} else {
@@ -190,8 +218,11 @@
 			
 		}
 		if(ganador !== null) {
-			_log.innerHTML += '<br />  Resultado Ronda: <b><i>' + ganador.nombre + '</i></b>';
-			_partidaActual.continuar();
+			var funcionDemorada = function ()  {
+				_log.innerHTML = 'Resultado Ronda: <b><i>' + ganador.nombre + '</i></b>'  + '<br /> ' + _log.innerHTML ;
+				_partidaActual.continuar();
+			}
+			setTimeout(funcionDemorada, 2000);
 		}	
 	}
 	
@@ -283,19 +314,19 @@
 		var j2 = this.equipoSegundo.jugador;
 		if (j1.cartasJugadas[indice].valor > j2.cartasJugadas[indice].valor) {
 			this.equipoPrimero.manos = this.equipoPrimero.manos + 1;
-			_log.innerHTML += '<br />Resultado de la mano: <i>GANADOR ' + this.equipoPrimero.jugador.nombre + '</i><br />';
+			_log.innerHTML = 'Resultado de la mano: <i>GANADOR ' + this.equipoPrimero.jugador.nombre + '</i><br />'  + _log.innerHTML ;
 			//return j1;
 			return this.equipoPrimero;
 		} else {
 			if (j1.cartasJugadas[indice].valor < j2.cartasJugadas[indice].valor) {
 				this.equipoSegundo.manos = this.equipoSegundo.manos + 1;
-				_log.innerHTML += '<br />Resultado de la mano: <i>GANADOR ' + this.equipoSegundo.jugador.nombre + '</i><br />';
+				_log.innerHTML = 'Resultado de la mano: <i>GANADOR ' + this.equipoSegundo.jugador.nombre + '</i><br />'  + _log.innerHTML ;
 				//return j2;
 				return this.equipoSegundo;
 			} else {
 				this.equipoPrimero.manos = this.equipoPrimero.manos + 1;
 				this.equipoSegundo.manos = this.equipoSegundo.manos + 1;
-				_log.innerHTML += '<br />Resultado de la mano: <i>PARDA</i><br />';
+				_log.innerHTML = 'Resultado de la mano: <i>PARDA</i><br />' + _log.innerHTML ;
 				if(this.equipoPrimero.esMano) {
 					return this.equipoPrimero;
 				} else {
@@ -340,14 +371,14 @@
 		this.equipoPrimero = {
 			jugador: {},
 			puntos: 0,
-			esMano: true,
+			esMano: false,
 			manos: 0,
 			esSuTurno: true
 		};
 		this.equipoSegundo = {
 			jugador: {},
 			puntos: 0,
-			esMano: false,
+			esMano: true,
 			manos: 0,
 			esSuTurno: false
 		};
@@ -370,20 +401,31 @@
 		}
 		this.equipoSegundo.jugador = maquina;
 		
+		$('#player-two').find('.player-name').html(maquina.nombre);
+		$('#player-one').find('.player-name').html(jugador1.nombre);
+		
 		this.continuar();
 	}
 	
 	Partida.prototype.continuar = function () {
 	    while (this.equipoPrimero.puntos < 5 && this.equipoSegundo.puntos < 5) {
-			_log.innerHTML += '<br /> Puntaje parcial : ' + this.equipoPrimero.jugador.nombre + ' ' + this.equipoPrimero.puntos + ' - '+ this.equipoSegundo.jugador.nombre + ' ' + this.equipoSegundo.puntos + '<hr />';
+			_log.innerHTML = '<hr />' + '<br /> Puntaje parcial : ' + this.equipoPrimero.jugador.nombre + ' ' + this.equipoPrimero.puntos + ' - '+ this.equipoSegundo.jugador.nombre + ' ' + this.equipoSegundo.puntos + '<br /> ' + '<hr />' + _log.innerHTML ;
+			if(this.equipoSegundo.esMano) {
+				this.equipoSegundo.esMano = false;
+				this.equipoPrimero.esMano = true;
+			} else {
+				this.equipoSegundo.esMano = true;
+				this.equipoPrimero.esMano = false;
+			}
 			var ronda = new Ronda(this.equipoPrimero, this.equipoSegundo);
 			ronda.iniciar();
 			if(ronda.enEspera) {
-			    break;
+				break;
 			}
+			
 		}
 		if(!(this.equipoPrimero.puntos < 5 && this.equipoSegundo.puntos < 5)) {
-		    _log.innerHTML += '<br /> PUNTAJE FINAL : ' + this.equipoPrimero.jugador.nombre + ' ' + this.equipoPrimero.puntos + ' - '+ this.equipoSegundo.jugador.nombre + ' ' + this.equipoSegundo.puntos + '<hr />';
+		    _log.innerHTML = '<hr />' + '<br /> PUNTAJE FINAL : ' + this.equipoPrimero.jugador.nombre + ' ' + this.equipoPrimero.puntos + ' - '+ this.equipoSegundo.jugador.nombre + ' ' + this.equipoSegundo.puntos + _log.innerHTML ;
 		}
 	}
 	

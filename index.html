@@ -6,9 +6,29 @@
 		<link href='http://fonts.googleapis.com/css?family=Kavoon' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="css/base.css" />
 	</head>
-	<body>
-		<h1>Truco argento</h1>
-		<div id="log"></div>
+	<body class="game">
+		<div class="game-wrapper">
+			<div class="game-header">
+				<h1>Truco argento</h1>
+			</div>
+			<div class="game-panel">
+				<div id="log"></div>
+			</div>
+			<div class="game-main">
+				<div id="player-two">
+					<h3 class="player-name"></h3>
+					<div class="player-envite-points"></div>
+					<ul class="player-cards"></ul>	
+				</div>
+				<div id="player-one">
+					<ul class="player-cards"></ul>	
+					<div class="player-envite-points"></div>
+					<h3 class="player-name"></h3>
+				</div>
+			</div>
+			<div class="game-footer">
+			</div>
+		</div>
 	</body>
 	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<script type="text/javascript" src="js/truco.js"></script>

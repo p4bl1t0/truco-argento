@@ -525,19 +525,45 @@ table {
     border-collapse: collapse;
     border-spacing: 0;
 }
-body {
+/*CSS*/
+.game {
 	background: #3C1E13 url('../images/bg.jpg');
 	color:white;
 	font-family:Kavoon, Helvetica;
 }
+.game-panel {
+	display:inline-block;
+	width:30%;
+	vertical-align:top;
+}
+.game-main {
+	display: inline-block;
+	width:67%;
+	vertical-align:top;
+}
 ul li {
     display:inline-block!important;
+    margin-right:2em;
 }
-.naipe {
+
+/*.naipe {
     height:221px;
     width:145px;
     background: url('../images/naipe.png');
     display:inline-block;
     margin-right:2em;
-}
+}*/
 
+.naipe {
+    background: url('../images/naipes-e.png') 0 0;
+    width:98px;
+    height:150px;
+    display:block;
+}
+.naipe-boca-abajo {
+    background: url('../images/naipes-e.png') 98px 0;
+}
+.naipe-jugado {
+	position:relative;
+	top:-35px;
+}
