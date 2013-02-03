@@ -172,17 +172,18 @@
 				this.equipoEnTurno = this.determinarGanadorMano(this.numeroDeMano);
 				ganador = this.determinarGanadorRonda();
 				this.numeroDeMano = this.numeroDeMano + 1;
-				if(this.numeroDeMano === 3) {
-					//break;
+				if(this.numeroDeMano === 3 || ganador !== null) {
+					break;
 				}
 			}
 			if(this.equipoEnTurno !== null) {
 				if(this.equipoEnTurno.jugador.esHumano) {
+					_log.innerHTML = '<b class="green">TURNO HUMANO</b><br /> ' + _log.innerHTML ;
 					//Debería esperar de la persona
 					//----------------------------------
 					this.enEspera = true;
 					_rondaActual = this;
-					$('.naipe-humano').unbind('click.jugar').not('naipe-jugado').bind('click', function (event) {
+					$('.naipe-humano').unbind('click.jugar').not('naipe-jugado').bind('click.jugar', function (event) {
 					    event.preventDefault();
 					    var $naipe = $(this);
 					    $naipe.addClass('naipe-jugado');
