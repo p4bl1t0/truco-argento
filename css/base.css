@@ -526,6 +526,9 @@ table {
     border-spacing: 0;
 }
 /*CSS*/
+html, body, .game-wrapper, .game-main {
+	height:100%;
+}
 .game {
 	background: #3C1E13 url('../images/bg.jpg');
 	color:white;
@@ -535,6 +538,7 @@ table {
 	display:inline-block;
 	width:30%;
 	vertical-align:top;
+	height: 100%;
 }
 .game-main {
 	display: inline-block;
@@ -545,7 +549,10 @@ ul li {
     display:inline-block!important;
     margin-right:2em;
 }
-
+#player-one {
+	position:absolute;
+	bottom:0;
+}
 /*.naipe {
     height:221px;
     width:145px;
@@ -565,7 +572,25 @@ ul li {
 }
 .naipe-jugado {
 	position:relative;
-	top:-35px;
+	/*top:-35px;*/
+	-moz-transform:  translate(0,-15%);
+	-webkit-transform:  translate(0,-15%);
+	-ms-transform:  translate(0,-15%);
+	-o-transform:  translate(0,-15%);
+	transform:  translate(0,-15%);
+}
+.game-header {
+	height:10%;
+}
+.game-header h1{
+	margin:0;
+}
+#game-score {
+	height:10%;
+}
+#log {
+	overflow-y:auto;
+	height:80%;
 }
 .green {
 	color:green;
