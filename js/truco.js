@@ -8,6 +8,13 @@
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	}
 	
+	Array.prototype.getLast = function() {
+    if ( this.length > 0 )
+        return this[ this.length - 1 ];
+    else
+        return undefined;
+};
+	
 	//Objetos
 	function Naipe (v, p, n, t) {
 		this.valor = 0;
@@ -142,6 +149,51 @@
 		this.esHumano =  false;
 	}
 		
+	IA.prototype.elegir  =  function ( orden , carta) {
+		var indice = -1;
+		var valor = (orden === 0) ? 99 : (carta === null ? -1: 99) ;
+		for ( var c in this.cartasEnMano ) {
+			var v_act = this.cartasEnMano[c].valor;
+			switch (orden) {
+					case 0:
+						if ( v_act < valor ) {valor = v_act ; indice = c; }
+						break;
+					case 1:
+						if (carta === null) {
+							if ( v_act > valor ) {valor = v_act ; indice = c; } 
+						} else {
+							if ( v_act < valor && v_act > carta.valor  ) {valor = v_act ; indice = c; } 
+						}
+						break;
+			}
+		}
+		return indice;
+	}
+		
+		
+	IA.prototype.jugarCarta =  function () {
+		
+		var primero = (_rondaActual.jugadasEnMano === 0) ? true : false;
+		var carta = null;
+		if (!primero)
+			carta = _rondaActual.equipoPrimero.jugador.cartasJugadas.getLast();
+		//determinarGanadorMano
+
+		if (_rondaActual.numeroDeMano === 1 && _rondaActual.equipoSegundo.manos > _rondaActual.equipoPrimero.manos) {
+			var indice = this.elegir(0);
+		} else {		
+			var indice = this.elegir(1,carta);
+			if (indice < 0 ) 
+				indice = this.elegir(0);
+		}
+		
+		var carta = this.cartasEnMano[indice];
+		_log.innerHTML = '<b>' + this.nombre + ' juega un :</b> ' + carta.getNombre() + '<br /> ' + _log.innerHTML ;
+		this.cartasJugadas.push(carta);
+		this.cartasEnMano.splice(indice,1);
+		return carta;
+	}	
+		
 	function Ronda (equipo1, equipo2) {
 		this.equipoPrimero = equipo1;
 		this.equipoSegundo = equipo2;
@@ -196,12 +248,15 @@
 					    var $naipe = $(this);
 					    $naipe.addClass('naipe-jugado');
 					    var index = parseInt($(this).attr('data-naipe-index'), 10);
-					    index = index - _rondaActual.numeroDeMano;
-					    if(index < 0) {
-					        index = 0;
-					    }
+					    
+					    $('.naipe-humano').not('.naipe-jugado').each(function (){
+							var aux = parseInt($(this).attr('data-naipe-index'), 10);
+							if (aux > index) $(this).attr('data-naipe-index', (aux - 1));
+						});
+					    
 					    _rondaActual.enEspera = false;
 					    _rondaActual.equipoEnTurno.jugador.jugarCarta(index);
+					    
 					    if(_rondaActual.equipoEnTurno === _rondaActual.equipoPrimero) {
 						_rondaActual.equipoEnTurno = _rondaActual.equipoSegundo;
                         } else {
@@ -214,7 +269,10 @@
 				} else {
 					//Le digo a la maquina que mueva
 					//Por ahora mueve aleatoriamente
-					var carta = this.equipoEnTurno.jugador.jugarCarta(getRandomInt(0, (this.equipoEnTurno.jugador.cartasEnMano.length - 1)));
+					//var carta = this.equipoEnTurno.jugador.jugarCarta(getRandomInt(0, (this.equipoEnTurno.jugador.cartasEnMano.length - 1)));
+					_rondaActual = this;
+					var carta = this.equipoEnTurno.jugador.jugarCarta();
+					
 					$('#player-two').find('li:eq(' + (this.equipoEnTurno.jugador.cartasJugadas.length - 1).toString() +')').css('background-position', carta.getCSS());
 					if(this.equipoEnTurno === this.equipoPrimero) {
 						this.equipoEnTurno = this.equipoSegundo;
@@ -266,6 +324,7 @@
 			if(i % 2 === 0) {
 				j2.cartas.push(maso[index]);
 				j2.cartasEnMano.push(maso[index]);
+				_log.innerHTML = '<b>' + j2.nombre + ' tiene un :</b> ' + maso[index].getNombre() + '<br /> ' + _log.innerHTML ;
 			} else {
 				j1.cartas.push(maso[index]);
 				j1.cartasEnMano.push(maso[index]);
