@@ -16,6 +16,13 @@
 };
 	
 	//Objetos
+	/*******************************************************************
+	 * 
+	 * Clase Naipe
+	 * 
+	 *******************************************************************
+	*/ 
+	
 	function Naipe (v, p, n, t) {
 		this.valor = 0;
 		this.puntosEnvido = 0;
@@ -60,6 +67,13 @@
 	Naipe.prototype.getNombre = function () {
 		return this.numero + ' de ' + this.palo;
 	};
+	
+	/*******************************************************************
+	 * 
+	 * Clase Jugador
+	 * 
+	 *******************************************************************
+	*/ 
 	
 	function Jugador () {
 		this.cartas = new Array();
@@ -141,6 +155,13 @@
 		}
 	}
 	
+	/*******************************************************************
+	 * 
+	 * Clase IA
+	 * 
+	 *******************************************************************
+	*/ 
+	
 	IA.prototype = new Jugador();
 	
 	IA.prototype.constructor = IA;
@@ -194,6 +215,13 @@
 		return carta;
 	}	
 		
+	/*******************************************************************
+	 * 
+	 * Clase Ronda
+	 * 
+	 *******************************************************************
+	*/	
+		
 	function Ronda (equipo1, equipo2) {
 		this.equipoPrimero = equipo1;
 		this.equipoSegundo = equipo2;
@@ -201,6 +229,30 @@
 		this.jugadasEnMano = 0;
 		this.equipoEnTurno = null;
 		this.enEspera = false;
+		// Variables de entorno para manejar el envido		
+		this.puedeEnvido = true;
+		this.cantos = new Array();   // Posibles valores: "E" "EE" "RE" "FE"
+		this.equipoEnvido = null;   
+		
+	}
+	
+	Ronda.prototype.equipoEnEspera = function (e) {
+		
+		if (e === this.equipoPrimero) 
+			return this.equipoSegundo;
+		else if (e === this.equipoSegundo)
+			return this.equipoPrimero;
+		else 
+			return null;
+        
+	}
+	Ronda.prototype.pasarTurno = function () {
+		if(this.equipoEnTurno === this.equipoPrimero) {
+			this.equipoEnTurno = this.equipoSegundo;
+        } else {
+            this.equipoEnTurno = this.equipoPrimero;
+        }
+        this.jugadasEnMano = this.jugadasEnMano + 1;
 	}
 	
 	Ronda.prototype.iniciar = function () {
@@ -225,24 +277,26 @@
 		
 	}
 	
-	Ronda.prototype.continuarRonda = function () {
-		var ganador = null;
-		while (ganador === null) {
-			if(this.jugadasEnMano === 2) {
-				this.jugadasEnMano = 0;
-				this.equipoEnTurno = this.determinarGanadorMano(this.numeroDeMano);
-				ganador = this.determinarGanadorRonda();
-				this.numeroDeMano = this.numeroDeMano + 1;
-				if(this.numeroDeMano === 3 || ganador !== null) {
-					break;
-				}
-			}
-			if(this.equipoEnTurno !== null) {
+	Ronda.prototype.decidirCarta = function () {
+		if(this.equipoEnTurno !== null) {
 				if(this.equipoEnTurno.jugador.esHumano) {
 					//Debería esperar de la persona
 					//----------------------------------
 					this.enEspera = true;
 					_rondaActual = this;
+					
+					if (this.puedeEnvido === true)
+						$(".canto").click(function (event){ 
+							var c = $(this).attr('data-envido');
+							_rondaActual.puedeEnvido = false;
+							_rondaActual.cantos.push(c);
+							_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(this.equipoEnTurno);
+							_log.innerHTML = "Envido <br/>" + _log.innerHTML ;
+							_rondaActual.enEspera = false;
+							_rondaActual.continuarRonda();
+						
+						} );
+					
 					$('.naipe-humano').unbind('click.jugar').not('.naipe-jugado').bind('click.jugar', function (event) {
 					    event.preventDefault();
 					    var $naipe = $(this);
@@ -253,35 +307,81 @@
 							var aux = parseInt($(this).attr('data-naipe-index'), 10);
 							if (aux > index) $(this).attr('data-naipe-index', (aux - 1));
 						});
-					    
-					    _rondaActual.enEspera = false;
 					    _rondaActual.equipoEnTurno.jugador.jugarCarta(index);
-					    
-					    if(_rondaActual.equipoEnTurno === _rondaActual.equipoPrimero) {
-						_rondaActual.equipoEnTurno = _rondaActual.equipoSegundo;
-                        } else {
-                            _rondaActual.equipoEnTurno = _rondaActual.equipoPrimero;
-                        }
-                        _rondaActual.jugadasEnMano = _rondaActual.jugadasEnMano + 1;
+					    _rondaActual.enEspera = false;
+					    _rondaActual.pasarTurno();
 					    _rondaActual.continuarRonda();
 					});
-					break;
-				} else {
-					//Le digo a la maquina que mueva
-					//Por ahora mueve aleatoriamente
-					//var carta = this.equipoEnTurno.jugador.jugarCarta(getRandomInt(0, (this.equipoEnTurno.jugador.cartasEnMano.length - 1)));
+				} else {   // DECIDE LA MAQUINAAAAAAAAAAAAAAAAA
 					_rondaActual = this;
+					
+					/*_rondaActual.puedeEnvido = false;
+					_rondaActual.cantos.push('E');
+					_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(this.equipoEnTurno);
+					return ;*/
 					var carta = this.equipoEnTurno.jugador.jugarCarta();
 					
 					$('#player-two').find('li:eq(' + (this.equipoEnTurno.jugador.cartasJugadas.length - 1).toString() +')').css('background-position', carta.getCSS());
-					if(this.equipoEnTurno === this.equipoPrimero) {
-						this.equipoEnTurno = this.equipoSegundo;
-					} else {
-						this.equipoEnTurno = this.equipoPrimero;
-					}
-					this.jugadasEnMano = this.jugadasEnMano + 1;
+					this.pasarTurno();
 				}
 			}
+	}
+	
+	Ronda.prototype.decidirEnvido = function () {
+		if (this.equipoEnvido.jugador.esHumano) {   // Creo los bind para que el jugador decida
+			var ultimo = this.cantos.getLast();
+			$('.canto').hide();
+			switch (ultimo) {
+				case 'E':
+					$('#Envido').show();
+				case 'EE':
+					$('#RealEnvido').show();
+				case 'R':
+					$('#FaltaEnvido').show();
+			}
+			this.enEspera = true;
+			_rondaActual = this;
+			$(".canto").click(function (event){ 
+				var c = $(this).attr('data-envido');
+				alert("Recanto " + c);
+				_rondaActual.puedeEnvido = false;
+				_rondaActual.cantos.push(c);
+				_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera();
+				_log.innerHTML = "Envido <br/>" + _log.innerHTML ;
+				_rondaActual.enEspera = false;
+				_rondaActual.continuarRonda();
+			} );
+			
+			// FALTA EL SI Y EL NO
+			
+		} else {// La maquina debe generar una respuesta
+			
+		}
+		
+		this.equipoEnvido = null;
+	}
+	
+	Ronda.prototype.continuarRonda = function () {
+		var ganador = null;
+		while (ganador === null) {
+			if(this.jugadasEnMano === 2) {
+				this.puedeEnvido = false;
+				this.jugadasEnMano = 0;
+				this.equipoEnTurno = this.determinarGanadorMano(this.numeroDeMano);
+				ganador = this.determinarGanadorRonda();
+				this.numeroDeMano = this.numeroDeMano + 1;
+				if(this.numeroDeMano === 3 || ganador !== null) {
+					break;
+				}
+			}
+
+			if (this.equipoEnvido === null) 
+				this.decidirCarta(); 
+			else 
+				this.decidirEnvido();
+			
+			if (this.enEspera == true) break;	
+			
 			
 		}
 		if(ganador !== null) {
@@ -456,6 +556,13 @@
 		
 	}
 	
+	/*******************************************************************
+	 * 
+	 * Clase Partida
+	 * 
+	 *******************************************************************
+	*/
+	
 	function Partida () {
 		this.equipoPrimero = {
 			jugador: {},
@@ -525,6 +632,11 @@
 		    _log.innerHTML = '<hr />' + '<br /> PUNTAJE FINAL : ' + this.equipoPrimero.jugador.nombre + ' ' + this.equipoPrimero.puntos + ' - '+ this.equipoSegundo.jugador.nombre + ' ' + this.equipoSegundo.puntos + _log.innerHTML ;
 		}
 	}
+	
+	
+	
+	//******************************************************************
+	//******************************************************************
 	
 	$(document).ready(function (){
 		//Comienza la acción
