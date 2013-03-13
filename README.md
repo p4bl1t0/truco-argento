@@ -1,6 +1,11 @@
-truco-argento
+Truco Argento
 =============
 
-HTML 5, CSS 3 and JavaScript Truco Argentino Game
+HTML5, CSS3 and JavaScript Truco Argentino Game
 
-by Pablo Botta
+by 
+
+-Mariano Botta
+-Pablo Botta
+-Esteban Campostrini
+  
