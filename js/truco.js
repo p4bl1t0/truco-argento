@@ -190,7 +190,40 @@
 		}
 		return indice;
 	}
-		
+    
+    IA.prototype.envido = function(ultimo, carta){
+        var puntos = this.getPuntosDeEnvido();
+        
+        alert('IA: ' + puntos);
+        if (ultimo === undefined){
+            //si el envido no fue cantado todavia
+            if (carta === undefined){
+                //si es mano
+                alert('es mano');
+                return 'true';
+            }
+            else{
+                //si es pie, aca puedo analizar la carta jugada por el oponente
+                //para decidir si cantar o no
+                alert('es pie');
+                return 'true';
+            }
+        }
+        else{
+            switch(ultimo){
+                case 'E':
+                    if (puntos >= 27){
+                        alert('IA: Quiero!!');
+                        return 'true';
+                    }
+                    else{ 
+                        alert('IA: No quiero!!');
+                        return 'false';
+                    }
+                    break;
+            }
+        }
+    }
 		
 	IA.prototype.jugarCarta =  function () {
 		
@@ -288,22 +321,12 @@
 					if (this.puedeEnvido === true)
 						$(".canto").click(function (event){ 
 							var c = $(this).attr('data-envido');
-							_rondaActual.puedeEnvido = false;
+                            _rondaActual.puedeEnvido = false;
 							_rondaActual.cantos.push(c);
 							_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
 							_log.innerHTML = "Envido 1<br/>" + _log.innerHTML ;
 							_rondaActual.enEspera = false;
-                            //deshabilito los cantos correspondientes
-                            $(this).unbind('click');
-                            $(this).addClass('cantado');
-                            $('.canto').not('cantado').each(function (){
-                                var aux  = parseInt($(this).attr('data-envido'), 10);
-                                var cantado = parseInt(c,10);
-                                if (aux < cantado) {
-                                    $(this).unbind('click');
-                                    $(this).addClass('cantado');
-                                }
-                            });
+                            $('.canto').hide();
 							_rondaActual.continuarRonda();
 						
 						} );
@@ -325,11 +348,14 @@
 					});
 				} else {   // DECIDE LA MAQUINAAAAAAAAAAAAAAAAA
 					_rondaActual = this;
-					
-					/*_rondaActual.puedeEnvido = false;
-					_rondaActual.cantos.push('E');
-					_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(this.equipoEnTurno);
-					return ;*/
+                    /* if (_rondaActual.puedeEnvido === true){
+                        var accion = this.equipoEnTurno.jugador.envido(undefined, this.equipoPrimero.jugador.cartasJugadas.getLast());
+                        this.puedeEnvido = false;
+                        if (accion !== 'false'){
+                            this.equipoEnvido = this.equipoEnEspera(this.equipoEnTurno);
+                            this.continuarRonda();
+                        }
+                    }*/
 					var carta = this.equipoEnTurno.jugador.jugarCarta();
 					
 					$('#player-two').find('li:eq(' + (this.equipoEnTurno.jugador.cartasJugadas.length - 1).toString() +')').css('background-position', carta.getCSS());
@@ -361,17 +387,20 @@
 				_log.innerHTML = "Envido 2<br/>" + _log.innerHTML ;
 				_rondaActual.enEspera = false;
 				_rondaActual.continuarRonda();
-			} );
+			});
 			
 			// FALTA EL SI Y EL NO
 			
 		} else {// La maquina debe generar una respuesta
+            var ultimo = this.cantos.getLast();
+            var carta  = this.equipoPrimero.jugador.cartasJugadas.getLast();
+            this.equipoSegundo.jugador.envido(ultimo,carta);
 			
 		}
 		
 		this.equipoEnvido = null;
 	}
-	
+
 	Ronda.prototype.continuarRonda = function () {
 		var ganador = null;
 		while (ganador === null) {
