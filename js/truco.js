@@ -290,9 +290,20 @@
 							var c = $(this).attr('data-envido');
 							_rondaActual.puedeEnvido = false;
 							_rondaActual.cantos.push(c);
-							_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(this.equipoEnTurno);
-							_log.innerHTML = "Envido <br/>" + _log.innerHTML ;
+							_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
+							_log.innerHTML = "Envido 1<br/>" + _log.innerHTML ;
 							_rondaActual.enEspera = false;
+                            //deshabilito los cantos correspondientes
+                            $(this).unbind('click');
+                            $(this).addClass('cantado');
+                            $('.canto').not('cantado').each(function (){
+                                var aux  = parseInt($(this).attr('data-envido'), 10);
+                                var cantado = parseInt(c,10);
+                                if (aux < cantado) {
+                                    $(this).unbind('click');
+                                    $(this).addClass('cantado');
+                                }
+                            });
 							_rondaActual.continuarRonda();
 						
 						} );
@@ -347,7 +358,7 @@
 				_rondaActual.puedeEnvido = false;
 				_rondaActual.cantos.push(c);
 				_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera();
-				_log.innerHTML = "Envido <br/>" + _log.innerHTML ;
+				_log.innerHTML = "Envido 2<br/>" + _log.innerHTML ;
 				_rondaActual.enEspera = false;
 				_rondaActual.continuarRonda();
 			} );
