@@ -294,16 +294,7 @@
 							_log.innerHTML = "Envido 1<br/>" + _log.innerHTML ;
 							_rondaActual.enEspera = false;
                             //deshabilito los cantos correspondientes
-                            $(this).unbind('click');
-                            $(this).addClass('cantado');
-                            $('.canto').not('cantado').each(function (){
-                                var aux  = parseInt($(this).attr('data-envido'), 10);
-                                var cantado = parseInt(c,10);
-                                if (aux < cantado) {
-                                    $(this).unbind('click');
-                                    $(this).addClass('cantado');
-                                }
-                            });
+                            $(".boton").hide();
 							_rondaActual.continuarRonda();
 						
 						} );
@@ -354,7 +345,8 @@
 			_rondaActual = this;
 			$(".canto").click(function (event){ 
 				var c = $(this).attr('data-envido');
-				alert("Recanto " + c);
+				if (ultimo === "E" && c === "E") c = "EE";
+				alert(c);
 				_rondaActual.puedeEnvido = false;
 				_rondaActual.cantos.push(c);
 				_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera();
