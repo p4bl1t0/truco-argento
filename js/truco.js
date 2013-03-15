@@ -262,7 +262,7 @@
         //Variables para manejar el truco
         this.equipoTruco = null;
         this.puedeTruco = true;
-		
+        this.noQuiso = null;
 	}
 	
 	Ronda.prototype.equipoEnEspera = function (e) {
@@ -378,6 +378,49 @@
 				}
 			}
 	}
+    Ronda.prototype.decidirTruco = function(){
+        if (this.equipoTruco.jugador.esHumano) {
+            $('.cantot').hide();
+            $('.boton').show();
+            var ultimo = this.cantos.getLast();
+            switch(ultimo){
+                case 'T':
+                    $('#reTruco').show();
+                case 'RT':
+                    $('#vale4').show();
+            }
+            this.enEspera = true;
+            _rondaActual = this;
+            
+            $('.cantot').click(function (event){
+                var c = $(this).attr('data-truco');
+				_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,c);
+				_rondaActual.cantos.push(c);
+				_rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
+				_rondaActual.enEspera = false;
+				_rondaActual.continuarRonda();
+            })
+
+            $("#Quiero").click(function (event){
+				_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"S");
+				_rondaActual.enEspera = false;
+				_rondaActual.continuarRonda();
+			});
+			
+			$("#NoQuiero").click(function (event)  {
+				_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"N");
+                _rondaActual.noQuiso = _rondaActual.equipoTruco;
+				_rondaActual.enEspera = false;
+				_rondaActual.continuarRonda();
+			});
+        }else{//la maquina decide
+            alert('La maquina no decide el truco todavia!');
+            this.equipoTruco = null;
+            this.cantos = [];
+            this.puedeTruco = false;
+            //return;
+        }
+    }
 	
 	Ronda.prototype.decidirEnvido = function () {
 		if (this.equipoEnvido.jugador.esHumano) {   // Creo los bind para que el jugador decida
@@ -439,13 +482,7 @@
 		}
 	}
     
-    Ronda.prototype.decidirTruco = function(){
-        alert('falta!');
-        this.equipoTruco = null;
-        this.cantos = [];
-        this.puedeTruco = false;
-        //return;
-    }
+
 	
 	Ronda.prototype.continuarRonda = function () {
 		var ganador = null;
@@ -538,6 +575,38 @@
 		}
 		return {ganador:g ,perdedor:p};
 	}
+    
+    Ronda.prototype.jugarTruco = function(d){
+        if (d){
+            
+        }
+        else{
+            
+        }
+    }
+    
+    Ronda.prototype.calcularPuntosTruco = function(){
+        var g = 0; p = 0; 
+        var c = this.cantos.getLast();
+        switch(c){
+            case 'T':
+                g = 2;
+                p = 1;
+                break;
+            case 'RT':
+                g = 3;
+                p = 2;
+                break;
+            case 'V':
+                g = 4;
+                p = 3;
+                break;
+            default: //si no se canto truco la ronda vale 1 punto
+                g = 1;
+                break;
+        }
+        return {querido:g, noQuerido:p};
+    }
 	
 	Ronda.prototype.logCantar = function (jugador,canto) {
 		var mensaje = "<b>" + jugador.nombre + " canto: " + "</b>" ;
@@ -697,33 +766,40 @@
 	Ronda.prototype.determinarGanadorRonda = function () {
 		var e1 = this.equipoPrimero;
 		var e2 = this.equipoSegundo;
-		if(e1.manos === e2.manos && (e1.manos === 3 || e1.manos === 2)) {
+        var puntosTruco = this.calcularPuntosTruco();
+        
+        if (this.noQuiso !== null){
+            var equipoGanador = this.equipoEnEspera(this.noQuiso);
+            equipoGanador.puntos += puntosTruco.noQuerido;
+            return equipoGanador.jugador;
+		} else if(e1.manos === e2.manos && (e1.manos === 3 || e1.manos === 2)) {
 			if(e1.manos ===  3) {
 				//PARDAMOS las tres, gana el mano
 				if(e1.esMano) {
-					e1.puntos = e1.puntos + 1;
+					//e1.puntos = e1.puntos + 1;
+                    e1.puntos = e1.puntos + puntosTruco.querido;
 					return e1.jugador;
 				} else {
-					e2.puntos = e2.puntos + 1;
+					e2.puntos = e2.puntos + puntosTruco.querido;
 					return e2.jugador;
 				}
 			} else {
 				//Repartimos 1ra y 2da, PARDAMOS tercer, gana el que ganó primera
 				if(e1 === this.determinarGanadorMano(0, false)) {
-					e1.puntos = e1.puntos + 1;
+					e1.puntos = e1.puntos + puntosTruco.querido;
 					return e1.jugador;
 				} else {
-					e2.puntos = e2.puntos + 1;
+					e2.puntos = e2.puntos + puntosTruco.querido;
 					return e2.jugador;
 				}
 			}	
 		} else {
 			if(e1.manos == 2 && e1.manos > e2.manos) {
-				e1.puntos = e1.puntos + 1;
+				e1.puntos = e1.puntos + puntosTruco.querido;
 				return e1.jugador;
 			} else {
 				if(e2.manos == 2 && e2.manos > e1.manos) {
-					e2.puntos = e2.puntos + 1;
+					e2.puntos = e2.puntos + puntosTruco.querido;
 					return e2.jugador;
 				} else {
 					//Sin ganador
