@@ -261,6 +261,7 @@
 		this.equipoEnvido = null;   
         //Variables para manejar el truco
         this.equipoTruco = null;
+        this.puedeTruco = true;
 		
 	}
 	
@@ -317,7 +318,7 @@
 					$("#NoQuiero").hide();
 					$(".canto").hide();
 					
-					if (this.puedeEnvido === true)
+					if (this.puedeEnvido === true){
 						$(".canto").show();
 						$(".canto").click(function (event){ 
 							var c = $(this).attr('data-envido');
@@ -330,16 +331,17 @@
                             $(".boton").hide();
 							_rondaActual.continuarRonda();
 						
-						} );
-					$(".cantot").click(function(event){
-                        var c = $(this).attr('data-truco');
-                        _rondaActual.cantos.push(c);
-                        _rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
-                        _rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador, c);
-                        _rondaActual.enEspera = false;
-                        $('.boton').hide();
-                        _rondaActual.continuarRonda();
-                    });
+						} );}
+					if (this.puedeTruco === true){
+                        $(".cantot").click(function(event){
+                            var c = $(this).attr('data-truco');
+                            _rondaActual.cantos.push(c);
+                            _rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
+                            _rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador, c);
+                            _rondaActual.enEspera = false;
+                            $(".boton").hide();
+                            _rondaActual.continuarRonda();})
+                    }
 					$('.naipe-humano').unbind('click.jugar').not('.naipe-jugado').bind('click.jugar', function (event) {
 					    event.preventDefault();
 					    var $naipe = $(this);
@@ -438,7 +440,11 @@
 	}
     
     Ronda.prototype.decidirTruco = function(){
-    
+        alert('falta!');
+        this.equipoTruco = null;
+        this.cantos = [];
+        this.puedeTruco = false;
+        //return;
     }
 	
 	Ronda.prototype.continuarRonda = function () {
