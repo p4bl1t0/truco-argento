@@ -193,8 +193,7 @@
     
     IA.prototype.envido = function(ultimo, carta){
         var puntos = this.getPuntosDeEnvido();
-        
-        alert('IA: ' + puntos);
+
         if (ultimo === undefined){
             //si el envido no fue cantado todavia
             if (carta === undefined){
@@ -210,18 +209,15 @@
             }
         }
         else{
+            var rta = '';
+            alert('ultimo: ' + ultimo);
             switch(ultimo){
                 case 'E':
-                    if (puntos >= 27){
-                        alert('IA: Quiero!!');
-                        return 'true';
-                    }
-                    else{ 
-                        alert('IA: No quiero!!');
-                        return 'false';
-                    }
+                    alert('entre!');
+                    (puntos >= 20) ? rta = 'S' : rta = 'N';
                     break;
             }
+            return rta;
         }
     }
 		
@@ -353,14 +349,10 @@
 					});
 				} else {   // DECIDE LA MAQUINAAAAAAAAAAAAAAAAA
 					_rondaActual = this;
-                    /* if (_rondaActual.puedeEnvido === true){
-                        var accion = this.equipoEnTurno.jugador.envido(undefined, this.equipoPrimero.jugador.cartasJugadas.getLast());
-                        this.puedeEnvido = false;
-                        if (accion !== 'false'){
-                            this.equipoEnvido = this.equipoEnEspera(this.equipoEnTurno);
-                            this.continuarRonda();
+                    if (_rondaActual.puedeEnvido === true){
+                        _rondaActual.puedeEnvido = false;
+                        _rondaActual.decidirEnvido();
                         }
-                    }*/
 					var carta = this.equipoEnTurno.jugador.jugarCarta();
 					
 					$('#player-two').find('li:eq(' + (this.equipoEnTurno.jugador.cartasJugadas.length - 1).toString() +')').css('background-position', carta.getCSS());
@@ -415,9 +407,18 @@
 		} else {// La maquina debe generar una respuesta
             var ultimo = this.cantos.getLast();
             var carta  = this.equipoPrimero.jugador.cartasJugadas.getLast();
-            this.equipoSegundo.jugador.envido(ultimo,carta);
+            var accion = this.equipoSegundo.jugador.envido(ultimo,carta);
+            if (accion === 'S' || accion === 'N'){
+                _rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,accion);
+                _rondaActual.jugarEnvido((accion === 'S') ? true : false);
+            }
+            else{
+                _rondaActual.cantos.push(accion);
+                _rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,accion);
+                _rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(_rondaActual.equipoEnvido);
+            }
 			
-		}		
+		}
 	}
 	
 	Ronda.prototype.continuarRonda = function () {
@@ -458,7 +459,7 @@
 	}
 	
 	Ronda.prototype.jugarEnvido = function (d) {
-		var puntos = this.calcularPuntosEnvido() ;
+		var puntos = this.calcularPuntosEnvido();
 		if (d) { // Dijo Quiero
 			if (this.equipoPrimero.esMano) {
 				var primero = this.equipoPrimero; var p1 = primero.jugador.getPuntosDeEnvido();
@@ -466,9 +467,9 @@
 			} else {
 				var primero = this.equipoSegundo; var p1 = primero.jugador.getPuntosDeEnvido();
 				var segundo = this.equipoPrimero; var p2 = segundo.jugador.getPuntosDeEnvido();
-			}	
+			}
 			
-			alert(puntos.ganador);
+			alert('Puntos del ganador del envido: ' + puntos.ganador);
 			
 			this.logCantar(primero.jugador , p1);
 			if (p2 > p1 ) {
