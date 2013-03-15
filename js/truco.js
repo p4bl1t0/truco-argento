@@ -577,7 +577,7 @@
 	}
     
     Ronda.prototype.calcularPuntosTruco = function(){
-        var g = 0; p = 0; 
+        var g = 0, p = 0; 
         var c = this.cantos.getLast();
         switch(c){
             case 'T':
