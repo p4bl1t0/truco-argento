@@ -191,28 +191,26 @@
 		return indice;
 	}
     
-    IA.prototype.envido = function(ultimo, carta){
+    IA.prototype.envido = function(acumulado, ultimaCarta){
         var puntos = this.getPuntosDeEnvido();
 
-        if (ultimo === undefined){
+        if (acumulado === 0){
             //si el envido no fue cantado todavia
-            if (carta === undefined){
+            if (ultimaCarta === undefined){
                 //si es mano
-                //alert('es mano');
                 return 'E';
             }
             else{
                 //si es pie, aca puedo analizar la carta jugada por el oponente
                 //para decidir si cantar o no
-                //alert('es pie');
                 return 'E';
             }
-        } else{
+        } else{//me cantaron algo
             var rta = '';
-            //alert('ultimo: ' + ultimo);
-            switch(ultimo){
-                case 'E':
-                    //alert('entre!');
+            acumulado = acumulado.toString();
+        
+            switch(acumulado){
+                case '2':
                     (puntos >= 20) ? rta = 'S' : rta = 'N';
                     break;
             }
@@ -261,6 +259,8 @@
 		this.puedeEnvido = true;
 		this.cantos = new Array();   // Posibles valores: "E" "EE" "RE" "FE"
 		this.equipoEnvido = null;   
+        //Variables para manejar el truco
+        this.equipoTruco = null;
 		
 	}
 	
@@ -331,7 +331,15 @@
 							_rondaActual.continuarRonda();
 						
 						} );
-					
+					$(".cantot").click(function(event){
+                        var c = $(this).attr('data-truco');
+                        _rondaActual.cantos.push(c);
+                        _rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
+                        _rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador, c);
+                        _rondaActual.enEspera = false;
+                        $('.boton').hide();
+                        _rondaActual.continuarRonda();
+                    });
 					$('.naipe-humano').unbind('click.jugar').not('.naipe-jugado').bind('click.jugar', function (event) {
 					    event.preventDefault();
 					    var $naipe = $(this);
@@ -350,9 +358,9 @@
 				} else {   // DECIDE LA MAQUINAAAAAAAAAAAAAAAAA
 					_rondaActual = this;
                     if (_rondaActual.puedeEnvido === true){
-						var ultimo = this.cantos.getLast();
+						//var ultimo = this.cantos.getLast();
 						var carta  = this.equipoPrimero.jugador.cartasJugadas.getLast();   // Convertir en relativos 
-						var accion = this.equipoSegundo.jugador.envido(ultimo,carta);
+						var accion = this.equipoSegundo.jugador.envido(this.calcularPuntosEnvido().ganador,carta);
 						if (accion !== '') {
 							_rondaActual.puedeEnvido = false;
 							_rondaActual.cantos.push(accion);
@@ -413,9 +421,9 @@
 			});
 			
 		} else {// La maquina debe generar una respuesta
-            var ultimo = this.cantos.getLast();
+            //var ultimo = this.cantos.getLast();
             var carta  = this.equipoPrimero.jugador.cartasJugadas.getLast();
-            var accion = this.equipoSegundo.jugador.envido(ultimo,carta);
+            var accion = this.equipoSegundo.jugador.envido(this.calcularPuntosEnvido().ganador,carta);
             if (accion === 'S' || accion === 'N'){
                 _rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,accion);
                 _rondaActual.jugarEnvido((accion === 'S') ? true : false);
@@ -428,6 +436,10 @@
 			
 		}
 	}
+    
+    Ronda.prototype.decidirTruco = function(){
+    
+    }
 	
 	Ronda.prototype.continuarRonda = function () {
 		var ganador = null;
@@ -443,11 +455,12 @@
 				}
 			}
 
-			if (this.equipoEnvido === null) 
-				this.decidirCarta(); 
-			else 
-				this.decidirEnvido();
-
+			if (this.equipoEnvido === null && this.equipoTruco === null) 
+				this.decidirCarta();
+            else if (this.equipoEnvido !== null)
+                this.decidirEnvido();
+            else
+                this.decidirTruco();
 
 			if (this.enEspera === true)  break; 
 			
@@ -492,6 +505,7 @@
 		
 		this.puedeEnvido = false;
 		this.equipoEnvido = null;
+        this.cantos = [];
 	}
 	
 	Ronda.prototype.calcularPuntosEnvido = function () {
@@ -532,6 +546,15 @@
 			case "F":
 				mensaje +=  " Falta Envido";
 				break;		
+            case "T":
+                mensaje += " Truco";
+                break;
+            case "RT":
+                mensaje += " Quiero re Truco";
+                break;
+            case "V":
+                mensaje += "Quiero vale 4";
+                break;
 			case "S":
 				mensaje +=  " Quiero";
 				break;		
