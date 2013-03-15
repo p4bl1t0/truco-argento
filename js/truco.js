@@ -198,22 +198,21 @@
             //si el envido no fue cantado todavia
             if (carta === undefined){
                 //si es mano
-                alert('es mano');
-                return 'true';
+                //alert('es mano');
+                return 'E';
             }
             else{
                 //si es pie, aca puedo analizar la carta jugada por el oponente
                 //para decidir si cantar o no
-                alert('es pie');
-                return 'true';
+                //alert('es pie');
+                return 'E';
             }
-        }
-        else{
+        } else{
             var rta = '';
-            alert('ultimo: ' + ultimo);
+            //alert('ultimo: ' + ultimo);
             switch(ultimo){
                 case 'E':
-                    alert('entre!');
+                    //alert('entre!');
                     (puntos >= 20) ? rta = 'S' : rta = 'N';
                     break;
             }
@@ -350,9 +349,17 @@
 				} else {   // DECIDE LA MAQUINAAAAAAAAAAAAAAAAA
 					_rondaActual = this;
                     if (_rondaActual.puedeEnvido === true){
-                        _rondaActual.puedeEnvido = false;
-                        _rondaActual.decidirEnvido();
-                        }
+						var ultimo = this.cantos.getLast();
+						var carta  = this.equipoPrimero.jugador.cartasJugadas.getLast();   // Convertir en relativos 
+						var accion = this.equipoSegundo.jugador.envido(ultimo,carta);
+						if (accion !== '') {
+							_rondaActual.puedeEnvido = false;
+							_rondaActual.cantos.push(accion);
+							_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
+							_rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador,accion);
+							return ;
+						}
+                    }
 					var carta = this.equipoEnTurno.jugador.jugarCarta();
 					
 					$('#player-two').find('li:eq(' + (this.equipoEnTurno.jugador.cartasJugadas.length - 1).toString() +')').css('background-position', carta.getCSS());
@@ -468,9 +475,7 @@
 				var primero = this.equipoSegundo; var p1 = primero.jugador.getPuntosDeEnvido();
 				var segundo = this.equipoPrimero; var p2 = segundo.jugador.getPuntosDeEnvido();
 			}
-			
-			alert('Puntos del ganador del envido: ' + puntos.ganador);
-			
+		
 			this.logCantar(primero.jugador , p1);
 			if (p2 > p1 ) {
 				this.logCantar(segundo.jugador , p2);
