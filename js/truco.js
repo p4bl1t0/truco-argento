@@ -576,15 +576,6 @@
 		return {ganador:g ,perdedor:p};
 	}
     
-    Ronda.prototype.jugarTruco = function(d){
-        if (d){
-            
-        }
-        else{
-            
-        }
-    }
-    
     Ronda.prototype.calcularPuntosTruco = function(){
         var g = 0; p = 0; 
         var c = this.cantos.getLast();
