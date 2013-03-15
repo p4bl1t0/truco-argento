@@ -315,9 +315,10 @@
 					_rondaActual = this;
 					$("#Quiero").hide();
 					$("#NoQuiero").hide();
-					
+					$(".canto").hide();
 					
 					if (this.puedeEnvido === true)
+						$(".canto").show();
 						$(".canto").click(function (event){ 
 							var c = $(this).attr('data-envido');
                             _rondaActual.puedeEnvido = false;
