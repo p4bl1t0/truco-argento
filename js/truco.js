@@ -434,9 +434,13 @@
 				_rondaActual.continuarRonda();
 			});
         }else{//la maquina decide
-            _rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"S");
+            /*_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"S");
 			_rondaActual.equipoTruco = null;
-			_rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
+			_rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);*/
+			_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"N");
+            _rondaActual.noQuiso = _rondaActual.equipoTruco;
+			
+			
         }
     }
 	
@@ -505,18 +509,18 @@
 	Ronda.prototype.continuarRonda = function () {
 		var ganador = null;
 		while (ganador === null) {
-			if(this.jugadasEnMano === 2) {
-				this.puedeEnvido = false;
-				this.jugadasEnMano = 0;
-				this.equipoEnTurno = this.determinarGanadorMano(this.numeroDeMano);
+			if(this.jugadasEnMano === 2 || this.noQuiso != null) {
+				if (this.jugadasEnMano === 2) {
+					this.puedeEnvido = false;
+					this.jugadasEnMano = 0;
+					this.equipoEnTurno = this.determinarGanadorMano(this.numeroDeMano);
+				}
 				ganador = this.determinarGanadorRonda();
 				this.numeroDeMano = this.numeroDeMano + 1;
 				if(this.numeroDeMano === 3 || ganador !== null) {
 					break;
 				}
 			}
-			
-			if (this.noQuiso != null) alert("Terminar la mano!! No quiso el truco")
 
 			if (this.equipoEnvido === null && this.equipoTruco === null) 
 				this.decidirCarta();
