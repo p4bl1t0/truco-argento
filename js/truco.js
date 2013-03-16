@@ -261,8 +261,9 @@
 		this.equipoEnvido = null;   
         //Variables para manejar el truco
         this.equipoTruco = null;
-        this.puedeTruco = true;
+        this.puedeTruco = null;
         this.noQuiso = null;
+        this.truco = new Array();
 	}
 	
 	Ronda.prototype.equipoEnEspera = function (e) {
@@ -317,7 +318,21 @@
 					$("#Quiero").hide();
 					$("#NoQuiero").hide();
 					$(".canto").hide();
-					
+					$(".cantot").hide();
+					var ultimo = this.truco.getLast();
+					switch(ultimo){
+						case 'T':
+							$('#reTruco').show();
+							break;
+						case 'RT':
+							$('#vale4').show();
+							break;
+						case 'V':
+							break;
+						default:
+							$('#Truco').show();
+							break;
+					}
 					if (this.puedeEnvido === true){
 						$(".canto").show();
 						$(".canto").click(function (event){ 
@@ -332,16 +347,17 @@
 							_rondaActual.continuarRonda();
 						
 						} );}
-					if (this.puedeTruco === true){
+					if (this.puedeTruco === null || this.puedeTruco === this.equipoEnTurno ){
                         $(".cantot").click(function(event){
                             var c = $(this).attr('data-truco');
-                            _rondaActual.cantos.push(c);
+                            _rondaActual.truco.push(c);
                             _rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
                             _rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador, c);
                             _rondaActual.enEspera = false;
                             $(".boton").hide();
                             _rondaActual.continuarRonda();})
                     }
+                    
 					$('.naipe-humano').unbind('click.jugar').not('.naipe-jugado').bind('click.jugar', function (event) {
 					    event.preventDefault();
 					    var $naipe = $(this);
@@ -386,8 +402,10 @@
             switch(ultimo){
                 case 'T':
                     $('#reTruco').show();
+                    break;
                 case 'RT':
                     $('#vale4').show();
+                    break;
             }
             this.enEspera = true;
             _rondaActual = this;
@@ -395,7 +413,7 @@
             $('.cantot').click(function (event){
                 var c = $(this).attr('data-truco');
 				_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,c);
-				_rondaActual.cantos.push(c);
+				_rondaActual.truco.push(c);
 				_rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
 				_rondaActual.enEspera = false;
 				_rondaActual.continuarRonda();
@@ -403,6 +421,8 @@
 
             $("#Quiero").click(function (event){
 				_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"S");
+				_rondaActual.equipoTruco = null;
+				_rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
 				_rondaActual.enEspera = false;
 				_rondaActual.continuarRonda();
 			});
@@ -414,11 +434,9 @@
 				_rondaActual.continuarRonda();
 			});
         }else{//la maquina decide
-            alert('La maquina no decide el truco todavia!');
-            this.equipoTruco = null;
-            this.cantos = [];
-            this.puedeTruco = false;
-            //return;
+            _rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"S");
+			_rondaActual.equipoTruco = null;
+			_rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
         }
     }
 	
@@ -497,6 +515,8 @@
 					break;
 				}
 			}
+			
+			if (this.noQuiso != null) alert("Terminar la mano!! No quiso el truco")
 
 			if (this.equipoEnvido === null && this.equipoTruco === null) 
 				this.decidirCarta();
@@ -578,7 +598,7 @@
     
     Ronda.prototype.calcularPuntosTruco = function(){
         var g = 0, p = 0; 
-        var c = this.cantos.getLast();
+        var c = this.truco.getLast();
         switch(c){
             case 'T':
                 g = 2;
