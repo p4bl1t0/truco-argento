@@ -3,6 +3,7 @@
 	var _log = document.getElementById('log');
 	var _rondaActual = null;
 	var _partidaActual = null;
+	var audio = {};
 	//Funciones Primitivas
 	function getRandomInt (min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -380,6 +381,9 @@
 						var carta  = this.equipoPrimero.jugador.cartasJugadas.getLast();   // Convertir en relativos 
 						var accion = this.equipoSegundo.jugador.envido(this.calcularPuntosEnvido().ganador,carta);
 						if (accion !== '') {
+							if(audio[accion] !== null && audio[accion] !== undefined) {
+								audio[accion].play();
+							}
 							_rondaActual.puedeEnvido = false;
 							_rondaActual.cantos.push(accion);
 							_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
@@ -491,15 +495,20 @@
             //var ultimo = this.cantos.getLast();
             var carta  = this.equipoPrimero.jugador.cartasJugadas.getLast();
             var accion = this.equipoSegundo.jugador.envido(this.calcularPuntosEnvido().ganador,carta);
-            if (accion === 'S' || accion === 'N'){
-                _rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,accion);
-                _rondaActual.jugarEnvido((accion === 'S') ? true : false);
-            }
-            else{
-                _rondaActual.cantos.push(accion);
-                _rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,accion);
-                _rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(_rondaActual.equipoEnvido);
-            }
+            if(accion !== '') {
+				if(audio[accion] !== null && audio[accion] !== undefined) {
+					audio[accion].play();
+				}
+				if (accion === 'S' || accion === 'N'){
+					_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,accion);
+					_rondaActual.jugarEnvido((accion === 'S') ? true : false);
+				}
+				else{
+					_rondaActual.cantos.push(accion);
+					_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,accion);
+					_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(_rondaActual.equipoEnvido);
+				}
+			}
 			
 		}
 	}
@@ -908,7 +917,40 @@
 	//******************************************************************
 	//******************************************************************
 	
-	$(document).ready(function (){
+	$(document).ready(function () {
+		//Cargo recursos
+		var a = new Audio();
+		a.setAttribute("src","audio/envido.wav");
+		a.load();
+		audio['E'] = a;
+		a = new Audio();
+		a.setAttribute("src","audio/real-envido.wav");
+		a.load();
+		audio['R'] = a;
+		a = new Audio();
+		a.setAttribute("src","audio/falta-envido.wav");
+		a.load();
+		audio['F'] = a;
+		a = new Audio();
+		a.setAttribute("src","audio/quiero.wav");
+		a.load();
+		audio['S'] = a;
+		a = new Audio();
+		a.setAttribute("src","audio/no-quiero.wav");
+		a.load();
+		audio['N'] = a;
+		a = new Audio();
+		a.setAttribute("src","audio/truco.wav");
+		a.load();
+		audio['T'] = a;
+		a = new Audio();
+		a.setAttribute("src","audio/re-truco.wav");
+		a.load();
+		audio['RT'] = a;
+		a = new Audio();
+		a.setAttribute("src","audio/vale-cuatro.wav");
+		a.load();
+		audio['V'] = a;
 		//Comienza la acción
 		_partidaActual = new Partida();
 		_partidaActual.iniciar('Pablo', 'Computadora');

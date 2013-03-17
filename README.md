@@ -5,7 +5,7 @@ HTML5, CSS3 and JavaScript Truco Argentino Game
 
 by 
 
--Mariano Botta
+-Mariano Botta 
 -Pablo Botta
 -Esteban Campostrini
   
