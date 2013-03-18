@@ -208,10 +208,10 @@
             }
         } else{//me cantaron algo
             var rta = '';
-            acumulado = acumulado.toString();
+            //acumulado = acumulado.toString();
         
             switch(acumulado){
-                case '2':
+                default:
                     (puntos >= 20) ? rta = 'S' : rta = 'N';
                     break;
             }
@@ -299,7 +299,8 @@
 			this.equipoEnTurno = this.equipoSegundo;
 		}
 		//#LOG
-		_log.innerHTML = '<strong>Número de cartas en el mazo:</strong> ' + c +' naipes. <br />' + _log.innerHTML ;
+		
+		//_log.innerHTML = '<strong>Número de cartas en el mazo:</strong> ' + c +' naipes. <br />' + _log.innerHTML ;
 		this.equipoPrimero.jugador.sayCartasEnMano();
 		_log.innerHTML = this.equipoPrimero.jugador.nombre + ' puntos para el envido: ' + this.equipoPrimero.jugador.getPuntosDeEnvido() + '<br />' + _log.innerHTML ;
 		this.equipoSegundo.jugador.sayCartasEnMano();
@@ -343,6 +344,7 @@
 							_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
 							_rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador,c);
 							_rondaActual.enEspera = false;
+							$(this).unbind('click');
                             //deshabilito los cantos correspondientes
                             $(".boton").hide();
 							_rondaActual.continuarRonda();
@@ -350,12 +352,14 @@
 						} );}
 					if (this.puedeTruco === null || this.puedeTruco === this.equipoEnTurno ){
                         $(".cantot").click(function(event){
+							//alert("AAA");
                             var c = $(this).attr('data-truco');
                             _rondaActual.truco.push(c);
                             _rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
                             _rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador, c);
                             _rondaActual.enEspera = false;
                             $(".boton").hide();
+                            $(this).unbind('click');
                             _rondaActual.continuarRonda();})
                     }
                     
@@ -371,6 +375,7 @@
 						});
 					    _rondaActual.equipoEnTurno.jugador.jugarCarta(index);
 					    _rondaActual.enEspera = false;
+					    $(this).unbind('click');
 					    _rondaActual.pasarTurno();
 					    _rondaActual.continuarRonda();
 					});
@@ -420,6 +425,7 @@
 				_rondaActual.truco.push(c);
 				_rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
 				_rondaActual.enEspera = false;
+				$(this).unbind('click');
 				_rondaActual.continuarRonda();
             })
 
@@ -428,6 +434,7 @@
 				_rondaActual.equipoTruco = null;
 				_rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
 				_rondaActual.enEspera = false;
+				$(this).unbind('click');
 				_rondaActual.continuarRonda();
 			});
 			
@@ -435,6 +442,7 @@
 				_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"N");
                 _rondaActual.noQuiso = _rondaActual.equipoTruco;
 				_rondaActual.enEspera = false;
+				$(this).unbind('click');
 				_rondaActual.continuarRonda();
 			});
         }else{//la maquina decide
@@ -443,8 +451,6 @@
 			_rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);*/
 			_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"N");
             _rondaActual.noQuiso = _rondaActual.equipoTruco;
-			
-			
         }
     }
 	
@@ -472,6 +478,7 @@
 				_rondaActual.cantos.push(c);
 				_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(_rondaActual.equipoEnvido);
 				_rondaActual.enEspera = false;
+				$(this).unbind('click');
 				_rondaActual.continuarRonda();
 			} );
 			
@@ -481,6 +488,7 @@
 				_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,"S");
 				_rondaActual.jugarEnvido(true);
 				_rondaActual.enEspera = false;
+				$(this).unbind('click');
 				_rondaActual.continuarRonda();
 			});
 			
@@ -488,6 +496,7 @@
 				_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,"N");
 				_rondaActual.jugarEnvido(false);
 				_rondaActual.enEspera = false;
+				$(this).unbind('click');
 				_rondaActual.continuarRonda();
 			});
 			
@@ -791,7 +800,6 @@
 		var e1 = this.equipoPrimero;
 		var e2 = this.equipoSegundo;
         var puntosTruco = this.calcularPuntosTruco();
-        
         if (this.noQuiso !== null){
             var equipoGanador = this.equipoEnEspera(this.noQuiso);
             equipoGanador.puntos += puntosTruco.noQuerido;
@@ -890,6 +898,7 @@
 	Partida.prototype.continuar = function () {
 	    while (this.equipoPrimero.puntos < 5 && this.equipoSegundo.puntos < 5) {
 			var _$tbl = $('#game-score');
+			_log.innerHTML =  "";
 			_$tbl.find('.player-one-points').html(this.equipoPrimero.puntos);
 			_$tbl.find('.player-two-points').html(this.equipoSegundo.puntos);
 			_log.innerHTML = '<hr />' + '<br /> Puntaje parcial : ' + this.equipoPrimero.jugador.nombre + ' ' + this.equipoPrimero.puntos + ' - '+ this.equipoSegundo.jugador.nombre + ' ' + this.equipoSegundo.puntos + '<br /> ' + '<hr />' + _log.innerHTML ;
