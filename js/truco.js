@@ -394,7 +394,7 @@
 					}
 					if (this.puedeEnvido === true){
 						$(".canto").show();
-						$(".canto").click(function (event){ 
+						$(".canto").unbind('click').click(function (event){ 
 							var c = $(this).attr('data-envido');
                             _rondaActual.puedeEnvido = false;
 							_rondaActual.cantos.push(c);
@@ -409,7 +409,7 @@
 						} );}
 						
 					if (this.puedeTruco === null || this.puedeTruco === this.equipoEnTurno ){
-                        $(".cantot").click(function(event){
+                        $(".cantot").unbind('click').click(function(event){
 							//alert("AAA");
                             var c = $(this).attr('data-truco');
                             _rondaActual.truco.push(c);
@@ -487,7 +487,7 @@
             this.enEspera = true;
             _rondaActual = this;
             
-            $('.cantot').click(function (event){
+            $('.cantot').unbind('click').click(function (event){
                 var c = $(this).attr('data-truco');
 				_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,c);
 				_rondaActual.truco.push(c);
@@ -497,7 +497,7 @@
 				_rondaActual.continuarRonda();
             })
 
-            $("#Quiero").click(function (event){
+            $("#Quiero").unbind('click').click(function (event){
 				_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"S");
 				_rondaActual.equipoTruco = null;
 				_rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
@@ -506,7 +506,7 @@
 				_rondaActual.continuarRonda();
 			});
 			
-			$("#NoQuiero").click(function (event)  {
+			$("#NoQuiero").unbind('click').click(function (event)  {
 				_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"N");
                 _rondaActual.noQuiso = _rondaActual.equipoTruco;
 				_rondaActual.enEspera = false;
@@ -539,7 +539,7 @@
 			this.enEspera = true;
 			_rondaActual = this;
 			
-			$(".canto").click(function (event){ 
+			$(".canto").unbind('click').click(function (event){ 
 				var c = $(this).attr('data-envido');
 				if (ultimo === "E" && c === "E") c = "EE";
 				_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,c);
@@ -552,7 +552,7 @@
 			
 			
 			
-			$("#Quiero").click(function (event){
+			$("#Quiero").unbind('click').click(function (event){
 				_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,"S");
 				_rondaActual.jugarEnvido(true);
 				_rondaActual.enEspera = false;
@@ -560,7 +560,7 @@
 				_rondaActual.continuarRonda();
 			});
 			
-			$("#NoQuiero").click(function (event)  {
+			$("#NoQuiero").unbind('click').click(function (event)  {
 				_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,"N");
 				_rondaActual.jugarEnvido(false);
 				_rondaActual.enEspera = false;
