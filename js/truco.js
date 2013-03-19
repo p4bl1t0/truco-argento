@@ -367,6 +367,8 @@
 					    event.preventDefault();
 					    var $naipe = $(this);
 					    $naipe.addClass('naipe-jugado');
+					    var $elementoPosicionador = $('.card-' + (_rondaActual.numeroDeMano * 2 + 1));
+						$naipe.css("transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )");
 					    var index = parseInt($(this).attr('data-naipe-index'), 10);
 					    
 					    $('.naipe-humano').not('.naipe-jugado').each(function (){
@@ -397,8 +399,15 @@
 						}
                     }
 					var carta = this.equipoEnTurno.jugador.jugarCarta();
+					var $elementoPosicionador = $('.card-' + (this.numeroDeMano + 1) * 2);
+					var $card = $('#player-two').find('li:eq(' + (this.equipoEnTurno.jugador.cartasJugadas.length - 1).toString() +')');
+					$card.css('background-position', carta.getCSS())
+						 //.css('position', 'absolute')
+						 //.css('top', (_elementoPosicionador.offset().top - _card.offset().top + 35) + 'px')
+						 //.css('left', (_elementoPosicionador.offset().left - _card.offset().left +10) + 'px');
+						 //-moz-transform:  translate(0,-15%);
+						 .css("transform", "translate(" + ($elementoPosicionador.offset().left - $card.offset().left) + "px, " + ($elementoPosicionador.offset().top - $card.offset().top)  + "px )");
 					
-					$('#player-two').find('li:eq(' + (this.equipoEnTurno.jugador.cartasJugadas.length - 1).toString() +')').css('background-position', carta.getCSS());
 					this.pasarTurno();
 				}
 			}
@@ -559,8 +568,8 @@
 			var juntarNaipes = function () {
 			$('.naipe').remove();
 			}
-			setTimeout(juntarNaipes, 1000);
-			setTimeout(repartir, 1500);
+			setTimeout(juntarNaipes, 2000);
+			setTimeout(repartir, 2500);
 		}	
 	}
 	

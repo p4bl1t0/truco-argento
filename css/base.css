@@ -566,6 +566,14 @@ ul li {
     width:98px;
     height:150px;
     display:block;
+    -webkit-transition: top left 1s linear;
+	-moz-transition: top left 1s linear;
+	-ms-transition: top left 1s linear;
+	-o-transition: top left 1s linear;
+	transition: top left 1s linear;
+	
+	-moz-transition: transform 1s linear;
+	transition: transform 1s linear;
 }
 .naipe-boca-abajo {
     background: url('../images/naipes-e.png') 98px 0;
@@ -573,11 +581,11 @@ ul li {
 .naipe-jugado {
 	position:relative;
 	/*top:-35px;*/
-	-moz-transform:  translate(0,-15%);
+	/*-moz-transform:  translate(0,-15%);
 	-webkit-transform:  translate(0,-15%);
 	-ms-transform:  translate(0,-15%);
 	-o-transform:  translate(0,-15%);
-	transform:  translate(0,-15%);
+	transform:  translate(0,-15%);*/
 }
 .game-header {
 	height:10%;
@@ -598,3 +606,40 @@ ul li {
 .amarillo {
 	color:yellow;
 }
+#player-two .player-cards {
+	min-height:150px;
+}
+.game-deck {
+	height:180px; 
+	position:relative;
+}
+.game-deck .card {
+	width:98px; 
+	height:150px;
+	position:absolute;
+}
+.card-1 {
+	top:0;
+	left:0;
+}
+.card-2 {
+	top:30px;
+	left:30px;
+}
+.card-3 {
+	top:0;
+	left:150px;
+}
+.card-4 {
+	top:30px;
+	left:180px;
+}
+.card-5 {
+	top:0;
+	left:300px;
+}	
+
+.card-6 {
+	top:30px;
+	left:330px;
+}					
