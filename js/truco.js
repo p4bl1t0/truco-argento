@@ -4,6 +4,9 @@
 	var _rondaActual = null;
 	var _partidaActual = null;
 	var audio = {};
+	
+	
+	
 	//Funciones Primitivas
 	function getRandomInt (min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -155,7 +158,42 @@
 			return carta;
 		}
 	}
+	/*******************************************************************
+	 * 
+	 * Clase Probabilidad
+	 * 
+	 *******************************************************************
+	*/ 
+	function Probabilidad()  {
+		// Parametros para calcular la probabilidad de los puntos
+		this.m1 = 0.15;
+		this.m2 = 0.20;
+		// Parametros para la carta vista
+		this.cv1 = -20;
+		this.cv2 = 20;
+	}
 	
+	Probabilidad.prototype.ponderarPuntos = function(puntos) {
+		var pen1 = this.m1 / 7 ;
+		var pen2 = (1 - this.m2) / ( 33 - 20 ); 
+		var h = 1 - 33 * pen2 ;
+		
+		if ( puntos <= 7 ) return puntos * pen1 ;
+		else return puntos * pen2 + h;  
+		
+	}
+	
+	Probabilidad.prototype.CartaVista = function(carta) {
+		if (carta === undefined) return 0;
+		else {
+			var e = carta.puntosEnvido;
+			var m = (this.cv2 -  this.cv1) / 7 ;
+			var h = this.cv1;
+			return  e * m + h;
+		}		
+	}
+	
+		
 	/*******************************************************************
 	 * 
 	 * Clase IA
@@ -192,27 +230,46 @@
 		return indice;
 	}
     
-    IA.prototype.envido = function(acumulado, ultimaCarta){
+    IA.prototype.envido = function(ultimo,acumulado, ultimaCarta){
         var puntos = this.getPuntosDeEnvido();
-
+		var p1 =  _rondaActual.equipoPrimero.puntos; 
+		var p2 =  _rondaActual.equipoSegundo.puntos;
+		
+		var diff = p1 - p2;
+		
+		var posible = this.prob.CartaVista(ultimaCarta);
+		
+		var valor = this.prob.ponderarPuntos(puntos);
+		var ran = getRandomInt(0,100);
+		
+        if ( p2 === 29 ) return ultimo === 'F' ? 'S' :  'F';
+        
         if (acumulado === 0){
-            //si el envido no fue cantado todavia
-            if (ultimaCarta === undefined){
-                //si es mano
-                return 'E';
-            }
-            else{
-                //si es pie, aca puedo analizar la carta jugada por el oponente
-                //para decidir si cantar o no
-                return 'E';
-            }
+				// El factor rando deberia desaparecer?????
+				alert( ran + "  + " +  posible  +   "  < "  + valor * 100  );
+                if (ran + posible  <  valor  * 100 ) return   'E'   ;
+                else return '';
+ 
         } else{//me cantaron algo
             var rta = '';
-            //acumulado = acumulado.toString();
-        
-            switch(acumulado){
-                default:
-                    (puntos >= 20) ? rta = 'S' : rta = 'N';
+            alert( ran + "  + " +  posible  +  " + " +  diff + " + " +  acumulado * 2   +  "  < "  + valor * 100  );
+            
+            switch(ultimo){
+                case 'E':
+					if (ran + posible + diff + acumulado  <  valor  * 100 ) return   'S'  ;
+					else return 'N';
+					break;
+                case 'EE':
+					if (ran + posible + diff + acumulado <  valor  * 100 ) return   'S'  ;
+					else return 'N';
+					break;
+                case 'R':
+					if (ran + posible + diff + acumulado * 1.5 <  valor  * 100 ) return   'S'  ;
+					else return 'N';
+					break;
+                case 'F':
+                    if (ran + posible  + diff + acumulado * 2 <  valor  * 100 ) return   'S'  ;
+					else return 'N';
                     break;
             }
             return rta;
@@ -350,6 +407,7 @@
 							_rondaActual.continuarRonda();
 						
 						} );}
+						
 					if (this.puedeTruco === null || this.puedeTruco === this.equipoEnTurno ){
                         $(".cantot").click(function(event){
 							//alert("AAA");
@@ -362,6 +420,7 @@
                             $(this).unbind('click');
                             _rondaActual.continuarRonda();})
                     }
+                    
                     
 					$('.naipe-humano').unbind('click.jugar').not('.naipe-jugado').bind('click.jugar', function (event) {
 					    event.preventDefault();
@@ -377,7 +436,7 @@
 						});
 					    _rondaActual.equipoEnTurno.jugador.jugarCarta(index);
 					    _rondaActual.enEspera = false;
-					    $(this).unbind('click');
+					    $('.naipe-humano').unbind('click.jugar');
 					    _rondaActual.pasarTurno();
 					    _rondaActual.continuarRonda();
 					});
@@ -386,7 +445,7 @@
                     if (_rondaActual.puedeEnvido === true){
 						//var ultimo = this.cantos.getLast();
 						var carta  = this.equipoPrimero.jugador.cartasJugadas.getLast();   // Convertir en relativos 
-						var accion = this.equipoSegundo.jugador.envido(this.calcularPuntosEnvido().ganador,carta);
+						var accion = this.equipoSegundo.jugador.envido( this.cantos.getLast() ,this.calcularPuntosEnvido().ganador,carta);
 						if (accion !== '') {
 							if(audio[accion] !== null && audio[accion] !== undefined) {
 								audio[accion].play();
@@ -510,9 +569,10 @@
 			});
 			
 		} else {// La maquina debe generar una respuesta
-            //var ultimo = this.cantos.getLast();
+            //var ultimenvidoo = this.cantos.getLast();
+            _rondaActual = this;
             var carta  = this.equipoPrimero.jugador.cartasJugadas.getLast();
-            var accion = this.equipoSegundo.jugador.envido(this.calcularPuntosEnvido().ganador,carta);
+            var accion = this.equipoSegundo.jugador.envido(this.cantos.getLast(),  this.calcularPuntosEnvido().ganador,carta);
             if(accion !== '') {
 				if(audio[accion] !== null && audio[accion] !== undefined) {
 					audio[accion].play();
@@ -556,9 +616,7 @@
             else
                 this.decidirTruco();
 
-			if (this.enEspera === true)  break; 
-			
-			
+			if (this.enEspera === true)  break; 	
 		}
 		if(ganador !== null) {
 			var repartir = function ()  {
@@ -619,14 +677,14 @@
 					p += 1;
 					break;
 				case 'F':
-					g += 30;          // GANA EL PARTIDO POR EL MOMENTO
+					g = 30 - (this.equipoPrimero.puntos < this.equipoSegundo.puntos ? this.equipoSegundo.puntos : this.equipoPrimero.puntos)  ;          // GANA EL PARTIDO POR EL MOMENTO
 					p += 1; 
 					break;
 			}
 		}
-		return {ganador:g ,perdedor:p};
+		return {ganador:g ,perdedor:p};    
 	}
-    
+     
     Ronda.prototype.calcularPuntosTruco = function(){
         var g = 0, p = 0; 
         var c = this.truco.getLast();
@@ -885,6 +943,7 @@
 		}
 		this.equipoPrimero.jugador = jugador1;
 		var maquina = new IA();
+		maquina.prob = new Probabilidad();
 		//maquina.esHumano = false;
 		if(nombreJugadorDos !== null && nombreJugadorDos !== undefined && nombreJugadorDos !== '') {
 			maquina.nombre = nombreJugadorDos;
@@ -905,7 +964,7 @@
 	}
 	
 	Partida.prototype.continuar = function () {
-	    while (this.equipoPrimero.puntos < 5 && this.equipoSegundo.puntos < 5) {
+	    while (this.equipoPrimero.puntos < 30 && this.equipoSegundo.puntos < 30) {
 			var _$tbl = $('#game-score');
 			_log.innerHTML =  "";
 			_$tbl.find('.player-one-points').html(this.equipoPrimero.puntos);
@@ -974,5 +1033,7 @@
 		_partidaActual.iniciar('Pablo', 'Computadora');
 		
 	});
+	
+
 		
 })(window);
