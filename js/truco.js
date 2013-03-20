@@ -424,7 +424,8 @@
 		this.puedeEnvido = true;
 		this.cantos = new Array();   // Posibles valores: "E" "EE" "RE" "FE"
 		this.equipoEnvido = null; 
-        this.quienCanto = new Array();  //mantiene corresp biunivoca entre lo cantado y el que lo cant'o  
+        this.quienCanto = new Array();  //mantiene corresp biunivoca entre lo cantado y el que lo cant'o 
+        this.envidoStatsFlag = true;
         //Variables para manejar el truco
         this.equipoTruco = null;
         this.puedeTruco = null;
@@ -733,10 +734,11 @@
 		if(ganador !== null) {
 			var repartir = function ()  {
 				_log.innerHTML = 'Resultado Ronda: <b><i>' + ganador.nombre + '</i></b>'  + '<br /> ' + _log.innerHTML ;
-				// ****
-                var puntosEnv = _rondaActual.equipoPrimero.jugador.getPuntosDeEnvido(_rondaActual.equipoPrimero.jugador.cartasJugadas);
-                _rondaActual.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, puntosEnv);
-                // ****
+
+                if (_rondaActual.envidoStatsFlag && _rondaActual.equipoPrimero.jugador.cartasJugadas.length === 3){
+                    var puntosEnv = _rondaActual.equipoPrimero.jugador.getPuntosDeEnvido(_rondaActual.equipoPrimero.jugador.cartasJugadas);
+                    _rondaActual.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, puntosEnv);
+                }
                 _partidaActual.continuar();
 			}
 			var juntarNaipes = function () {
@@ -761,8 +763,17 @@
 			this.logCantar(primero.jugador , p1);
 			if (p2 > p1 ) {
 				this.logCantar(segundo.jugador , p2);
-				segundo.puntos += puntos.ganador;
+				if (this.envidoStatsFlag && segundo === this.equipoPrimero){
+                    this.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, p2);
+                    this.envidoStatsFlag = false;
+                }
+                segundo.puntos += puntos.ganador;
+                
 			}else{
+				if (this.envidoStatsFlag && primero === this.equipoPrimero){
+                    this.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, p1);
+                    this.envidoStatsFlag = false;
+                }
 				primero.puntos += puntos.ganador;
 			}
 
