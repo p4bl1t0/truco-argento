@@ -12,14 +12,58 @@
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	}
 	
+	function getRandomReal (min, max) {
+		return Math.random() * (max - min + 1) + min;
+	}
+	
 	Array.prototype.getLast = function() {
     if ( this.length > 0 )
         return this[ this.length - 1 ];
     else
         return undefined;
-};
+	};
 	
 	//Objetos
+	/*******************************************************************
+	 * 
+	 * Clase Distribucion Normal
+	 * 
+	 *******************************************************************
+	*/ 
+	function DistribucionNormal (a,b , m , d) {
+		this.media = m;
+		this.desvio  = d;
+		this.cons = 1 / ( this.desvio  * Math.sqrt(  2 * Math.PI) );
+		
+	}
+	
+	DistribucionNormal.prototype.f = function(v){
+		var interior = ( (v - this.media  ) / this.desvio  ) ;
+		return  this.cons * Math.exp( (-1/2) * interior * interior ) ;
+	} 
+	
+	DistribucionNormal.prototype.getNumber = function () {
+		do {
+			var x = getRandomReal ( this.media - this.desvio * 5   , this.media + this.desvio * 5   ) ;
+			var y = getRandomReal (0,1);
+			var fx = this.f(x);
+		} while ( fx > y );
+		return x;
+	}
+	
+	DistribucionNormal.prototype.getNumberAB = function (A,B) {
+		do {
+			var x = getRandomReal ( A  , B   ) ;
+			var y = getRandomReal (0,1);
+			var fx = this.f(x);
+		} while ( fx > y );
+		return x;
+	}
+	
+	var tt = new DistribucionNormal(100,5);
+	var t = tt.getNumberAB(0,100)
+	alert(  t  );
+	
 	/*******************************************************************
 	 * 
 	 * Clase Naipe
