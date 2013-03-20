@@ -7,9 +7,43 @@
 	
 	
 	
+	
+	/*
+	 * Returns member of set with a given mean and standard deviation
+	 * mean: mean
+	 * standard deviation: std_dev 
+	 */
+	function createMemberInNormalDistribution(mean,std_dev){
+		return mean + (gaussRandom()*std_dev);
+	}
+
+	/*
+	 * Returns random number in normal distribution centering on 0.
+	 * ~95% of numbers returned should fall between -2 and 2
+	 */
+	function gaussRandom() {
+		var u = 2*Math.random()-1;
+		var v = 2*Math.random()-1;
+		var r = u*u + v*v;
+		/*if outside interval [0,1] start over*/
+		if(r == 0 || r > 1) return gaussRandom();
+
+		var c = Math.sqrt(-2*Math.log(r)/r);
+		return u*c;
+
+		/* todo: optimize this algorithm by caching (v*c) 
+		 * and returning next time gaussRandom() is called.
+		 * left out for simplicity */
+	}
+	
+	
 	//Funciones Primitivas
 	function getRandomInt (min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+	
+	function getRandomReal (min, max) {
+		return Math.random() * (max - min + 1) + min;
 	}
 	
 	Array.prototype.getLast = function() {
@@ -17,9 +51,51 @@
         return this[ this.length - 1 ];
     else
         return undefined;
-};
+	};
 	
 	//Objetos
+	/*******************************************************************
+	 * 
+	 * Clase Distribucion Normal
+	 * 
+	 *******************************************************************
+	*/ 
+	function DistribucionNormal ( m , d) {
+		this.media = m;
+		this.desvio  = d;
+		this.cons = 1 / ( this.desvio  * Math.sqrt(  2 * Math.PI) );
+		
+	}
+	
+	DistribucionNormal.prototype.f = function(v){
+		var interior = ( (v - this.media  ) / this.desvio  ) ;
+		return  this.cons * Math.exp( (-1/2) * interior * interior ) ;
+	} 
+	
+	DistribucionNormal.prototype.getNumber = function () {
+		var x,y,fx;
+		do {
+			x = getRandomReal ( this.media - this.desvio * 5   , this.media + this.desvio * 5   ) ;
+			y = getRandomReal (0,1);
+			fx = this.f(x);
+		} while ( fx > y );
+		return x;
+	}
+	
+	DistribucionNormal.prototype.getNumberAB = function (A,B) {
+		var x,y,fx;
+		do {
+			x = getRandomReal ( A  , B   ) ;
+			y = getRandomReal (0,1);
+			fx = this.f(x);
+		} while ( fx > y );
+		return x;
+	}
+	
+	var tt = new DistribucionNormal(0,0.44);
+	var t = createMemberInNormalDistribution(100,30)  ;
+	//alert(  t > 100 ?  100 - (t - 100 ) + "  *"  : t );
+	
 	/*******************************************************************
 	 * 
 	 * Clase Naipe
@@ -85,6 +161,11 @@
 		this.cartasJugadas = new Array();
 		this.esHumano = true;
 		this.nombre = '';
+        
+        this.envidoS     = new Array();
+        this.realEnvido  = new Array();
+        this.revire      = new Array();
+        this.faltaEnvido = new Array();
 	}
 	
 	Jugador.prototype.sayCartasEnMano = function () {
@@ -109,15 +190,16 @@
 		//_log.innerHTML += html;
 	}
 	
-	Jugador.prototype.getPuntosDeEnvido = function () {
+	Jugador.prototype.getPuntosDeEnvido = function (cartas) {
 		var pares = { 
 			Espada: new Array(),
 			Basto: new Array(),
 			Oro: new Array(),
 			Copa: new Array()
 		};
-		for (var i = 0; i < this.cartas.length; i++) {
-			var carta = this.cartas[i];
+		//for (var i = 0; i < this.cartas.length; i++) {
+        for(var i = 0; i < cartas.length; i++){
+			var carta = cartas[i];
 			if(carta !== undefined) {
 				pares[carta.palo].push(carta.puntosEnvido);
 			}
@@ -230,8 +312,32 @@
 		return indice;
 	}
     
+    IA.prototype.statsEnvido = function(cantos, quienCanto, puntos){
+        if (cantos !== undefined && cantos !== null)
+            for(var i in cantos){
+                if (quienCanto[i] === 'H')
+                    switch (cantos[i]){
+                        case 'E':
+                            this.envidoS.push(puntos);
+                            break;
+                        case 'EE':
+                            this.revire.push(puntos);
+                            break;
+                        case 'R':
+                            this.realEnvido.push(puntos);
+                            break;
+                        case 'F':
+                            this.faltaEnvido.push(puntos);
+                            break;
+                    }
+            }
+        return;
+    }
+
+
+    
     IA.prototype.envido = function(ultimo,acumulado, ultimaCarta){
-        var puntos = this.getPuntosDeEnvido();
+        var puntos = this.getPuntosDeEnvido(this.cartas);
 		var p1 =  _rondaActual.equipoPrimero.puntos; 
 		var p2 =  _rondaActual.equipoSegundo.puntos;
 		
@@ -240,7 +346,8 @@
 		var posible = this.prob.CartaVista(ultimaCarta);
 		
 		var valor = this.prob.ponderarPuntos(puntos);
-		var ran = getRandomInt(0,100);
+		//var ran = getRandomInt(0,100);
+        var ran  = createMemberInNormalDistribution(100, 30);
 		
         if ( p2 === 29 ) return ultimo === 'F' ? 'S' :  'F';
         
@@ -316,7 +423,9 @@
 		// Variables de entorno para manejar el envido		
 		this.puedeEnvido = true;
 		this.cantos = new Array();   // Posibles valores: "E" "EE" "RE" "FE"
-		this.equipoEnvido = null;   
+		this.equipoEnvido = null; 
+        this.quienCanto = new Array();  //mantiene corresp biunivoca entre lo cantado y el que lo cant'o 
+        this.envidoStatsFlag = true;
         //Variables para manejar el truco
         this.equipoTruco = null;
         this.puedeTruco = null;
@@ -359,9 +468,9 @@
 		
 		//_log.innerHTML = '<strong>Número de cartas en el mazo:</strong> ' + c +' naipes. <br />' + _log.innerHTML ;
 		this.equipoPrimero.jugador.sayCartasEnMano();
-		_log.innerHTML = this.equipoPrimero.jugador.nombre + ' puntos para el envido: ' + this.equipoPrimero.jugador.getPuntosDeEnvido() + '<br />' + _log.innerHTML ;
+		_log.innerHTML = this.equipoPrimero.jugador.nombre + ' puntos para el envido: ' + this.equipoPrimero.jugador.getPuntosDeEnvido(this.equipoPrimero.jugador.cartas) + '<br />' + _log.innerHTML ;
 		this.equipoSegundo.jugador.sayCartasEnMano();
-		_log.innerHTML = this.equipoSegundo.jugador.nombre + ' puntos para el envido: ' + this.equipoSegundo.jugador.getPuntosDeEnvido() + '<br />'  + _log.innerHTML ;
+		_log.innerHTML = this.equipoSegundo.jugador.nombre + ' puntos para el envido: ' + this.equipoSegundo.jugador.getPuntosDeEnvido(this.equipoSegundo.jugador.cartas) + '<br />'  + _log.innerHTML ;
 		//---------------------------------
 		this.continuarRonda();
 		
@@ -394,10 +503,11 @@
 					}
 					if (this.puedeEnvido === true){
 						$(".canto").show();
-						$(".canto").click(function (event){ 
+						$(".canto").unbind('click').click(function (event){ 
 							var c = $(this).attr('data-envido');
                             _rondaActual.puedeEnvido = false;
 							_rondaActual.cantos.push(c);
+                            _rondaActual.quienCanto.push('H');
 							_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
 							_rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador,c);
 							_rondaActual.enEspera = false;
@@ -409,7 +519,7 @@
 						} );}
 						
 					if (this.puedeTruco === null || this.puedeTruco === this.equipoEnTurno ){
-                        $(".cantot").click(function(event){
+                        $(".cantot").unbind('click').click(function(event){
 							//alert("AAA");
                             var c = $(this).attr('data-truco');
                             _rondaActual.truco.push(c);
@@ -457,6 +567,7 @@
 							}
 							_rondaActual.puedeEnvido = false;
 							_rondaActual.cantos.push(accion);
+                            _rondaActual.quienCanto.push('M');
 							_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
 							_rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador,accion);
 							return ;
@@ -492,7 +603,7 @@
             this.enEspera = true;
             _rondaActual = this;
             
-            $('.cantot').click(function (event){
+            $('.cantot').unbind('click').click(function (event){
                 var c = $(this).attr('data-truco');
 				_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,c);
 				_rondaActual.truco.push(c);
@@ -502,7 +613,7 @@
 				_rondaActual.continuarRonda();
             })
 
-            $("#Quiero").click(function (event){
+            $("#Quiero").unbind('click').click(function (event){
 				_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"S");
 				_rondaActual.equipoTruco = null;
 				_rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
@@ -511,7 +622,7 @@
 				_rondaActual.continuarRonda();
 			});
 			
-			$("#NoQuiero").click(function (event)  {
+			$("#NoQuiero").unbind('click').click(function (event)  {
 				_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"N");
                 _rondaActual.noQuiso = _rondaActual.equipoTruco;
 				_rondaActual.enEspera = false;
@@ -544,11 +655,12 @@
 			this.enEspera = true;
 			_rondaActual = this;
 			
-			$(".canto").click(function (event){ 
+			$(".canto").unbind('click').click(function (event){ 
 				var c = $(this).attr('data-envido');
 				if (ultimo === "E" && c === "E") c = "EE";
 				_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,c);
 				_rondaActual.cantos.push(c);
+                _rondaActual.quienCanto.push('H');
 				_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(_rondaActual.equipoEnvido);
 				_rondaActual.enEspera = false;
 				$(this).unbind('click');
@@ -557,7 +669,7 @@
 			
 			
 			
-			$("#Quiero").click(function (event){
+			$("#Quiero").unbind('click').click(function (event){
 				_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,"S");
 				_rondaActual.jugarEnvido(true);
 				_rondaActual.enEspera = false;
@@ -565,7 +677,7 @@
 				_rondaActual.continuarRonda();
 			});
 			
-			$("#NoQuiero").click(function (event)  {
+			$("#NoQuiero").unbind('click').click(function (event)  {
 				_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,"N");
 				_rondaActual.jugarEnvido(false);
 				_rondaActual.enEspera = false;
@@ -588,6 +700,7 @@
 				}
 				else{
 					_rondaActual.cantos.push(accion);
+                    _rondaActual.quienCanto.push('M');
 					_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,accion);
 					_rondaActual.equipoEnvido = _rondaActual.equipoEnEspera(_rondaActual.equipoEnvido);
 				}
@@ -596,7 +709,7 @@
 		}
 	}
     
-
+    //Ronda.prototype.puntosEnMesa = function (){}
 	
 	Ronda.prototype.continuarRonda = function () {
 		var ganador = null;
@@ -626,7 +739,12 @@
 		if(ganador !== null) {
 			var repartir = function ()  {
 				_log.innerHTML = 'Resultado Ronda: <b><i>' + ganador.nombre + '</i></b>'  + '<br /> ' + _log.innerHTML ;
-				_partidaActual.continuar();
+
+                if (_rondaActual.envidoStatsFlag && _rondaActual.equipoPrimero.jugador.cartasJugadas.length === 3){
+                    var puntosEnv = _rondaActual.equipoPrimero.jugador.getPuntosDeEnvido(_rondaActual.equipoPrimero.jugador.cartasJugadas);
+                    _rondaActual.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, puntosEnv);
+                }
+                _partidaActual.continuar();
 			}
 			var juntarNaipes = function () {
 			$('.naipe').remove();
@@ -640,18 +758,27 @@
 		var puntos = this.calcularPuntosEnvido();
 		if (d) { // Dijo Quiero
 			if (this.equipoPrimero.esMano) {
-				var primero = this.equipoPrimero; var p1 = primero.jugador.getPuntosDeEnvido();
-				var segundo = this.equipoSegundo; var p2 = segundo.jugador.getPuntosDeEnvido();
+				var primero = this.equipoPrimero; var p1 = primero.jugador.getPuntosDeEnvido(primero.jugador.cartas);
+				var segundo = this.equipoSegundo; var p2 = segundo.jugador.getPuntosDeEnvido(segundo.jugador.cartas);
 			} else {
-				var primero = this.equipoSegundo; var p1 = primero.jugador.getPuntosDeEnvido();
-				var segundo = this.equipoPrimero; var p2 = segundo.jugador.getPuntosDeEnvido();
+				var primero = this.equipoSegundo; var p1 = primero.jugador.getPuntosDeEnvido(primero.jugador.cartas);
+				var segundo = this.equipoPrimero; var p2 = segundo.jugador.getPuntosDeEnvido(segundo.jugador.cartas);
 			}
 		
 			this.logCantar(primero.jugador , p1);
 			if (p2 > p1 ) {
 				this.logCantar(segundo.jugador , p2);
-				segundo.puntos += puntos.ganador;
+				if (this.envidoStatsFlag && segundo === this.equipoPrimero){
+                    this.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, p2);
+                    this.envidoStatsFlag = false;
+                }
+                segundo.puntos += puntos.ganador;
+                
 			}else{
+				if (this.envidoStatsFlag && primero === this.equipoPrimero){
+                    this.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, p1);
+                    this.envidoStatsFlag = false;
+                }
 				primero.puntos += puntos.ganador;
 			}
 
