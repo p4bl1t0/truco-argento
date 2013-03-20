@@ -566,13 +566,16 @@ ul li {
     width:98px;
     height:150px;
     display:block;
-    -webkit-transition: top left 1s linear;
-	-moz-transition: top left 1s linear;
-	-ms-transition: top left 1s linear;
-	-o-transition: top left 1s linear;
-	transition: top left 1s linear;
 	
+    /*-webkit-transition: transform 1s linear;
+	-ms-transition: transform 1s linear;
+	-o-transition: transform 1s linear;
 	-moz-transition: transform 1s linear;
+	transition: transform 1s linear;*/
+	-webkit-transition: -webkit-transform  1s linear;
+	-moz-transition: -moz-transform 1s linear;
+	-ms-transition: -ms-transform 1s linear;
+	-o-transition: -o-transform 1s linear;
 	transition: transform 1s linear;
 }
 .naipe-boca-abajo {
@@ -580,12 +583,6 @@ ul li {
 }
 .naipe-jugado {
 	position:relative;
-	/*top:-35px;*/
-	/*-moz-transform:  translate(0,-15%);
-	-webkit-transform:  translate(0,-15%);
-	-ms-transform:  translate(0,-15%);
-	-o-transform:  translate(0,-15%);
-	transform:  translate(0,-15%);*/
 }
 .game-header {
 	height:10%;

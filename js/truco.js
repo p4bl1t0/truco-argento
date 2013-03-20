@@ -427,7 +427,12 @@
 					    var $naipe = $(this);
 					    $naipe.addClass('naipe-jugado');
 					    var $elementoPosicionador = $('.card-' + (_rondaActual.numeroDeMano * 2 + 1));
-						$naipe.css("transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )");
+						$naipe
+							.css("-ms-transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )")
+							.css("-o-transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )")
+							.css("-webkit-transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )")
+							.css("-moz-transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )")
+							.css("transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )");
 					    var index = parseInt($(this).attr('data-naipe-index'), 10);
 					    
 					    $('.naipe-humano').not('.naipe-jugado').each(function (){
@@ -461,10 +466,10 @@
 					var $elementoPosicionador = $('.card-' + (this.numeroDeMano + 1) * 2);
 					var $card = $('#player-two').find('li:eq(' + (this.equipoEnTurno.jugador.cartasJugadas.length - 1).toString() +')');
 					$card.css('background-position', carta.getCSS())
-						 //.css('position', 'absolute')
-						 //.css('top', (_elementoPosicionador.offset().top - _card.offset().top + 35) + 'px')
-						 //.css('left', (_elementoPosicionador.offset().left - _card.offset().left +10) + 'px');
-						 //-moz-transform:  translate(0,-15%);
+						 .css("-o-transform", "translate(" + ($elementoPosicionador.offset().left - $card.offset().left) + "px, " + ($elementoPosicionador.offset().top - $card.offset().top)  + "px )")
+						 .css("-ms-transform", "translate(" + ($elementoPosicionador.offset().left - $card.offset().left) + "px, " + ($elementoPosicionador.offset().top - $card.offset().top)  + "px )")
+						 .css("-webkit-transform", "translate(" + ($elementoPosicionador.offset().left - $card.offset().left) + "px, " + ($elementoPosicionador.offset().top - $card.offset().top)  + "px )")
+						 .css("-moz-transform", "translate(" + ($elementoPosicionador.offset().left - $card.offset().left) + "px, " + ($elementoPosicionador.offset().top - $card.offset().top)  + "px )")
 						 .css("transform", "translate(" + ($elementoPosicionador.offset().left - $card.offset().left) + "px, " + ($elementoPosicionador.offset().top - $card.offset().top)  + "px )");
 					
 					this.pasarTurno();
@@ -840,12 +845,16 @@
 				this.equipoPrimero.manos = this.equipoPrimero.manos + 1;
 			}
 			_log.innerHTML = 'Resultado de la mano: <i>GANADOR ' + this.equipoPrimero.jugador.nombre + '</i><br />'  + _log.innerHTML ;
+			// Deberíamos buscar una forma mas elegante
+			$('#player-one').find('li:eq(' + (indice).toString() +')').css('z-index', 100);
 			return this.equipoPrimero;
 		} else {
 			if (j1.cartasJugadas[indice].valor < j2.cartasJugadas[indice].valor) {
 				if(acumularPuntos) {
 					this.equipoSegundo.manos = this.equipoSegundo.manos + 1;
 				}
+				// Deberíamos buscar una forma mas elegante
+				$('#player-two').find('li:eq(' + (indice).toString() +')').css('z-index', 100);
 				_log.innerHTML = 'Resultado de la mano: <i>GANADOR ' + this.equipoSegundo.jugador.nombre + '</i><br />'  + _log.innerHTML ;
 				return this.equipoSegundo;
 			} else {
