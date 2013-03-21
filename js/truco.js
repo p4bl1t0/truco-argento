@@ -5,38 +5,6 @@
 	var _partidaActual = null;
 	var audio = {};
 	
-	
-	
-	
-	/*
-	 * Returns member of set with a given mean and standard deviation
-	 * mean: mean
-	 * standard deviation: std_dev 
-	 */
-	function createMemberInNormalDistribution(mean,std_dev){
-		return mean + (gaussRandom()*std_dev);
-	}
-
-	/*
-	 * Returns random number in normal distribution centering on 0.
-	 * ~95% of numbers returned should fall between -2 and 2
-	 */
-	function gaussRandom() {
-		var u = 2*Math.random()-1;
-		var v = 2*Math.random()-1;
-		var r = u*u + v*v;
-		/*if outside interval [0,1] start over*/
-		if(r == 0 || r > 1) return gaussRandom();
-
-		var c = Math.sqrt(-2*Math.log(r)/r);
-		return u*c;
-
-		/* todo: optimize this algorithm by caching (v*c) 
-		 * and returning next time gaussRandom() is called.
-		 * left out for simplicity */
-	}
-	
-	
 	//Funciones Primitivas
 	function getRandomInt (min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -54,47 +22,7 @@
 	};
 	
 	//Objetos
-	/*******************************************************************
-	 * 
-	 * Clase Distribucion Normal
-	 * 
-	 *******************************************************************
-	*/ 
-	function DistribucionNormal ( m , d) {
-		this.media = m;
-		this.desvio  = d;
-		this.cons = 1 / ( this.desvio  * Math.sqrt(  2 * Math.PI) );
-		
-	}
-	
-	DistribucionNormal.prototype.f = function(v){
-		var interior = ( (v - this.media  ) / this.desvio  ) ;
-		return  this.cons * Math.exp( (-1/2) * interior * interior ) ;
-	} 
-	
-	DistribucionNormal.prototype.getNumber = function () {
-		var x,y,fx;
-		do {
-			x = getRandomReal ( this.media - this.desvio * 5   , this.media + this.desvio * 5   ) ;
-			y = getRandomReal (0,1);
-			fx = this.f(x);
-		} while ( fx > y );
-		return x;
-	}
-	
-	DistribucionNormal.prototype.getNumberAB = function (A,B) {
-		var x,y,fx;
-		do {
-			x = getRandomReal ( A  , B   ) ;
-			y = getRandomReal (0,1);
-			fx = this.f(x);
-		} while ( fx > y );
-		return x;
-	}
-	
-	var tt = new DistribucionNormal(0,0.44);
-	var t = createMemberInNormalDistribution(100,30)  ;
-	//alert(  t > 100 ?  100 - (t - 100 ) + "  *"  : t );
+
 	
 	/*******************************************************************
 	 * 
@@ -275,6 +203,27 @@
 		}		
 	}
 	
+	Probabilidad.prototype.promedioPuntos = function(pcc) {
+		var i = 0;
+		var suma = 0;
+		
+		if (pcc.length === 0) return null;
+		
+		/*     MEDIA   */ 
+		/*for(i = 0 ; i < pcc.length ; i++) {
+			suma = suma +   (  (pcc[i] <= 7 ) ? pcc[i] + 10 : pcc[i] ) ;
+		}
+		return (suma / pcc.length);*/
+		
+		/*     MEDIANA   */ 
+		var t = pcc.sort();
+		if (t.length % 2 == 0 )  return   ( t[t.length  / 2]  + t[t.length/2 - 1 ]    ) / 2;
+		else return t[(t.length - 1) / 2] ;
+		
+		
+		
+	}
+	
 		
 	/*******************************************************************
 	 * 
@@ -344,34 +293,50 @@
 		var diff = p1 - p2;
 		
 		var posible = this.prob.CartaVista(ultimaCarta);
-		
 		var valor = this.prob.ponderarPuntos(puntos);
-		//var ran = getRandomInt(0,100);
-        var ran  = createMemberInNormalDistribution(100, 30);
+		var ran = getRandomInt(0,100);
 		
         if ( p2 === 29 ) return ultimo === 'F' ? 'S' :  'F';
         
         if (acumulado === 0){
-				// El factor rando deberia desaparecer?????
-				//alert( ran + "  + " +  posible  +   "  < "  + valor * 100  );
-                if (ran + posible  <  valor  * 100 ) return   'E'   ;
-                else return '';
+			if (ultimaCarta !== undefined) {  // Canto Segundo   
+					if (puntos > 30) {
+					var pRE = this.prob.promedioPuntos( this.envidoS.concat(this.revire , this.realEnvido) );
+					if (pRE === null || pRE > puntos ) return 'E';
+					else return 'R';
+				}else {
+					if (ultimaCarta.puntosEnvido > puntos) return '';          // Si me gana con la mesa no canto...podria ser opcion para mentir
+					if (ran + posible  <  valor  * 100 ) return   'E';
+					else return '';
+				}
+			} else 
+				if (ran + posible  <  valor  * 100 ) return   'E';
+				else return '';
  
         } else{//me cantaron algo
             var rta = '';
-            //alert( ran + "  + " +  posible  +  " + " +  diff + " + " +  acumulado * 2   +  "  < "  + valor * 100  );
             
+            if (puntos <= 7) return 'N' ;
+            //alert( ran + "  + " +  posible  +  " + " +  diff + " + " +  acumulado * 2   +  "  < "  + valor * 100  );
+            if (puntos >= 31) ran = 0;
             switch(ultimo){
                 case 'E':
-					if (ran + posible + diff + acumulado  <  valor  * 100 ) return   'S'  ;
+					var pRE = this.prob.promedioPuntos(this.envidoS)  ;
+					var pRE =  pRE === null ? 0 : 15 - pRE ; 
+					alert(pRE);
+					if (ran + posible + diff + acumulado + pRE  <  valor  * 100 ) return   'S'  ;
 					else return 'N';
 					break;
                 case 'EE':
-					if (ran + posible + diff + acumulado <  valor  * 100 ) return   'S'  ;
+					var pRE =   this.prob.promedioPuntos(this.revire.concat(this.envidoS))  ;
+					var pRE =  pRE === null ? 0 : 15 - pRE ;
+					if (ran + posible + diff + acumulado  + pRE<  valor  * 100 ) return   'S'  ;
 					else return 'N';
 					break;
                 case 'R':
-					if (ran + posible + diff + acumulado * 1.5 <  valor  * 100 ) return   'S'  ;
+					var pRE =  this.prob.promedioPuntos(this.realEnvido.concat(this.envidoS, this.revire))   ;
+					var pRE =  pRE === null ? 0 : 15 - pRE ;
+					if (ran + posible + diff + acumulado * 2 + pRE <  valor  * 100 ) return   'S'  ;
 					else return 'N';
 					break;
                 case 'F':
@@ -1117,7 +1082,11 @@
 				this.equipoSegundo.esMano = true;
 				this.equipoPrimero.esMano = false;
 			}
-			alert(this.equipoSegundo.jugador.envidoS);
+			$('#player-one').find('.player-name').html("Envido: " + this.equipoSegundo.jugador.prob.promedioPuntos(this.equipoSegundo.jugador.envidoS) +  " - " +
+ 			                                           "EE: " + this.equipoSegundo.jugador.prob.promedioPuntos(this.equipoSegundo.jugador.revire) +  " - "  + 
+			                                           "RE: " + this.equipoSegundo.jugador.prob.promedioPuntos(this.equipoSegundo.jugador.realEnvido) +  " - " +
+			                                           "TODO: " + this.equipoSegundo.jugador.prob.promedioPuntos(this.equipoSegundo.jugador.realEnvido.concat(this.equipoSegundo.jugador.revire,this.equipoSegundo.jugador.envidoS))  
+			                                          );
 			var ronda = new Ronda(this.equipoPrimero, this.equipoSegundo);
 			ronda.iniciar();
 			if(ronda.enEspera) {
@@ -1125,7 +1094,7 @@
 			}
 			
 		}
-		if(!(this.equipoPrimero.puntos < 5 && this.equipoSegundo.puntos < 5)) {
+		if(!(this.equipoPrimero.puntos < 30 && this.equipoSegundo.puntos < 30)) {
 		    _log.innerHTML = '<hr />' + '<br /> PUNTAJE FINAL : ' + this.equipoPrimero.jugador.nombre + ' ' + this.equipoPrimero.puntos + ' - '+ this.equipoSegundo.jugador.nombre + ' ' + this.equipoSegundo.puntos + _log.innerHTML ;
 		}
 	}
