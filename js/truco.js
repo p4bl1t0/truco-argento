@@ -353,13 +353,13 @@
         
         if (acumulado === 0){
 				// El factor rando deberia desaparecer?????
-				alert( ran + "  + " +  posible  +   "  < "  + valor * 100  );
+				//alert( ran + "  + " +  posible  +   "  < "  + valor * 100  );
                 if (ran + posible  <  valor  * 100 ) return   'E'   ;
                 else return '';
  
         } else{//me cantaron algo
             var rta = '';
-            alert( ran + "  + " +  posible  +  " + " +  diff + " + " +  acumulado * 2   +  "  < "  + valor * 100  );
+            //alert( ran + "  + " +  posible  +  " + " +  diff + " + " +  acumulado * 2   +  "  < "  + valor * 100  );
             
             switch(ultimo){
                 case 'E':
@@ -737,18 +737,21 @@
 			if (this.enEspera === true)  break; 	
 		}
 		if(ganador !== null) {
+			_rondaActual = this;
 			var repartir = function ()  {
 				_log.innerHTML = 'Resultado Ronda: <b><i>' + ganador.nombre + '</i></b>'  + '<br /> ' + _log.innerHTML ;
 
                 if (_rondaActual.envidoStatsFlag && _rondaActual.equipoPrimero.jugador.cartasJugadas.length === 3){
                     var puntosEnv = _rondaActual.equipoPrimero.jugador.getPuntosDeEnvido(_rondaActual.equipoPrimero.jugador.cartasJugadas);
-                    _rondaActual.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, puntosEnv);
+                    _rondaActual.equipoSegundo.jugador.statsEnvido(_rondaActual.cantos, _rondaActual.quienCanto, puntosEnv);
                 }
                 _partidaActual.continuar();
 			}
+			
 			var juntarNaipes = function () {
 			$('.naipe').remove();
 			}
+			
 			setTimeout(juntarNaipes, 2000);
 			setTimeout(repartir, 2500);
 		}	
@@ -789,7 +792,7 @@
 		
 		this.puedeEnvido = false;
 		this.equipoEnvido = null;
-        this.cantos = [];
+        //this.cantos = [];
 	}
 	
 	Ronda.prototype.calcularPuntosEnvido = function () {
@@ -1113,6 +1116,7 @@
 				this.equipoSegundo.esMano = true;
 				this.equipoPrimero.esMano = false;
 			}
+			alert(this.equipoSegundo.jugador.envidoS);
 			var ronda = new Ronda(this.equipoPrimero, this.equipoSegundo);
 			ronda.iniciar();
 			if(ronda.enEspera) {
