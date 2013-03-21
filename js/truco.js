@@ -295,21 +295,39 @@
 		var posible = this.prob.CartaVista(ultimaCarta);
 		var valor = this.prob.ponderarPuntos(puntos);
 		var ran = getRandomInt(0,100);
-		
-        if ( p2 === 29 ) return ultimo === 'F' ? 'S' :  'F';
+		var loQueFalta = 30 - ((p1 > p2) ? p1 : p2);
+
+        if ( p2 === 29 ){
+            if (ultimo !== null && ultimo !== undefined)
+                switch(ultimo){ //si me cantaron algo respondo con la falta
+                    case 'E':
+                    case 'R':
+                    case 'EE':
+                        return 'F';
+                        break;
+                }
+            else{//sino me fijo si tengo algo decente para cantar y canto, 
+                 // de ultima 
+                    var pRE = this.prob.promedioPuntos(this.envidoS)  ;
+					var pRE =  pRE === null ? 0 : 15 - pRE ; 
+					if (ran + diff <  valor  * 150 ) return   'F'  ;
+					else return '';
+                }
+        }
+                
         
         if (acumulado === 0){
-			if (ultimaCarta !== undefined) {  // Canto Segundo   
+			if (ultimaCarta !== undefined) {  // Canto siendo pie   
 					if (puntos > 30) {
-					var pRE = this.prob.promedioPuntos( this.envidoS.concat(this.revire , this.realEnvido) );
-					if (pRE === null || pRE > puntos ) return 'E';
-					else return 'R';
-				}else {
-					if (ultimaCarta.puntosEnvido > puntos) return '';          // Si me gana con la mesa no canto...podria ser opcion para mentir
-					if (ran + posible  <  valor  * 100 ) return   'E';
-					else return '';
-				}
-			} else 
+                        var pRE = this.prob.promedioPuntos( this.envidoS.concat(this.revire , this.realEnvido) );
+                        if (pRE === null || pRE > puntos ) return 'E';
+                        else return 'R';
+                    }else {
+                        if (ultimaCarta.puntosEnvido > puntos) return '';          // Si me gana con la mesa no canto...podria ser opcion para mentir
+                        if (ran + posible + diff  <  valor  * 100 ) return   'E';
+                        else return '';
+                    }
+			} else //Soy mano
 				if (ran + posible  <  valor  * 100 ) return   'E';
 				else return '';
  
@@ -317,6 +335,20 @@
             var rta = '';
             
             if (puntos <= 7) return 'N' ;
+            
+            //si gane o pierda me conviene la falta entonces la canto
+            if (p2 > p1 && acumulado > loQueFalta &&  _rondaActual.calcularPuntosEnvido().perdedor > loQueFalta && ultimo !== 'F') 
+                return 'F';
+            
+            //si hay mas en juego que lo que falta y voy ganando, considero la falta envido
+
+            if (acumulado > loQueFalta && p2 > p1 && ultimo !== 'F') {
+                var pRE = this.prob.promedioPuntos(this.realEnvido.concat(this.envidoS, this.revire));
+                pRE = pRE === null ? 0 : 15 - pRE;
+                alert ((ran + posible + diff + acumulado + pRE)  + '<' + (valor * 100));
+                if(ran + posible + diff + acumulado + pRE < valor * 100) return 'F';
+            }
+
             //alert( ran + "  + " +  posible  +  " + " +  diff + " + " +  acumulado * 2   +  "  < "  + valor * 100  );
             if (puntos >= 31) ran = 0;
             switch(ultimo){
@@ -324,7 +356,10 @@
 					var pRE = this.prob.promedioPuntos(this.envidoS)  ;
 					var pRE =  pRE === null ? 0 : 15 - pRE ; 
 					alert(pRE);
-					if (ran + posible + diff + acumulado + pRE  <  valor  * 100 ) return   'S'  ;
+					
+                    if (puntos === 33) return 'EE';
+                    
+                    else if (ran + posible + diff + acumulado + pRE  <  valor  * 100 ) return   'S'  ;
 					else return 'N';
 					break;
                 case 'EE':
@@ -419,6 +454,7 @@
 	}
 	
 	Ronda.prototype.iniciar = function () {
+        
 		this.equipoPrimero.manos = 0;
 		this.equipoSegundo.manos = 0;
 		var c = this.repartirCartas(this.equipoPrimero.jugador, this.equipoSegundo.jugador);
@@ -1087,7 +1123,8 @@
 			                                           "RE: " + this.equipoSegundo.jugador.prob.promedioPuntos(this.equipoSegundo.jugador.realEnvido) +  " - " +
 			                                           "TODO: " + this.equipoSegundo.jugador.prob.promedioPuntos(this.equipoSegundo.jugador.realEnvido.concat(this.equipoSegundo.jugador.revire,this.equipoSegundo.jugador.envidoS))  
 			                                          );
-			var ronda = new Ronda(this.equipoPrimero, this.equipoSegundo);
+           
+            var ronda = new Ronda(this.equipoPrimero, this.equipoSegundo);
 			ronda.iniciar();
 			if(ronda.enEspera) {
 				break;
