@@ -769,19 +769,20 @@
 			}
 		
 			this.logCantar(primero.jugador , p1);
+			if (this.envidoStatsFlag && primero === this.equipoPrimero){ // Humano Canta primero, Registro los puntos
+                    this.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, p1);
+                    this.envidoStatsFlag = false;
+            }
+			
 			if (p2 > p1 ) {
 				this.logCantar(segundo.jugador , p2);
-				if (this.envidoStatsFlag && segundo === this.equipoPrimero){
+				if (this.envidoStatsFlag && segundo === this.equipoPrimero){ // Humano canta para ganarme
                     this.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, p2);
                     this.envidoStatsFlag = false;
                 }
                 segundo.puntos += puntos.ganador;
                 
-			}else{
-				if (this.envidoStatsFlag && primero === this.equipoPrimero){
-                    this.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, p1);
-                    this.envidoStatsFlag = false;
-                }
+			}else{ // Humano NO CANTA, NO REGISTRO NADA
 				primero.puntos += puntos.ganador;
 			}
 
