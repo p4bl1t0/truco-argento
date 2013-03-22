@@ -162,7 +162,7 @@
 	Jugador.prototype.jugarCarta =  function (indice) {
 		if(indice !== null && indice !== undefined && this.cartasEnMano.length > indice) {
 			var carta = this.cartasEnMano[indice];
-			_log.innerHTML = '<b>' + this.nombre + ' juega un :</b> ' + carta.getNombre() + '<br /> ' + _log.innerHTML ;
+			//_log.innerHTML = '<b>' + this.nombre + ' juega un :</b> ' + carta.getNombre() + '<br /> ' + _log.innerHTML ;
 			this.cartasJugadas.push(carta);
 			this.cartasEnMano.splice(indice,1);
 			return carta;
@@ -177,7 +177,7 @@
 	function Probabilidad()  {
 		// Parametros para calcular la probabilidad de los puntos
 		this.m1 = 0.15;
-		this.m2 = 0.20;
+		this.m2 = 0.25; // antes ->  0.20;
 		// Parametros para la carta vista
 		this.cv1 = -20;
 		this.cv2 = 20;
@@ -216,7 +216,7 @@
 		return (suma / pcc.length);*/
 		
 		/*     MEDIANA   */ 
-		var t = pcc.sort();
+		var t = pcc.sort(function(a,b){return a-b});
 		if (t.length % 2 == 0 )  return   ( t[t.length  / 2]  + t[t.length/2 - 1 ]    ) / 2;
 		else return t[(t.length - 1) / 2] ;
 		
@@ -309,7 +309,7 @@
             else{//sino me fijo si tengo algo decente para cantar y canto, 
                  // de ultima 
                     var pRE = this.prob.promedioPuntos(this.envidoS)  ;
-					var pRE =  pRE === null ? 0 : 15 - pRE ; 
+					var pRE =  pRE === null ? 0 : -(15 -  pRE) ; 
 					if (ran + diff <  valor  * 150 ) return   'F'  ;
 					else return '';
                 }
@@ -331,7 +331,7 @@
 				if (ran + posible  <  valor  * 100 ) return   'E';
 				else return '';
  
-        } else{//me cantaron algo
+        } else{        //me cantaron algo *******************************
             var rta = '';
             
             if (puntos <= 7) return 'N' ;
@@ -344,34 +344,38 @@
 
             if (acumulado > loQueFalta && p2 > p1 && ultimo !== 'F') {
                 var pRE = this.prob.promedioPuntos(this.realEnvido.concat(this.envidoS, this.revire));
-                pRE = pRE === null ? 0 : 15 - pRE;
+                pRE = pRE === null ? 0 : -(15 -  pRE);
                 alert ((ran + posible + diff + acumulado + pRE)  + '<' + (valor * 100));
                 if(ran + posible + diff + acumulado + pRE < valor * 100) return 'F';
             }
 
             //alert( ran + "  + " +  posible  +  " + " +  diff + " + " +  acumulado * 2   +  "  < "  + valor * 100  );
-            if (puntos >= 31) ran = 0;
+            
             switch(ultimo){
                 case 'E':
+					//if (puntos >= 30) ran = 0;
 					var pRE = this.prob.promedioPuntos(this.envidoS)  ;
-					var pRE =  pRE === null ? 0 : 15 - pRE ; 
-					alert(pRE);
-					
-                    if (puntos === 33) return 'EE';
-                    
-                    else if (ran + posible + diff + acumulado + pRE  <  valor  * 100 ) return   'S'  ;
-					else return 'N';
+					var pRE =  pRE === null ? 0 :  -(15 -  pRE)  ; 
+										                  
+                    if (ran + posible + diff + acumulado + pRE  <  valor  * 100 ) {
+						if (puntos >= 30 ) return  'EE' ; 
+						else return 'S';
+					} else { if (puntos >= 30 ) return 'S'; 
+					         else  return 'N';  
+					}
 					break;
                 case 'EE':
+					if (puntos >= 30) ran = 0;
 					var pRE =   this.prob.promedioPuntos(this.revire.concat(this.envidoS))  ;
-					var pRE =  pRE === null ? 0 : 15 - pRE ;
-					if (ran + posible + diff + acumulado  + pRE<  valor  * 100 ) return   'S'  ;
+					var pRE =  pRE === null ? 0 : -(15 -  pRE)  ;
+					if (ran + posible + diff + acumulado  + pRE <  valor  * 100 ) return   'S'  ;
 					else return 'N';
 					break;
                 case 'R':
+					if (puntos >= 31) ran = 0;
 					var pRE =  this.prob.promedioPuntos(this.realEnvido.concat(this.envidoS, this.revire))   ;
-					var pRE =  pRE === null ? 0 : 15 - pRE ;
-					if (ran + posible + diff + acumulado * 2 + pRE <  valor  * 100 ) return   'S'  ;
+					var pRE =  pRE === null ? 0 :  -(15 -  pRE)  ;
+					if (ran + posible + diff + acumulado * 2 + pRE * 2 <  valor  * 100 ) return   'S'  ;
 					else return 'N';
 					break;
                 case 'F':
@@ -400,7 +404,7 @@
 		}
 		
 		var carta = this.cartasEnMano[indice];
-		_log.innerHTML = '<b>' + this.nombre + ' juega un :</b> ' + carta.getNombre() + '<br /> ' + _log.innerHTML ;
+		//_log.innerHTML = '<b>' + this.nombre + ' juega un :</b> ' + carta.getNombre() + '<br /> ' + _log.innerHTML ;
 		this.cartasJugadas.push(carta);
 		this.cartasEnMano.splice(indice,1);
 		return carta;
