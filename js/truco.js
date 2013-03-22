@@ -296,6 +296,7 @@
 		var valor = this.prob.ponderarPuntos(puntos);
 		var ran = getRandomInt(0,100);
 		var loQueFalta = 30 - ((p1 > p2) ? p1 : p2);
+        var puntosNoQuerido = _rondaActual.calcularPuntosEnvido().perdedor;
 
         if ( p2 === 29 ){
             if (ultimo !== null && ultimo !== undefined)
@@ -337,7 +338,7 @@
             if (puntos <= 7) return 'N' ;
             
             //si gane o pierda me conviene la falta entonces la canto
-            if (p2 > p1 && acumulado > loQueFalta &&  _rondaActual.calcularPuntosEnvido().perdedor > loQueFalta && ultimo !== 'F') 
+            if (p2 > p1 && acumulado > loQueFalta &&  puntosNoQuerido > loQueFalta && ultimo !== 'F') 
                 return 'F';
             
             //si hay mas en juego que lo que falta y voy ganando, considero la falta envido
@@ -348,6 +349,9 @@
                 alert ((ran + posible + diff + acumulado + pRE)  + '<' + (valor * 100));
                 if(ran + posible + diff + acumulado + pRE < valor * 100) return 'F';
             }
+
+            //si los puntos del no quiero hacen que pierda entonces juego el envido, en una de esas...
+            if (puntosNoQuerido + p1 > 30) return 'S';
 
             //alert( ran + "  + " +  posible  +  " + " +  diff + " + " +  acumulado * 2   +  "  < "  + valor * 100  );
             
