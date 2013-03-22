@@ -319,9 +319,9 @@
         
         if (acumulado === 0){
 			if (ultimaCarta !== undefined) {  // Canto siendo pie   
-					if (puntos > 30) {
+					if (puntos > 28) {
                         var pRE = this.prob.promedioPuntos( this.envidoS.concat(this.revire , this.realEnvido) );
-                        if (pRE === null || pRE > puntos ) return 'E';
+                        if (pRE === null || pRE > puntos ) return ( puntos > 30 ? 'R' : 'E');
                         else return 'R';
                     }else {
                         if (ultimaCarta.puntosEnvido > puntos) return '';          // Si me gana con la mesa no canto...podria ser opcion para mentir
