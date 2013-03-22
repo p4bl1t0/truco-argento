@@ -578,6 +578,10 @@ ul li {
 	-o-transition: -o-transform 1s linear;
 	transition: transform 1s linear;
 }
+.naipe:focus,
+.naipe:active {
+  outline:0;
+}
 .naipe-boca-abajo {
     background: url('../images/naipes-e.png') 98px 0;
 }
@@ -616,27 +620,27 @@ ul li {
 	position:absolute;
 }
 .card-1 {
-	top:0;
+	top:30px;
 	left:0;
 }
 .card-2 {
-	top:30px;
+	top:0;
 	left:30px;
 }
 .card-3 {
-	top:0;
+	top:30px;
 	left:150px;
 }
 .card-4 {
-	top:30px;
+	top:0;
 	left:180px;
 }
 .card-5 {
-	top:0;
+	top:30px;
 	left:300px;
 }	
 
 .card-6 {
-	top:30px;
+	top:0;
 	left:330px;
 }					
