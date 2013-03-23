@@ -95,6 +95,9 @@
         this.revire      = new Array();
         this.faltaEnvido = new Array();
 	}
+	//------------------------------------------------------------------
+	// Genera codigo HTML para las cartas en mano
+	//------------------------------------------------------------------
 	
 	Jugador.prototype.sayCartasEnMano = function () {
 		var html = '';
@@ -117,6 +120,9 @@
 		//html += '</ul>';
 		//_log.innerHTML += html;
 	}
+	//------------------------------------------------------------------
+	//  Determina los puntos de envido en la mano del jugador
+	//------------------------------------------------------------------
 	
 	Jugador.prototype.getPuntosDeEnvido = function (cartas) {
 		var pares = { 
@@ -158,6 +164,9 @@
 		}
 		return puntos;
 	}
+	//------------------------------------------------------------------
+	// El humano juega una carta
+	//------------------------------------------------------------------
 	
 	Jugador.prototype.jugarCarta =  function (indice) {
 		if(indice !== null && indice !== undefined && this.cartasEnMano.length > indice) {
@@ -182,6 +191,9 @@
 		this.cv1 = -20;
 		this.cv2 = 20;
 	}
+	//------------------------------------------------------------------
+	//  Pondera los puntos de envido de la maquina
+	//------------------------------------------------------------------
 	
 	Probabilidad.prototype.ponderarPuntos = function(puntos) {
 		var pen1 = this.m1 / 7 ;
@@ -192,6 +204,9 @@
 		else return puntos * pen2 + h;  
 		
 	}
+	//------------------------------------------------------------------
+	//  Pondera la carta jugada del humano (para envido)
+	//------------------------------------------------------------------
 	
 	Probabilidad.prototype.CartaVista = function(carta) {
 		if (carta === undefined) return 0;
@@ -202,6 +217,9 @@
 			return  e * m + h;
 		}		
 	}
+	//------------------------------------------------------------------
+	// Calcula la media de un vector (Para determinar el canto usual del humano)
+	//------------------------------------------------------------------
 	
 	Probabilidad.prototype.promedioPuntos = function(pcc) {
 		var i = 0;
@@ -239,7 +257,10 @@
 	function IA () {
 		this.esHumano =  false;
 	}
-		
+	//------------------------------------------------------------------
+	//  Elige la carta mas baja o la mas alta segun los datos 
+	//------------------------------------------------------------------
+	
 	IA.prototype.elegir  =  function ( orden , carta) {
 		var indice = -1;
 		var valor = (orden === 0) ? 99 : (carta === null ? -1: 99) ;
@@ -260,6 +281,10 @@
 		}
 		return indice;
 	}
+    
+    //------------------------------------------------------------------
+    // LLeva estadistica de los cantos del humano
+    //------------------------------------------------------------------
     
     IA.prototype.statsEnvido = function(cantos, quienCanto, puntos){
         if (cantos !== undefined && cantos !== null)
@@ -282,8 +307,21 @@
             }
         return;
     }
-
-
+	//------------------------------------------------------------------
+	//  Determina el canto del truco
+	//------------------------------------------------------------------
+	
+	IA.prototype.truco = function (resp , ultimo) {
+		if (resp) {   // Me cantaron, tengo que responder
+			return 'S';
+		}else{       //  Tengo la posibilidad de responder
+			return '';
+		}
+		
+	}
+    //------------------------------------------------------------------
+    // Determina el canto del envido
+    //------------------------------------------------------------------
     
     IA.prototype.envido = function(ultimo,acumulado, ultimaCarta){
         var puntos = this.getPuntosDeEnvido(this.cartas);
@@ -390,7 +428,10 @@
             return rta;
         }
     }
-		
+	//------------------------------------------------------------------
+	// LA maquina elige una carta para jugar
+	//------------------------------------------------------------------
+	
 	IA.prototype.jugarCarta =  function () {
 		
 		var primero = (_rondaActual.jugadasEnMano === 0) ? true : false;
@@ -440,6 +481,9 @@
         this.noQuiso = null;
         this.truco = new Array();
 	}
+	//------------------------------------------------------------------
+	
+	//------------------------------------------------------------------
 	
 	Ronda.prototype.equipoEnEspera = function (e) {
 		
@@ -451,6 +495,9 @@
 			return null;
         
 	}
+	//------------------------------------------------------------------
+	
+	//------------------------------------------------------------------
 	
 	Ronda.prototype.pasarTurno = function () {
 		if(this.equipoEnTurno === this.equipoPrimero) {
@@ -461,8 +508,11 @@
         this.jugadasEnMano = this.jugadasEnMano + 1;
 	}
 	
+	//------------------------------------------------------------------
+	// Inicia la ronda
+	//------------------------------------------------------------------
+	
 	Ronda.prototype.iniciar = function () {
-        
 		this.equipoPrimero.manos = 0;
 		this.equipoSegundo.manos = 0;
 		var c = this.repartirCartas(this.equipoPrimero.jugador, this.equipoSegundo.jugador);
@@ -484,12 +534,15 @@
 		this.continuarRonda();
 		
 	}
+	//------------------------------------------------------------------
+	// En este momento se puede jugar una carta o hacer un canto
+	//------------------------------------------------------------------
+	
 	
 	Ronda.prototype.decidirCarta = function () {
 		if(this.equipoEnTurno !== null) {
 				if(this.equipoEnTurno.jugador.esHumano) {
-					//Debería esperar de la persona
-					//----------------------------------
+					// Habilitamos los botones
 					this.enEspera = true;
 					_rondaActual = this;
 					$("#Quiero").hide();
@@ -510,6 +563,7 @@
 							$('#Truco').show();
 							break;
 					}
+					//  Envido del Humano
 					if (this.puedeEnvido === true){
 						$(".canto").show();
 						$(".canto").unbind('click').click(function (event){ 
@@ -526,7 +580,7 @@
 							_rondaActual.continuarRonda();
 						
 						} );}
-						
+					//  Truco del humano
 					if (this.puedeTruco === null || this.puedeTruco === this.equipoEnTurno ){
                         $(".cantot").unbind('click').click(function(event){
 							//alert("AAA");
@@ -540,7 +594,7 @@
                             _rondaActual.continuarRonda();})
                     }
                     
-                    
+                    //  Jugar una carta del Humano
 					$('.naipe-humano').unbind('click.jugar').not('.naipe-jugado').bind('click.jugar', function (event) {
 					    event.preventDefault();
 					    var $naipe = $(this);
@@ -566,6 +620,8 @@
 					});
 				} else {   // DECIDE LA MAQUINAAAAAAAAAAAAAAAAA
 					_rondaActual = this;
+					
+					// La maquina decide si cantar ENVIDO
                     if (_rondaActual.puedeEnvido === true){
 						//var ultimo = this.cantos.getLast();
 						var carta  = this.equipoPrimero.jugador.cartasJugadas.getLast();   // Convertir en relativos 
@@ -582,7 +638,21 @@
 							return ;
 						}
                     }
+                    
+                    // La maquina decide si cantar el truco
+                    if (this.puedeTruco === null || this.puedeTruco === this.equipoEnTurno ){
+						var c = this.this.equipoSegundo.jugador.truco(false , _rondaActual.truco.getLast());
+						if (c !== '') {
+							_rondaActual.truco.push(c);
+							_rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
+							_rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador, c);
+							return ;
+						}
+                    }
+                    
+                    //  Juega una carta
 					var carta = this.equipoEnTurno.jugador.jugarCarta();
+					
 					var $elementoPosicionador = $('.card-' + (this.numeroDeMano + 1) * 2);
 					var $card = $('#player-two').find('li:eq(' + (this.equipoEnTurno.jugador.cartasJugadas.length - 1).toString() +')');
 					$card.css('background-position', carta.getCSS())
@@ -596,6 +666,11 @@
 				}
 			}
 	}
+	
+	//------------------------------------------------------------------
+	// ALgun jugador canto truco y el otro tiene que responder
+	//------------------------------------------------------------------
+	
     Ronda.prototype.decidirTruco = function(){
         if (this.equipoTruco.jugador.esHumano) {
             $('.cantot').hide();
@@ -638,14 +713,29 @@
 				$(this).unbind('click');
 				_rondaActual.continuarRonda();
 			});
-        }else{//la maquina decide
-            /*_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"S");
-			_rondaActual.equipoTruco = null;
-			_rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);*/
-			_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"N");
-            _rondaActual.noQuiso = _rondaActual.equipoTruco;
+        }else{
+			var c = this.this.equipoSegundo.jugador.truco(true , _rondaActual.truco.getLast());
+			switch (c) {
+				case 'S': // Si quiero
+					_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"S");
+					_rondaActual.equipoTruco = null;
+					_rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
+				case 'N': // No quiero
+					_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"N");
+					_rondaActual.noQuiso = _rondaActual.equipoTruco;
+				default:  // Re Truco
+					_rondaActual.truco.push(c);
+					_rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
+					_rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador, c);
+					break;
+				
+			}
+			
         }
     }
+	//------------------------------------------------------------------
+	// Responder envido
+	//------------------------------------------------------------------
 	
 	Ronda.prototype.decidirEnvido = function () {
 		if (this.equipoEnvido.jugador.esHumano) {   // Creo los bind para que el jugador decida
@@ -718,7 +808,10 @@
 		}
 	}
     
-    //Ronda.prototype.puntosEnMesa = function (){}
+
+	//------------------------------------------------------------------
+	// Flujo central de la ronda
+	//------------------------------------------------------------------
 	
 	Ronda.prototype.continuarRonda = function () {
 		var ganador = null;
@@ -765,6 +858,9 @@
 			setTimeout(repartir, 2500);
 		}	
 	}
+	//------------------------------------------------------------------
+	// Determina quien gana el envido 
+	//------------------------------------------------------------------
 	
 	Ronda.prototype.jugarEnvido = function (d) {
 		var puntos = this.calcularPuntosEnvido();
@@ -804,6 +900,9 @@
 		this.equipoEnvido = null;
         //this.cantos = [];
 	}
+	//------------------------------------------------------------------
+	// Calcula los puntos de Envido para le ganador y el perdedor
+	//------------------------------------------------------------------
 	
 	Ronda.prototype.calcularPuntosEnvido = function () {
 		var g = 0 , p = 0;
@@ -829,7 +928,10 @@
 		}
 		return {ganador:g ,perdedor:p};    
 	}
-     
+     //------------------------------------------------------------------
+    // Calcula los puntos de truco 
+    //------------------------------------------------------------------
+    
     Ronda.prototype.calcularPuntosTruco = function(){
         var g = 0, p = 0; 
         var c = this.truco.getLast();
@@ -852,6 +954,9 @@
         }
         return {querido:g, noQuerido:p};
     }
+	//------------------------------------------------------------------
+	// Escribe en el log quien canto
+	//------------------------------------------------------------------
 	
 	Ronda.prototype.logCantar = function (jugador,canto) {
 		var mensaje = "<b>" + jugador.nombre + " canto: " + "</b>" ;
@@ -889,6 +994,9 @@
 		_log.innerHTML = mensaje + '<br /> ' + _log.innerHTML ;
 		
 	}
+	//------------------------------------------------------------------
+	// Reparte las cartas para una nueva ronda
+	//------------------------------------------------------------------
 	
 	Ronda.prototype.repartirCartas = function(j1, j2) {
 		if(j1 === null || j1 === undefined) {
@@ -928,6 +1036,9 @@
 		return maso.length;
 		
 	}
+	//------------------------------------------------------------------
+	// Genera una baraja
+	//------------------------------------------------------------------
 	
 	Ronda.prototype.generarBaraja = function () {
 		var baraja = new Array();
@@ -973,6 +1084,9 @@
 		baraja.push(new Naipe(1, 4, 4, 'Copa'));
 		return baraja;
 	}
+	//------------------------------------------------------------------
+	// Determina el ganador de una mano
+	//------------------------------------------------------------------
 	
 	Ronda.prototype.determinarGanadorMano = function (indice, acumularPuntos) {
 		if(acumularPuntos == undefined || acumularPuntos == null) {
@@ -1011,6 +1125,9 @@
 			}
 		}
 	}
+	//------------------------------------------------------------------
+	// Determina el ganador de la ronda
+	//------------------------------------------------------------------
 	
 	Ronda.prototype.determinarGanadorRonda = function () {
 		var e1 = this.equipoPrimero;
@@ -1082,6 +1199,9 @@
 			esSuTurno: false
 		};
 	}
+	//------------------------------------------------------------------
+	// Inicia la partida
+	//------------------------------------------------------------------
 	
 	Partida.prototype.iniciar = function (nombreJugadorUno, nombreJugadorDos) {
 		var jugador1 = new Jugador();
@@ -1111,6 +1231,9 @@
 		
 		this.continuar();
 	}
+	//------------------------------------------------------------------
+	// Continua la partida, una nueva ronda
+	//------------------------------------------------------------------
 	
 	Partida.prototype.continuar = function () {
 	    while (this.equipoPrimero.puntos < 30 && this.equipoSegundo.puntos < 30) {
