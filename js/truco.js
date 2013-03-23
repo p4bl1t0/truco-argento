@@ -3,7 +3,7 @@
 	var _log = document.getElementById('log');
 	var _rondaActual = null;
 	var _partidaActual = null;
-	var audio = {};
+	var audio = null;
 	
 	//Funciones Primitivas
 	function getRandomInt (min, max) {
@@ -15,14 +15,38 @@
 	}
 	
 	Array.prototype.getLast = function() {
-    if ( this.length > 0 )
-        return this[ this.length - 1 ];
-    else
-        return undefined;
+    	if ( this.length > 0 ) {
+        	return this[ this.length - 1 ];
+		}
+    	else {
+        	return undefined;
+		}
 	};
 	
 	//Objetos
-
+	/*************************************************************************
+	 * 
+	 * Audio 
+	 * 
+	 * **********************************************************************
+	 */
+	 
+	 function Sonido(cbxSonido) {
+		this.fx = {};
+		this.cbx = {};
+		if(cbxSonido !== null && cbxSonido !== undefined) {
+			this.cbx = cbxSonido;
+	 	} else {
+			this.cbx.checked = true;
+		}
+		 
+		this.play = function (soundName) {
+			if(this.cbx.checked && this.fx[soundName] !== null && this.fx[soundName] !== undefined) {
+				this.fx[soundName].play();
+			}
+		}
+	 }
+	
 	
 	/*******************************************************************
 	 * 
@@ -481,6 +505,7 @@
 		this.equipoSegundo.jugador.sayCartasEnMano();
 		_log.innerHTML = this.equipoSegundo.jugador.nombre + ' puntos para el envido: ' + this.equipoSegundo.jugador.getPuntosDeEnvido(this.equipoSegundo.jugador.cartas) + '<br />'  + _log.innerHTML ;
 		//---------------------------------
+		$('.game-deck').find('.card').css('background-image', 'none');
 		this.continuarRonda();
 		
 	}
@@ -546,12 +571,21 @@
 					    var $naipe = $(this);
 					    $naipe.addClass('naipe-jugado');
 					    var $elementoPosicionador = $('.card-' + (_rondaActual.numeroDeMano * 2 + 1));
-						$naipe
-							.css("-ms-transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )")
-							.css("-o-transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )")
-							.css("-webkit-transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )")
-							.css("-moz-transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )")
-							.css("transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )");
+						$naipe.css("-ms-transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )")
+							  .css("-o-transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )")
+							  .css("-webkit-transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )")
+							  .css("-moz-transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )")
+							  .css("transform", "translate(" + ($elementoPosicionador.offset().left - $naipe.offset().left) + "px, " + ($elementoPosicionador.offset().top - $naipe.offset().top)  + "px )");
+							  
+						
+						var delay = function () { 
+							$elementoPosicionador.css('background-image', $naipe.css('background-image'));
+							$elementoPosicionador.css('background-position', $naipe.css('background-position'));
+							$naipe.attr('style', 'display:none!important;');
+						}
+						
+						setTimeout(delay, 1000);
+						
 					    var index = parseInt($(this).attr('data-naipe-index'), 10);
 					    
 					    $('.naipe-humano').not('.naipe-jugado').each(function (){
@@ -571,9 +605,7 @@
 						var carta  = this.equipoPrimero.jugador.cartasJugadas.getLast();   // Convertir en relativos 
 						var accion = this.equipoSegundo.jugador.envido( this.cantos.getLast() ,this.calcularPuntosEnvido().ganador,carta);
 						if (accion !== '') {
-							if(audio[accion] !== null && audio[accion] !== undefined) {
-								audio[accion].play();
-							}
+							audio.play(accion);
 							_rondaActual.puedeEnvido = false;
 							_rondaActual.cantos.push(accion);
                             _rondaActual.quienCanto.push('M');
@@ -591,6 +623,14 @@
 						 .css("-webkit-transform", "translate(" + ($elementoPosicionador.offset().left - $card.offset().left) + "px, " + ($elementoPosicionador.offset().top - $card.offset().top)  + "px )")
 						 .css("-moz-transform", "translate(" + ($elementoPosicionador.offset().left - $card.offset().left) + "px, " + ($elementoPosicionador.offset().top - $card.offset().top)  + "px )")
 						 .css("transform", "translate(" + ($elementoPosicionador.offset().left - $card.offset().left) + "px, " + ($elementoPosicionador.offset().top - $card.offset().top)  + "px )");
+						 
+					var delay = function () { 
+						$elementoPosicionador.css('background-image', $card.css('background-image'));
+						$elementoPosicionador.css('background-position', $card.css('background-position'));
+						$card.attr('style', 'display:none!important;');
+					}
+					
+					setTimeout(delay, 1000);
 					
 					this.pasarTurno();
 				}
@@ -700,9 +740,7 @@
             var carta  = this.equipoPrimero.jugador.cartasJugadas.getLast();
             var accion = this.equipoSegundo.jugador.envido(this.cantos.getLast(),  this.calcularPuntosEnvido().ganador,carta);
             if(accion !== '') {
-				if(audio[accion] !== null && audio[accion] !== undefined) {
-					audio[accion].play();
-				}
+				audio.play(accion);
 				if (accion === 'S' || accion === 'N'){
 					_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,accion);
 					_rondaActual.jugarEnvido((accion === 'S') ? true : false);
@@ -986,7 +1024,8 @@
 			}
 			_log.innerHTML = 'Resultado de la mano: <i>GANADOR ' + this.equipoPrimero.jugador.nombre + '</i><br />'  + _log.innerHTML ;
 			// Deberíamos buscar una forma mas elegante
-			$('#player-one').find('li:eq(' + (indice).toString() +')').css('z-index', 100);
+			$('.game-deck').find('.card-' + (this.numeroDeMano * 2 + 1).toString() ).css('z-index', 100);
+			$('.game-deck').find('.card-' + (this.numeroDeMano * 2 + 2).toString() ).css('z-index', 0);
 			return this.equipoPrimero;
 		} else {
 			if (j1.cartasJugadas[indice].valor < j2.cartasJugadas[indice].valor) {
@@ -994,7 +1033,9 @@
 					this.equipoSegundo.manos = this.equipoSegundo.manos + 1;
 				}
 				// Deberíamos buscar una forma mas elegante
-				$('#player-two').find('li:eq(' + (indice).toString() +')').css('z-index', 100);
+				
+				$('.game-deck').find('.card-' + ((this.numeroDeMano + 1) * 2).toString() ).css('z-index', 100);
+				$('.game-deck').find('.card-' + ((this.numeroDeMano + 1) * 2 - 1).toString() ).css('z-index', 0);
 				_log.innerHTML = 'Resultado de la mano: <i>GANADOR ' + this.equipoSegundo.jugador.nombre + '</i><br />'  + _log.innerHTML ;
 				return this.equipoSegundo;
 			} else {
@@ -1113,7 +1154,8 @@
 	}
 	
 	Partida.prototype.continuar = function () {
-	    while (this.equipoPrimero.puntos < 30 && this.equipoSegundo.puntos < 30) {
+		var limitePuntaje = parseInt($('.rbd-ptos-partida:checked').val(), 10);
+	    while (this.equipoPrimero.puntos < limitePuntaje && this.equipoSegundo.puntos < limitePuntaje) {
 			var _$tbl = $('#game-score');
 			_log.innerHTML =  "";
 			_$tbl.find('.player-one-points').html(this.equipoPrimero.puntos);
@@ -1139,7 +1181,7 @@
 			}
 			
 		}
-		if(!(this.equipoPrimero.puntos < 30 && this.equipoSegundo.puntos < 30)) {
+		if(!(this.equipoPrimero.puntos < limitePuntaje && this.equipoSegundo.puntos < limitePuntaje)) {
 		    _log.innerHTML = '<hr />' + '<br /> PUNTAJE FINAL : ' + this.equipoPrimero.jugador.nombre + ' ' + this.equipoPrimero.puntos + ' - '+ this.equipoSegundo.jugador.nombre + ' ' + this.equipoSegundo.puntos + _log.innerHTML ;
 		}
 	}
@@ -1150,39 +1192,40 @@
 	//******************************************************************
 	
 	$(document).ready(function () {
+		audio = new Sonido($('#cbxAudio').get(0));
 		//Cargo recursos
 		var a = new Audio();
 		a.setAttribute("src","audio/envido.wav");
 		a.load();
-		audio['E'] = a;
+		audio.fx['E'] = a;
 		a = new Audio();
 		a.setAttribute("src","audio/real-envido.wav");
 		a.load();
-		audio['R'] = a;
+		audio.fx['R'] = a;
 		a = new Audio();
 		a.setAttribute("src","audio/falta-envido.wav");
 		a.load();
-		audio['F'] = a;
+		audio.fx['F'] = a;
 		a = new Audio();
 		a.setAttribute("src","audio/quiero.wav");
 		a.load();
-		audio['S'] = a;
+		audio.fx['S'] = a;
 		a = new Audio();
 		a.setAttribute("src","audio/no-quiero.wav");
 		a.load();
-		audio['N'] = a;
+		audio.fx['N'] = a;
 		a = new Audio();
 		a.setAttribute("src","audio/truco.wav");
 		a.load();
-		audio['T'] = a;
+		audio.fx['T'] = a;
 		a = new Audio();
 		a.setAttribute("src","audio/re-truco.wav");
 		a.load();
-		audio['RT'] = a;
+		audio.fx['RT'] = a;
 		a = new Audio();
 		a.setAttribute("src","audio/vale-cuatro.wav");
 		a.load();
-		audio['V'] = a;
+		audio.fx['V'] = a;
 		//Comienza la acción
 		_partidaActual = new Partida();
 		_partidaActual.iniciar('Pablo', 'Computadora');

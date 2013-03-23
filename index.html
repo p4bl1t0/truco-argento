@@ -13,6 +13,18 @@
 				<div class="game-header">
 					<h1>Truco argento</h1>
 				</div>
+				<fieldset>
+					<legend>Configuraciones</legend>
+					<input type="checkbox" id="cbxAudio" checked="checked" />
+					<label for="cbxAudio">Sonido</label>
+					<div>
+						<div class="label">Jugar a:</div>
+						<input type="radio" value="15" id="rdb15" class="rbd-ptos-partida" checked="checked" />
+						<label for="rdb10">15 pts.</label>
+						<input type="radio" value="30" id="rdb30" class="rbd-ptos-partida" />
+						<label for="rdb10">30 pts.</label>
+					</div>
+				</fieldset>
 				<table id="game-score">
 					<thead>
 						<tr>
@@ -46,7 +58,7 @@
 				<div id="log"></div>
 			</div>
 			<div class="game-main" style="position: relative;">
-				<div id="player-two">
+				<div id="player-two" class="player">
 					<h3 class="player-name"></h3>
 					<div class="player-envite-points"></div>
 					<ul class="player-cards" ></ul>	
@@ -59,7 +71,7 @@
 					<div class="card card-5"></div>
 					<div class="card card-6"></div>
 				</div>
-				<div id="player-one">
+				<div id="player-one" class="player">
 					<ul class="player-cards"></ul>	
 					<div class="player-envite-points"></div>
 					<h3 class="player-name"></h3>

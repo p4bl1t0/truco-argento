@@ -528,6 +528,7 @@ table {
 /*CSS*/
 html, body, .game-wrapper, .game-main {
 	height:100%;
+	overflow: hidden;
 }
 .game {
 	background: #3C1E13 url('../images/bg.jpg');
@@ -536,13 +537,15 @@ html, body, .game-wrapper, .game-main {
 }
 .game-panel {
 	display:inline-block;
-	width:30%;
+	width:35%;
 	vertical-align:top;
 	height: 100%;
+	background: none repeat scroll 0 0 #111111;
+    border-right: 2px solid 
 }
 .game-main {
 	display: inline-block;
-	width:67%;
+	width:62%;
 	vertical-align:top;
 }
 ul li {
@@ -552,6 +555,17 @@ ul li {
 #player-one {
 	position:absolute;
 	bottom:0;
+}
+.player {
+	width:100%;
+	text-align:center;
+}
+.player-cards {
+	padding:0;
+}
+.player-name {
+	font-size:1em;
+	margin:.5em 0;
 }
 /*.naipe {
     height:221px;
@@ -567,11 +581,6 @@ ul li {
     height:150px;
     display:block;
 	
-    /*-webkit-transition: transform 1s linear;
-	-ms-transition: transform 1s linear;
-	-o-transition: transform 1s linear;
-	-moz-transition: transform 1s linear;
-	transition: transform 1s linear;*/
 	-webkit-transition: -webkit-transform  1s linear;
 	-moz-transition: -moz-transform 1s linear;
 	-ms-transition: -ms-transform 1s linear;
@@ -613,11 +622,13 @@ ul li {
 .game-deck {
 	height:180px; 
 	position:relative;
+	margin-left:10%;
 }
 .game-deck .card {
 	width:98px; 
 	height:150px;
 	position:absolute;
+	/*border:1px solid white;*/
 }
 .card-1 {
 	top:30px;
