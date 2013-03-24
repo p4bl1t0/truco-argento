@@ -511,12 +511,15 @@
 	
 	Ronda.prototype.equipoEnEspera = function (e) {
 		
-		if (e === this.equipoPrimero) 
+		if (e === this.equipoPrimero) {
 			return this.equipoSegundo;
-		else if (e === this.equipoSegundo)
+		}
+		else if (e === this.equipoSegundo) {
 			return this.equipoPrimero;
-		else 
+		}
+		else {
 			return null;
+		}
         
 	}
 	//------------------------------------------------------------------
@@ -673,7 +676,7 @@
                     
                     // La maquina decide si cantar el truco
                     if (this.puedeTruco === null || this.puedeTruco === this.equipoEnTurno ){
-						var c = this.this.equipoSegundo.jugador.truco(false , _rondaActual.truco.getLast());
+						var c = this.equipoSegundo.jugador.truco(false , _rondaActual.truco.getLast());
 						if (c !== '') {
 							_rondaActual.truco.push(c);
 							_rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
@@ -996,40 +999,52 @@
 	// Escribe en el log quien canto
 	//------------------------------------------------------------------
 	
-	Ronda.prototype.logCantar = function (jugador,canto) {
-		var mensaje = "<b>" + jugador.nombre + " canto: " + "</b>" ;
+	Ronda.prototype.logCantar = function (jugador, canto) {
+		var _playerVoice = null;
+		if(this.equipoPrimero.jugador == jugador) {
+			_playerVoice = $('#player-one').find('.player-voice');
+		} else {
+			_playerVoice = $('#player-two').find('.player-voice');
+		}
+		var mensaje = '';
 		switch (canto){
 			case "E":
 			case "EE":
-				mensaje +=  " Envido";
+				mensaje += "Envido";
 				break;
 			case "R":
-				mensaje +=  " Real Envido";
+				mensaje += "Real Envido";
 				break;
 			case "F":
-				mensaje +=  " Falta Envido";
+				mensaje += "Falta Envido";
 				break;		
             case "T":
-                mensaje += " Truco";
+                mensaje += "Truco!";
                 break;
             case "RT":
-                mensaje += " Quiero re Truco";
+                mensaje += "Quiero RE-Truco!";
                 break;
             case "V":
-                mensaje += "Quiero vale 4";
+                mensaje += "Quiero vale Cuatro!";
                 break;
 			case "S":
-				mensaje +=  " Quiero";
+				mensaje += "Quiero";
 				break;		
 			case "N":
-				mensaje +=  " No Quiero";
+				mensaje += "No Quiero";
 				break;		
 			default :
 				mensaje += canto ;
 				break;
 		}		
-		
-		_log.innerHTML = mensaje + '<br /> ' + _log.innerHTML ;
+		_playerVoice.html(mensaje).addClass('recien-cantado');
+		setTimeout(function () {
+			_playerVoice.removeClass('recien-cantado');
+			setTimeout(function () {
+				_playerVoice.html('');
+			}, 500);
+		}, 1500);
+		_log.innerHTML = "<b>" + jugador.nombre + " canto: " + "</b> " + mensaje + '<br /> ' + _log.innerHTML ;
 		
 	}
 	//------------------------------------------------------------------

@@ -567,6 +567,33 @@ ul li {
 	font-size:1em;
 	margin:.5em 0;
 }
+.player-content {
+	position:relative;
+}
+.player-voice {
+	position:absolute;
+	background-color:transparent;
+	border:0 solid transparent;
+	width:70%;
+	margin-left:15%;
+	padding:.4em;
+	-webkit-transition: all  .5s linear;
+	-moz-transition: all .5s linear;
+	-ms-transition: all .5s linear;
+	-o-transition: all .5s linear;
+	transition: all .5s linear;
+}
+.recien-cantado {
+	background-color: #C10000;
+	border:1px solid #EEE;
+}
+#player-one .player-voice {
+	top:-2.8em;
+}
+#player-one .recien-cantado {
+	background-color: #00248C;
+	border:1px solid #EEE;
+}
 /*.naipe {
     height:221px;
     width:145px;
