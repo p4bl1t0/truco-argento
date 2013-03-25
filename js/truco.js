@@ -467,10 +467,23 @@
 	//------------------------------------------------------------------
 	
 	IA.prototype.truco = function (resp , ultimo) {
-		if (resp) {   // Me cantaron, tengo que responder
+		var e1 = _rondaActual.equipoPrimero;
+        var e2 = _rondaActual.equipoSegundo;
+        
+        if (resp) {   // Me cantaron, tengo que responder
 			return 'S';
-		}else{       //  Tengo la posibilidad de responder
-			return '';
+		}else{//  Tengo el quiero o todavia no se canto nada
+            //regla tonta como para empezar
+            if (e1.jugador.cartasJugadas.length === 3){
+                if (e2.jugador.cartasEnMano[0].valor > e1.jugador.cartasJugadas[2].valor){
+                    return 'T';
+                }
+                else
+                    return '';
+            }
+            else{
+                return '';
+            }
 		}
 		
 	}
@@ -811,6 +824,7 @@
 						if (c !== '') {
 							_rondaActual.truco.push(c);
 							_rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
+                            _rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
 							_rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador, c);
 							return ;
 						}
@@ -849,7 +863,8 @@
         if (this.equipoTruco.jugador.esHumano) {
             $('.cantot').hide();
             $('.boton').show();
-            var ultimo = this.cantos.getLast();
+            var ultimo = this.truco.getLast();
+            alert('ultimo: ' + ultimo);
             switch(ultimo){
                 case 'T':
                     $('#reTruco').show();
@@ -874,7 +889,7 @@
             $("#Quiero").unbind('click').click(function (event){
 				_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"S");
 				_rondaActual.equipoTruco = null;
-				_rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
+				//_rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
 				_rondaActual.enEspera = false;
 				$(this).unbind('click');
 				_rondaActual.continuarRonda();
@@ -902,9 +917,7 @@
 					_rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
 					_rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador, c);
 					break;
-				
-			}
-			
+				}
         }
     }
 	//------------------------------------------------------------------
