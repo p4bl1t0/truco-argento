@@ -350,7 +350,7 @@
 							posibles.push(new Naipe(v, 7, 7, palo));
 							break;
 						default:
-							posibles.push(new Naipe(numero - 3 , numero , numero , palo));
+							posibles.push(new Naipe(p - 3 , p , p , palo));
 							break;
                     }
                 }
