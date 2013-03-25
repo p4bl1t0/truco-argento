@@ -261,9 +261,94 @@
 		var t = pcc.sort(function(a,b){return a-b});
 		if (t.length % 2 == 0 )  return   ( t[t.length  / 2]  + t[t.length/2 - 1 ]    ) / 2;
 		else return t[(t.length - 1) / 2] ;
+	}
+	
+	//------------------------------------------------------------------
+	// Deduce las posibles cartas segun los puntos de envido
+	//------------------------------------------------------------------
+	
+	Probabilidad.prototype.deducirCarta = function (puntos , jugadas) {
+		var posibles = new Array(), i = 0, j;
+		if (puntos <= 7) {
+			switch (puntos) {
+				case 0:
+					posibles.push(new Naipe(7, 0, 12, 'Espada'));
+					posibles.push(new Naipe(7, 0, 12, 'Basto'));
+					posibles.push(new Naipe(7, 0, 12, 'Oro'));
+					posibles.push(new Naipe(7, 0, 12, 'Copa'));
+					posibles.push(new Naipe(6, 0, 11, 'Espada'));
+					posibles.push(new Naipe(6, 0, 11, 'Basto'));
+					posibles.push(new Naipe(6, 0, 11, 'Oro'));
+					posibles.push(new Naipe(6, 0, 11, 'Copa'));
+					posibles.push(new Naipe(5, 0, 10, 'Espada'));
+					posibles.push(new Naipe(5, 0, 10, 'Basto'));
+					posibles.push(new Naipe(5, 0, 10, 'Oro'));
+					posibles.push(new Naipe(5, 0, 10, 'Copa'));
+					break;
+				case 1:
+					posibles.push(new Naipe(14, 1, 1, 'Espada'));
+					posibles.push(new Naipe(13, 1, 1, 'Basto'));
+					posibles.push(new Naipe(8 , 1, 1, 'Oro'));
+					posibles.push(new Naipe(8 , 1, 1, 'Copa'));
+					break;
+				case 7:
+					posibles.push(new Naipe(12, 7, 7, 'Espada'));
+					posibles.push(new Naipe(11, 7, 7, 'Oro'));
+					posibles.push(new Naipe(4 , 7, 7, 'Basto'));
+					posibles.push(new Naipe(4 , 7, 7, 'Copa'));
+					break;
+				case default:
+					posibles.push(new Naipe(puntos - 3 , puntos, puntos, 'Espada'));
+					posibles.push(new Naipe(puntos - 3 , puntos, puntos, 'Oro'));
+					posibles.push(new Naipe(puntos - 3 , puntos, puntos, 'Basto'));
+					posibles.push(new Naipe(puntos - 3 , puntos, puntos, 'Copa'));
+					break;
+			}	
+			for (j = 0 , j < jugadas.length ; j ++) 
+				for (i = posibles.length - 1; i >= 0 ; i --) 
+					if (posibles[i] !== null && jugadas[j].palo === posibles[i].palo   )
+						posibles.splice(i);
+	
+			
+		} else {
+			if (posibles.length === 2 && posibles[0].palo === posibles[1].palo) {
+				var e1 = posibles[0].puntosEnvido ;
+				var e2 = posibles[1].puntosEnvido ;
+				if ( e1 + e2 + 20  == puntos) return null;  // Nada por deducir ya jugo los puntos
+			}
+			// No jugo los puntos, voy a ver como puedo formar los puntos
+			for (i = 0; i < posibles.length ; i ++) {
+				var palo   = posibles[i].palo;
+				var numero = puntos - posibles[i].puntosEnvido; - 20 
+				if ( 0 <= numero && numero <= 7 ) 
+					switch (numero) {
+						case 0:
+							posibles.push(new Naipe(7, 0, 12, palo));
+							posibles.push(new Naipe(6, 0, 11, palo));
+							posibles.push(new Naipe(5, 0, 10, palo));
+							break;
+						case 1:
+							var v = palo === 'Espada' ? 14 : (palo === 'Basto' ? 13 : 8) ; 
+							posibles.push(new Naipe(v, 1, 1, palo));
+							break;
+						case 7:
+							var v = palo === 'Espada' ? 12 : (palo === 'Oro' ? 11 : 4) ; 
+							posibles.push(new Naipe(v, 7, 7, palo));
+							break;
+						case default:
+							posibles.push(new Naipe(numero - 3 , numero , numero , palo));
+							break;
+					}
+			}		
+		}
 		
-		
-		
+		for (j = 0 , j < jugadas.length ; j ++) 
+				for (i = posibles.length - 1; i >= 0 ; i --) 
+					if (jugadas[j].numero === posibles[i].numero && jugadas[j].palo === posibles[i].palo   )
+						posibles.splice(i);
+						
+		return posibles; // Faltaria sacar las cartas que ya jugo !!!  
+			             // si canto 7 y ya jugo uno puede tener otros 7 
 	}
 	
 		
@@ -756,8 +841,8 @@
 				$(this).unbind('click');
 				_rondaActual.continuarRonda();
 			});
-        }else{
-			var c = this.this.equipoSegundo.jugador.truco(true , _rondaActual.truco.getLast());
+        } else {
+			var c = this.equipoSegundo.jugador.truco(true , _rondaActual.truco.getLast());
 			switch (c) {
 				case 'S': // Si quiero
 					_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"S");
