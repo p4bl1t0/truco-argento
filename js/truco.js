@@ -474,7 +474,7 @@
 			return 'S';
 		}else{//  Tengo el quiero o todavia no se canto nada
             //regla tonta como para empezar
-            if (e1.jugador.cartasJugadas.length === 3){
+            if (ultimo === null && e1.jugador.cartasJugadas.length === 3){
                 if (e2.jugador.cartasEnMano[0].valor > e1.jugador.cartasJugadas[2].valor){
                     return 'T';
                 }
@@ -721,20 +721,9 @@
 					$("#NoQuiero").hide();
 					$(".canto").hide();
 					$(".cantot").hide();
-					var ultimo = this.truco.getLast();
-					switch(ultimo){
-						case 'T':
-							$('#reTruco').show();
-							break;
-						case 'RT':
-							$('#vale4').show();
-							break;
-						case 'V':
-							break;
-						default:
-							$('#Truco').show();
-							break;
-					}
+					
+					
+
 					//  Envido del Humano
 					if (this.puedeEnvido === true){
 						$(".canto").show();
@@ -754,6 +743,20 @@
 						} );}
 					//  Truco del humano
 					if (this.puedeTruco === null || this.puedeTruco === this.equipoEnTurno ){
+                        var ultimo = this.truco.getLast();
+                        switch(ultimo){
+						case 'T':
+							$('#reTruco').show();
+							break;
+						case 'RT':
+							$('#vale4').show();
+							break;
+						case 'V':
+							break;
+						default:
+							$('#Truco').show();
+							break;
+					}
                         $(".cantot").unbind('click').click(function(event){
 							//alert("AAA");
                             var c = $(this).attr('data-truco');
@@ -864,7 +867,6 @@
             $('.cantot').hide();
             $('.boton').show();
             var ultimo = this.truco.getLast();
-            alert('ultimo: ' + ultimo);
             switch(ultimo){
                 case 'T':
                     $('#reTruco').show();
@@ -889,7 +891,6 @@
             $("#Quiero").unbind('click').click(function (event){
 				_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"S");
 				_rondaActual.equipoTruco = null;
-				//_rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
 				_rondaActual.enEspera = false;
 				$(this).unbind('click');
 				_rondaActual.continuarRonda();
@@ -907,11 +908,13 @@
 			switch (c) {
 				case 'S': // Si quiero
 					_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"S");
-					_rondaActual.equipoTruco = null;
-					_rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
+					_rondaActual.puedeTruco = _rondaActual.equipoSegundo;
+                    _rondaActual.equipoTruco = null;
+                    break;
 				case 'N': // No quiero
 					_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"N");
 					_rondaActual.noQuiso = _rondaActual.equipoTruco;
+                    break;
 				default:  // Re Truco
 					_rondaActual.truco.push(c);
 					_rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
