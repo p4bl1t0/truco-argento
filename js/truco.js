@@ -291,13 +291,26 @@
 					posibles.push(new Naipe(8 , 1, 1, 'Oro'));
 					posibles.push(new Naipe(8 , 1, 1, 'Copa'));
 					break;
+                case 2:
+                    posibles.push(new Naipe(9, 2, 2, 'Espada'));
+                    posibles.push(new Naipe(9, 2, 2, 'Basto'));
+                    posibles.push(new Naipe(9, 2, 2, 'Oro'));
+                    posibles.push(new Naipe(9, 2, 2, 'Copa'));
+                    break;
+                case 3:
+                    posibles.push(new Naipe(10, 3, 3, 'Espada'));
+                    posibles.push(new Naipe(10, 3, 3, 'Basto'));
+                    posibles.push(new Naipe(10, 3, 3, 'Oro'));
+                    posibles.push(new Naipe(10, 3, 3, 'Copa'));
+                    break;
 				case 7:
 					posibles.push(new Naipe(12, 7, 7, 'Espada'));
 					posibles.push(new Naipe(11, 7, 7, 'Oro'));
 					posibles.push(new Naipe(4 , 7, 7, 'Basto'));
 					posibles.push(new Naipe(4 , 7, 7, 'Copa'));
 					break;
-				case default:
+
+                case default:
 					posibles.push(new Naipe(puntos - 3 , puntos, puntos, 'Espada'));
 					posibles.push(new Naipe(puntos - 3 , puntos, puntos, 'Oro'));
 					posibles.push(new Naipe(puntos - 3 , puntos, puntos, 'Basto'));
@@ -306,20 +319,25 @@
 			}	
 			for (j = 0 , j < jugadas.length ; j ++) 
 				for (i = posibles.length - 1; i >= 0 ; i --) 
-					if (posibles[i] !== null && jugadas[j].palo === posibles[i].palo   )
+					if (posibles[i] !== null && jugadas[j].palo === posibles[i].palo)
 						posibles.splice(i);
 	
 			
 		} else {
-			if (posibles.length === 2 && posibles[0].palo === posibles[1].palo) {
-				var e1 = posibles[0].puntosEnvido ;
-				var e2 = posibles[1].puntosEnvido ;
-				if ( e1 + e2 + 20  == puntos) return null;  // Nada por deducir ya jugo los puntos
+			if (jugadas.length === 2 && jugadas[0].palo === jugadas[1].palo) {
+				var e1 = jugadas[0].puntosEnvido ;
+				var e2 = jugadas[1].puntosEnvido ;
+				if ( e1 + e2 + 20  !== puntos){//si tiene flor trato de deducir que carta le queda
+                    //var p1 = puntos - e1, p2 = puntos - e2;
+                    
+                    
+                    }
+                else return null;  // Nada por deducir ya jugo los puntos
 			}
 			// No jugo los puntos, voy a ver como puedo formar los puntos
-			for (i = 0; i < posibles.length ; i ++) {
-				var palo   = posibles[i].palo;
-				var numero = puntos - posibles[i].puntosEnvido; - 20 
+			for (i = 0; i < jugadas.length ; i ++) {
+				var palo   = jugadas[i].palo;
+				var numero = puntos - jugadas[i].puntosEnvido - 20;
 				if ( 0 <= numero && numero <= 7 ) 
 					switch (numero) {
 						case 0:
@@ -331,6 +349,12 @@
 							var v = palo === 'Espada' ? 14 : (palo === 'Basto' ? 13 : 8) ; 
 							posibles.push(new Naipe(v, 1, 1, palo));
 							break;
+                        case 2:
+                            posibles.push(new Naipe(9, 2, 2, palo));
+                            break;
+                        case 3:
+                            posibles.push(new Naipe(10, 3, 3, palo));
+                            break;
 						case 7:
 							var v = palo === 'Espada' ? 12 : (palo === 'Oro' ? 11 : 4) ; 
 							posibles.push(new Naipe(v, 7, 7, palo));
