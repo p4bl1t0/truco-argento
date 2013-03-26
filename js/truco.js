@@ -99,7 +99,20 @@
 	Naipe.prototype.getNombre = function () {
 		return this.numero + ' de ' + this.palo;
 	};
-	
+
+	//calcula la probabilidad de ganar con el naipe actual
+    Naipe.prototype.cuantasMejores = function (){
+        var maso = _rondaActual.generarBaraja();
+        var cuantas = maso.length;
+        
+        for(var i = 0; i < maso.length; i++){
+            if (maso[i].valor >= this.valor && !(maso[i].palo === this.palo && maso[i].numero === this.numero)){
+                cuantas -= 1;
+            }
+        }
+        return (cuantas/maso.length);
+    }
+
 	/*******************************************************************
 	 * 
 	 * Clase Jugador
@@ -472,20 +485,15 @@
         
         if (resp) {   // Me cantaron, tengo que responder
 			return 'S';
-		}else{//  Tengo el quiero o todavia no se canto nada
-            //regla tonta como para empezar
-            if (ultimo === null && e1.jugador.cartasJugadas.length === 3){
-                if (e2.jugador.cartasEnMano[0].valor > e1.jugador.cartasJugadas[2].valor){
-                    return 'T';
-                }
-                else
-                    return '';
-            }
-            else{
+		}else if (ultimo === null || ultimo === undefined){//todavia no se canto nada
+            if(e1.jugador.cartasJugadas.length === 3 && e2.jugador.cartasEnMano[0].valor > e1.jugador.cartasJugadas[2].valor)
+                return 'T';
+            else
                 return '';
-            }
-		}
-		
+        }
+        else{ //tengo el quiero
+            return '';
+        }
 	}
     //------------------------------------------------------------------
     // Determina el canto del envido
@@ -712,7 +720,7 @@
 	
 	
 	Ronda.prototype.decidirCarta = function () {
-		if(this.equipoEnTurno !== null) {
+        if(this.equipoEnTurno !== null) {
 				if(this.equipoEnTurno.jugador.esHumano) {
 					// Habilitamos los botones
 					this.enEspera = true;
