@@ -101,7 +101,7 @@
 	};
 
 	//calcula la probabilidad de ganar con el naipe actual
-    Naipe.prototype.cuantasMejores = function (){
+    Naipe.prototype.probGanar = function (){
         var maso = _rondaActual.generarBaraja();
         var cuantas = maso.length;
         
@@ -126,6 +126,8 @@
 		this.cartasJugadas = new Array();
 		this.esHumano = true;
 		this.nombre = '';
+        this.puntosGanadosEnvido = 0;
+        
         
         this.envidoS     = new Array();
         this.realEnvido  = new Array();
@@ -319,7 +321,7 @@
                     posibles.push(new Naipe(10, 3, 3, 'Copa'));
                     break;
 				case 7:
-					posibles.push(new Naipe(12, 7, 7, 'Espada'));
+                    posibles.push(new Naipe(12, 7, 7, 'Espada'));
 					posibles.push(new Naipe(11, 7, 7, 'Oro'));
 					posibles.push(new Naipe(4 , 7, 7, 'Basto'));
 					posibles.push(new Naipe(4 , 7, 7, 'Copa'));
@@ -332,10 +334,11 @@
 					break;
 			}	
 			for (j = 0 ; j < jugadas.length ; j ++) 
-				for (i = posibles.length - 1; i >= 0 ; i --) 
-					if (posibles[i] !== null && jugadas[j].palo === posibles[i].palo)
-						posibles.splice(i);
-	
+				for (i = posibles.length - 1; i >= 0 ; i --){
+					if (posibles[i] !== undefined && jugadas[j].palo === posibles[i].palo){
+                        posibles[i] = undefined;
+                    }
+                }
 			
 		} else {
 			if (jugadas.length === 2 && jugadas[0].palo === jugadas[1].palo) {
@@ -401,15 +404,21 @@
 			}		
 		}
 		
-		for (j = 0 ; j < jugadas.length ; j ++) 
+		/*for (j = 0 ; j < jugadas.length ; j ++) 
 				for (i = posibles.length - 1; i >= 0 ; i --) 
 					if (jugadas[j].numero === posibles[i].numero && jugadas[j].palo === posibles[i].palo   )
-						posibles.splice(i);
+						posibles.splice(i);*/
 						
 		return posibles; // Faltaria sacar las cartas que ya jugo !!!  
 			             // si canto 7 y ya jugo uno puede tener otros 7 
 	}
 	
+    Probabilidad.prototype.promedioTruco = function (cartas){
+        var suma = 0;
+        for(var i = 0; i < cartas.length; i++)
+            suma = suma + cartas[i].probGanar();
+        return (suma / cartas.length);
+    }
 		
 	/*******************************************************************
 	 * 
@@ -479,12 +488,93 @@
 	//  Determina el canto del truco
 	//------------------------------------------------------------------
 	
+    IA.prototype.gane = function(nroMano){
+        var e1 = _rondaActual.equipoPrimero;
+        var e2 = _rondaActual.equipoSegundo;
+        
+        return (e2.jugador.cartasJugadas[nroMano].valor - e1.jugador.cartasJugadas[nroMano].valor);
+    }
+
+    IA.prototype.clasificarCartas = function(cartas){
+        var media = 0, alta = 0, baja = 0;
+        
+        for(var i = 0; i < cartas.length; i++)
+            if (cartas[i].valor <= 7 )
+                baja++;
+            else if (cartas[i].valor  <= 10)
+                media++;
+            else
+                alta++;
+        return {alta:alta, media:media, baja:baja};
+    }
+    
 	IA.prototype.truco = function (resp , ultimo) {
 		var e1 = _rondaActual.equipoPrimero;
         var e2 = _rondaActual.equipoSegundo;
+        var nroMano = _rondaActual.numeroDeMano;
+        var posiblesCartas = (_rondaActual.puntosGuardados !== null) ?
+            e2.jugador.prob.deducirCarta(_rondaActual.puntosGuardados, e1.jugador.cartasJugadas) : null;
+        var clasif = this.clasificarCartas(this.cartasEnMano);
         
-        if (resp) {   // Me cantaron, tengo que responder
-			return 'S';
+        /*if (e1.esMano){
+            switch (e1.jugador.cartasJugadas.length){
+                case 1: //primera ya jugada
+                    break;
+                case 2: //segunda ya jugada
+                    break;
+                case 3: //tercera ya jugada
+                    if (e1.jugador.cartasEnMano[0].valor > e1.jugador.cartasJugadas[2].valor)
+                        return 'T';
+                    break;
+                }
+            return '';
+        }
+        else{
+            
+            switch(e2.jugador.cartasEnMano.length){
+                case 3:
+                    alert('no jugue nada todavia!');
+                    break;
+                case 2:
+                    alert('jugue 1');
+                    break;
+                case 1:
+                    alert('jugue 2');
+                    break;
+                case 0:
+                    alert('llego hasta aca??');
+                    break;
+            }
+            return '';
+        }*/
+        if (resp) {  // Me cantaron, tengo que responder
+            switch(nroMano){
+                case 0:
+                    if (clasif.alta >= 2) return 'RT';
+                    if (e2.jugador.puntosGanadosEnvido < 2 && (clasif.alta + clasif.media) >= 2 && clasif.alta >= 1)
+                        return 'S';
+                    if (clasif.media === 3) return 'S';
+                    if (clasif.baja === 3) return 'RT'; //esto no deberia pasar siempre
+                    return 'N';
+                case 1:
+                    if(this.gane(0) > 0)
+                        return 'S';
+                    else
+                        return 'N';
+                case 2:
+                    if(e2.jugador.cartasEnMano.length > 0){
+                        if(e2.jugador.cartasEnMano[0].probGanar() > .724)
+                            return (e2.jugador.cartasEnMano[0].valor - 1 >= 12 ) ? 'R' : 'S';
+                        else
+                            return 'N';
+                    }
+                    else{
+                        if(e2.jugador.cartasJugadas[2].valor >= 10)
+                            return 'S';
+                        else
+                            return 'N';
+                    }
+                }
 		}else if (ultimo === null || ultimo === undefined){//todavia no se canto nada
             if(e1.jugador.cartasJugadas.length === 3 && e2.jugador.cartasEnMano[0].valor > e1.jugador.cartasJugadas[2].valor)
                 return 'T';
@@ -547,6 +637,8 @@
 				else return '';
  
         } else{        //me cantaron algo *******************************
+            return 'S';
+            
             var rta = '';
             
             if (puntos <= 7) return 'N' ;
@@ -651,6 +743,7 @@
 		this.equipoEnvido = null; 
         this.quienCanto = new Array();  //mantiene corresp biunivoca entre lo cantado y el que lo cant'o 
         this.envidoStatsFlag = true;
+        this.puntosGuardados = null;
         //Variables para manejar el truco
         this.equipoTruco = null;
         this.puedeTruco = null;
@@ -924,9 +1017,11 @@
 					_rondaActual.noQuiso = _rondaActual.equipoTruco;
                     break;
 				default:  // Re Truco
-					_rondaActual.truco.push(c);
-					_rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
-					_rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador, c);
+                    alert('estoy acaaaa: ' + c);
+					_rondaActual.logCantar(_rondaActual.equipoTruco.jugador, c);
+                    _rondaActual.truco.push(c);
+					_rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
+					
 					break;
 				}
         }
@@ -1072,24 +1167,29 @@
 			this.logCantar(primero.jugador , p1);
 			if (this.envidoStatsFlag && primero === this.equipoPrimero){ // Humano Canta primero, Registro los puntos
                     this.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, p1);
+                    this.puntosGuardados = p1;
                     this.envidoStatsFlag = false;
             }
 			
-			if (p2 > p1 ) {
+			if (p2 > p1) {
 				this.logCantar(segundo.jugador , p2);
 				if (this.envidoStatsFlag && segundo === this.equipoPrimero){ // Humano canta para ganarme
                     this.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, p2);
+                    this.puntosGuardados = p2;
                     this.envidoStatsFlag = false;
                 }
+                segundo.jugador.puntosGanadosEnvido = puntos.ganador;
                 segundo.puntos += puntos.ganador;
                 
 			}else{ // Humano NO CANTA, NO REGISTRO NADA
 				primero.puntos += puntos.ganador;
+                primero.jugador.puntosGanadosEnvido = puntos.ganador;
 			}
 
 		} else { // No Quiero
 			var ganador = this.equipoEnEspera(this.equipoEnvido);	
 			ganador.puntos += puntos.perdedor;
+            ganador.jugador.puntosGanadosEnvido = puntos.perdedor;
 		}
 		
 		this.puedeEnvido = false;
@@ -1233,7 +1333,8 @@
 			if(i % 2 === 0) {
 				j2.cartas.push(maso[index]);
 				j2.cartasEnMano.push(maso[index]);
-				_log.innerHTML = '<b>' + j2.nombre + ' tiene un :</b> ' + maso[index].getNombre() + '<br /> ' + _log.innerHTML ;
+                _rondaActual = this;
+				_log.innerHTML = '<b>' + j2.nombre + ' tiene un :</b> ' + maso[index].getNombre() + '('  + maso[index].probGanar()  + ') <br /> ' + _log.innerHTML ;
 			} else {
 				j1.cartas.push(maso[index]);
 				j1.cartasEnMano.push(maso[index]);
@@ -1241,6 +1342,7 @@
 			maso.splice(index, 1);
 			
 		}
+        _log.innerHTML = '<b> Promedio para el truco: ' + j2.prob.promedioTruco(j2.cartasEnMano) + '<br/>' + _log.innerHTML;
 		return maso.length;
 		
 	}
@@ -1302,6 +1404,8 @@
 		}
 		var j1 = this.equipoPrimero.jugador;
 		var j2 = this.equipoSegundo.jugador;
+        
+        _log.innerHTML = '<b> Promedio para el truco: ' + j2.prob.promedioTruco(j2.cartasEnMano) + '<br/>' + _log.innerHTML;
 		if (j1.cartasJugadas[indice].valor > j2.cartasJugadas[indice].valor) {
 			if(acumularPuntos) {
 				this.equipoPrimero.manos = this.equipoPrimero.manos + 1;
