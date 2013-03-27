@@ -516,39 +516,6 @@
             e2.jugador.prob.deducirCarta(_rondaActual.puntosGuardados, e1.jugador.cartasJugadas) : null;
         
         var clasif = this.clasificarCartas(this.cartasEnMano);
-        
-        /*if (e1.esMano){
-            switch (e1.jugador.cartasJugadas.length){
-                case 1: //primera ya jugada
-                    break;
-                case 2: //segunda ya jugada
-                    break;
-                case 3: //tercera ya jugada
-                    if (e1.jugador.cartasEnMano[0].valor > e1.jugador.cartasJugadas[2].valor)
-                        return 'T';
-                    break;
-                }
-            return '';
-        }
-        else{
-            
-            switch(e2.jugador.cartasEnMano.length){
-                case 3:
-                    alert('no jugue nada todavia!');
-                    break;
-                case 2:
-                    alert('jugue 1');
-                    break;
-                case 1:
-                    alert('jugue 2');
-                    break;
-                case 0:
-                    alert('llego hasta aca??');
-                    break;
-            }
-            return '';
-        }*/
-        
         // Tener en cuenta la carta que jugue
         
         var mediaalta = clasif.alta + clasif.media;
