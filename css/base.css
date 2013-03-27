@@ -530,10 +530,15 @@ html, body, .game-wrapper, .game-main {
 	height:100%;
 	overflow: hidden;
 }
+h1, h3 {
+	font-family:Kavoon, Helvetica;
+}
+h1 {
+}
 .game {
 	background: #3C1E13 url('../images/bg.jpg');
 	color:white;
-	font-family:Kavoon, Helvetica;
+	font-family:Helvetica;
 }
 .game-panel {
 	display:inline-block;
@@ -541,7 +546,26 @@ html, body, .game-wrapper, .game-main {
 	vertical-align:top;
 	height: 100%;
 	background: none repeat scroll 0 0 #111111;
-    border-right: 2px solid 
+    border-right: 2px solid white;
+    background: -webkit-gradient(linear, 50% 100%, 50% 0%, color-stop(0%, #142B0F), color-stop(100%, #000));
+	background: -webkit-linear-gradient(bottom, #142B0F,#000);
+	background: -moz-linear-gradient(bottom, #142B0F,#000);
+	background: -o-linear-gradient(bottom, #142B0F,#000);
+	background: -ms-linear-gradient(bottom, #142B0F,#000);
+	background: linear-gradient(bottom, #142B0F,#000);
+}
+.game-panel fieldset {
+	width:80%;
+	margin:.5em auto 0;
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+	box-sizing: border-box;         /* Opera/IE 8+ */
+}
+.label-cantos {
+	margin:.8em 0 .4em;
+}
+.label-cantos--first {
+	margin:0 0 .4em;
 }
 .game-main {
 	display: inline-block;
@@ -628,10 +652,20 @@ ul li {
 	height:10%;
 }
 .game-header h1{
-	margin:0;
+	text-align:center;
+	margin:.3em 0;
 }
 #game-score {
 	height:10%;
+	border:1px solid white;
+	width:80%;
+	margin:auto;
+}
+#game-score td,
+#game-score th {
+	text-align:center;
+	border:1px solid white;
+	width:50%;
 }
 #log {
 	overflow-y:auto;

@@ -826,6 +826,7 @@
 					_rondaActual = this;
 					$("#Quiero").hide();
 					$("#NoQuiero").hide();
+					$('.label-cantos--SN').hide();
 					$(".canto").hide();
 					$(".cantot").hide();
 					
@@ -1042,6 +1043,7 @@
 			$('.canto').hide();
 			$("#Quiero").show();
 			$("#NoQuiero").show();
+			$('.label-cantos--SN').show();
 			switch (ultimo) {
 				case 'E':
 					$('#Envido').show();

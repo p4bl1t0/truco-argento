@@ -13,18 +13,6 @@
 				<div class="game-header">
 					<h1>Truco argento</h1>
 				</div>
-				<fieldset>
-					<legend>Configuraciones</legend>
-					<input type="checkbox" id="cbxAudio" checked="checked" />
-					<label for="cbxAudio">Sonido</label>
-					<div>
-						<div class="label">Jugar a:</div>
-						<input type="radio" value="15" id="rdb15" class="rbd-ptos-partida" checked="checked" />
-						<label for="rdb10">15 pts.</label>
-						<input type="radio" value="30" id="rdb30" class="rbd-ptos-partida" />
-						<label for="rdb10">30 pts.</label>
-					</div>
-				</fieldset>
 				<table id="game-score">
 					<thead>
 						<tr>
@@ -39,19 +27,33 @@
 						</tr>
 					</tbody>
 				</table>
+				<fieldset id="configuraciones">
+					<legend>Configuraciones</legend>
+					<input type="checkbox" id="cbxAudio" checked="checked" />
+					<label for="cbxAudio">Sonido</label>
+					<div>
+						<div class="label">Jugar a:</div>
+						<input type="radio" value="15" id="rdb15" class="rbd-ptos-partida" checked="checked" />
+						<label for="rdb10">15 pts.</label>
+						<input type="radio" value="30" id="rdb30" class="rbd-ptos-partida" />
+						<label for="rdb10">30 pts.</label>
+					</div>
+				</fieldset>
 				<div class="game-action">
-					<input type="button" value="Envido"       id="Envido"         class="canto btn btn-primary"  data-envido='E' />
-					<input type="button" value="Real Envido"  id="RealEnvido"     class="canto btn btn-success"  data-envido='R'/>
-					<input type="button" value="Falta Envido" id="FaltaEnvido"    class="canto btn btn-inverse"  data-envido='F'/>
-					<br/>
-					<br/>
-					<input type="button" value="Truco"           id="Truco"   class="cantot btn btn-primary" data-truco='T' />
-					<input type="button" value="Quiero re Truco" id="reTruco" class="cantot btn btn-success" data-truco='RT' />
-					<input type="button" value="Quiero vale 4"   id="vale4"   class="cantot btn btn-inverse" data-truco='V' />
-					<br/>
-					<br/>
-					<input type="button" value="Quiero"    id="Quiero"   class="boton btn"/>
-					<input type="button" value="No Quiero" id="NoQuiero" class="boton btn" />
+					<fieldset id="cantos">
+						<legend>Cantos</legend>
+						<div class="label-cantos label-cantos--first">Para la mentira ...</div>
+						<input type="button" value="Envido"       id="Envido"         class="canto btn btn-primary"  data-envido='E' />
+						<input type="button" value="Real Envido"  id="RealEnvido"     class="canto btn btn-success"  data-envido='R'/>
+						<input type="button" value="Falta Envido" id="FaltaEnvido"    class="canto btn btn-inverse"  data-envido='F'/>
+						<div class="label-cantos">Para el rabón ...</div>
+						<input type="button" value="Truco"           id="Truco"   class="cantot btn btn-primary" data-truco='T' />
+						<input type="button" value="Quiero re Truco" id="reTruco" class="cantot btn btn-success" data-truco='RT' />
+						<input type="button" value="Quiero vale 4"   id="vale4"   class="cantot btn btn-inverse" data-truco='V' />
+						<div class="label-cantos label-cantos--SN">Mi respuesta ...</div>
+						<input type="button" value="Quiero"    id="Quiero"   class="boton btn"/>
+						<input type="button" value="No Quiero" id="NoQuiero" class="boton btn" />
+					</fieldset>
 					
 					
 				</div>
