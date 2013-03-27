@@ -401,14 +401,16 @@
 							posibles.push(new Naipe(numero - 3 , numero , numero , palo));
 							break;
 					}
-			}		
+			}
 		}
 		
-		/*for (j = 0 ; j < jugadas.length ; j ++) 
-				for (i = posibles.length - 1; i >= 0 ; i --) 
-					if (jugadas[j].numero === posibles[i].numero && jugadas[j].palo === posibles[i].palo   )
-						posibles.splice(i);*/
-						
+		//saco las cartas que ya jugo
+		for (j = 0 ; j < jugadas.length ; j ++) 
+				for (i = posibles.length - 1; i >= 0 ; i--)
+					if (jugadas[j].numero === posibles[i].numero && jugadas[j].palo === posibles[i].palo){
+						posibles.splice(i);
+						break;
+					}
 		return posibles; // Faltaria sacar las cartas que ya jugo !!!  
 			             // si canto 7 y ya jugo uno puede tener otros 7 
 	}

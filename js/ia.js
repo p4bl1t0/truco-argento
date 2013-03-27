@@ -17,22 +17,24 @@ function IA () {
 //------------------------------------------------------------------
 
 IA.prototype.elegir  =  function ( orden , carta) {
-var indice = -1;
-var valor = (orden === 0) ? 99 : (carta === null ? -1: 99) ;
+	var indice = -1;
+	var valor = (orden === 0) ? 99 : (carta === null ? -1: 99) ;
+    
     for ( var c in this.cartasEnMano ) {
-    var v_act = this.cartasEnMano[c].valor;
-    switch (orden) {
-	case 0:
-	    if ( v_act < valor ) {valor = v_act ; indice = c; }
-	    break;
-	case 1:
-	    if (carta === null) {
-		if ( v_act > valor ) {valor = v_act ; indice = c; } 
-	    } else {
-		if ( v_act < valor && v_act > carta.valor  ) {valor = v_act ; indice = c; } 
-	    }
-		break;
-	    }
+		var v_act = this.cartasEnMano[c].valor;
+		switch (orden) {
+			case 0:
+				if ( v_act < valor ) {valor = v_act ; indice = c; }
+				break;
+			case 1:
+				if (carta === null) {
+					if ( v_act > valor ) {valor = v_act ; indice = c; } 
+				} 
+				else {
+					if ( v_act < valor && v_act > carta.valor  ) {valor = v_act ; indice = c; } 
+				}
+				break;
+		}
 	}
 	return indice;
 }
@@ -70,6 +72,7 @@ var valor = (orden === 0) ? 99 : (carta === null ? -1: 99) ;
         var e1 = _rondaActual.equipoPrimero;
         var e2 = _rondaActual.equipoSegundo;
         
+        alert('estaMano: ' + nroMano);
         return (e2.jugador.cartasJugadas[nroMano].valor - e1.jugador.cartasJugadas[nroMano].valor);
     }
 
@@ -86,6 +89,14 @@ var valor = (orden === 0) ? 99 : (carta === null ? -1: 99) ;
         return {alta:alta, media:media, baja:baja};
     }
     
+IA.prototype.laMato = function (carta)
+{
+	for(var i = 0; i < this.cartasEnMano.length; i++)
+		if(carta.valor < this.cartasEnMano[i].valor)
+			return true;
+	return false;
+}
+
 IA.prototype.truco = function (resp , ultimo) {
 	var e1 = _rondaActual.equipoPrimero;
     var e2 = _rondaActual.equipoSegundo;
@@ -99,6 +110,10 @@ IA.prototype.truco = function (resp , ultimo) {
     var clasif = this.clasificarCartas(this.cartasEnMano);
     // Tener en cuenta la carta que jugue
 	var mediaalta = clasif.alta + clasif.media;
+	
+	if(posiblesCartas !== null)
+		for(var i = 0; i < posiblesCartas.length; i++)
+			alert(posiblesCartas[i].numero + ' ' + posiblesCartas[i].palo);
     
     if (resp) {  // Me cantaron, tengo que responder
         switch(nroMano){
@@ -110,61 +125,205 @@ IA.prototype.truco = function (resp , ultimo) {
                 if (clasif.baja === 3) return 'RT'; //esto no deberia pasar siempre
                 return 'N';
             case 1:
-                if(this.gane(0) > 0 && mediaalta >= 1)
-                    return ( clasif.alta >= 1 ? 'RT'  : 'S'  )  ;
-                else if (mediaalta >= 1) 
-                    return 'S'
-                else return 'N';
+                if(this.gane(0) > 0){//si tengo primera
+					if(miMesa === null){//todavia no jugue -> el humano tampoco, estoy en un retruque
+						switch(ultimo){
+							case 'RT':
+								if(mediaalta >= 1)
+									return (clasif.alta >= 1 ? 'V' : 'S');
+								else if (clasif.baja === 1 && clasif.media === 1)
+									return 'S';
+								else
+									return 'N';
+							case 'V':
+								return 'N';
+						}
+					}
+					else{//ya jugue, el humano no
+						switch(ultimo){//a rellenar
+							case 'T':
+							case 'RT':
+							case 'V':
+								return 'N';
+						}
+					}
+				}
+				else{//perdi primera
+					if(suMesa === null){//no se tiro ninguna carta en la segunda todavia
+						switch(ultimo){//a rellenar
+							case 'T':
+							case 'RT':
+							case 'V':
+								return 'N';
+						}
+					}
+					else{//el humano ya jugo. Estoy en medio de un retruque
+						switch(ultimo){//a rellenar
+							case 'RT':
+							case 'V':
+								return 'N';
+							}
+					}
+				}
             case 2:
-                if(enMano.length > 0){
+                if(this.gane(1) > 0){//perdi primera, gane segunda
+					if(miMesa === null){//todavia no jugue, me esta retrucando
+						switch(ultimo){
+							case 'RT':
+								if(this.cartasEnMano[0].valor >= 13)
+									return 'V';
+								if(this.cartasEnMano[0].valor >= 11)
+									return 'S';
+								return 'N';
+							case 'V':
+								if(this.cartasEnMano[0].valor >= 13)
+									return 'S';
+								return 'N';
+						}
+					}
+					else{//ya jugue, el humano no
+						switch(ultimo){//a rellenar
+							case 'T':
+								if(miMesa.valor >= 10)
+									return 'S';
+								return 'N';
+							case 'RT':
+							case 'V':
+								return 'S';
+						}
+					}
+				}
+				else{//gane primera, perdi segunda
+					if(suMesa === null){//el humano no jugo todavia
+						switch(ultimo){
+							case 'T':
+								if(this.cartasEnMano[0].valor >= 11)
+									return 'RT';
+								if(this.cartasEnMano[0].valor >= 9)
+									return 'S';
+								return 'N';
+							case 'RT':
+							case 'V':
+								return 'N';
+						}
+						
+					}
+					else{//el humano ya jugo, yo le cante y me retruco
+						switch(ultimo){
+							case 'RT':
+								if(this.cartasEnMano[0].valor > suMesa.valor)
+									return 'V';
+								return 'N';
+							case 'V':
+								if(this.cartasEnMano[0].valor > suMesa.valor)
+									return 'S';
+								return 'N';
+						}
+					}
+				}
+/*                if(enMano.length > 0){
                     if(enMano[0].probGanar() > .724)
                         return (enMano[0].valor - 1 >= 12 ) ? 'RT' : 'S';
                     else
                         return 'N';
                 }
                 else{
-                    if(e2.jugador.cartasJugadas[2].valor >= 10)
+                    if(this.cartasJugadas[2].valor >= 10)
                         return 'S';
                     else
                         return 'N';
-                }
+                }*/
         }
-		}else if (ultimo === null || ultimo === undefined){//todavia no se canto nada
-			switch(nroMano){
-				case 0:
+	}
+	else if (ultimo === null || ultimo === undefined){//todavia no se canto nada
+		switch(nroMano){
+			case 0:
+				return '';
+			case 1:
+				if (this.gane(0) > 0){//gane primera, el humano todavia no jugo la segunda carta
+					if(clasif.alta === 1)
+						return '';
+					if(clasif.alta >= 1)
+						return 'T';
+				}
+				else{//perdi primera, el humano ya jugo
 					return '';
-				case 1:
-					if (this.gane(0) > 0){//gane primera, el humano todavia no jugo la segunda carta
-						if(clasif.alta >= 1)
-							return 'T';
-					}
-					return '';
-				case 2:
-					if (this.gane(1) < 0){//perdi segunda, el humano ya jugo
-						if(e2.jugador.cartasEnMano[0].valor > e1.jugador.cartasJugadas[2].valor)
-							return 'T';
-					}
-					return '';
-			}
-		}
-		else{ //tengo el quiero
-			switch(nroMano){
-				case 0:
-				case 1:
-					if(this.gane(0) > 0){
-						if(clasif.alta >= 1)
-							return 'RT';
-					}
-					return '';
-				case 2:
-					if (this.gane(1) > 0){//gane segunda, juego yo primero
-						if(e2.jugador.cartasEnMano[0].valor >= 11)
-							return 'RT';
-					}
+				}
+			case 2:
+				alert('este caseeee');
+				if (this.gane(1) < 0){//gane primera, perdi segunda, el humano ya jugo
+					if(this.cartasEnMano[0].valor > e1.jugador.cartasJugadas[2].valor)
+						return 'T';
+					if(posiblesCartas.length === 1 && posiblesCartas[0].valor < this.cartasEnMano[0].valor)
+						return 'T';
+					if(suMesa.valor < 10)//si tiene menos de un 3 le canto
+						return 'T';
+				}
+				else{//perdi primera, gane segunda, el humano no jugo todavia
 					return '';
 				}
 		}
 	}
+	else{ //tengo el quiero
+		switch(nroMano){
+			case 0:
+				return '';
+			case 1:
+				if(this.gane(0) > 0){//gane primera, todavia no jugo nadie
+					switch(ultimo){
+						case 'T':
+							if(clasif.alta >= 1)
+								return 'RT';
+							return '';
+						case 'RT':
+							return '';
+						default://esta en vale 4, no se puede hacer nada mas
+							return '';
+					}
+				}
+				else{//perdi primera, el humano ya jugo
+					switch(ultimo){
+						case 'T':
+						case 'RT':
+							return '';
+						default://esta en vale 4, no se puede hacer nada mas
+							return '';
+					}
+				}
+			case 2:
+				if(this.gane(1) > 0){//gane segunda, juego yo primero
+					switch(ultimo){
+						case 'T':
+							if(clasif.alta === 1)
+								return 'RT';
+							return '';
+						case 'RT':
+							if(this.cartasEnMano[0].valor >= 13)
+								return 'V';
+							return '';
+						default://esta en vale 4, no se puede hacer nada mas
+							return '';
+					}
+				}
+				else{//gane primera y perdi segunda, el humano ya jugo
+					switch(ultimo){
+						case 'T':
+							if(suMesa.valor < this.cartasEnMano[0].valor)
+								return 'RT';
+							if(suMesa.valor < 9)
+								return 'RT';
+							return '';
+						case 'RT':
+							if(suMesa.valor < this.cartasEnMano[0].valor)
+								return 'V';
+							return '';
+						default://esta en vale 4, no se puede hacer nada mas
+							return '';
+					}
+				}
+			}
+	}
+}
     //------------------------------------------------------------------
     // Determina el canto del envido
     //------------------------------------------------------------------
