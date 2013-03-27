@@ -514,6 +514,7 @@
         var nroMano = _rondaActual.numeroDeMano;
         var posiblesCartas = (_rondaActual.puntosGuardados !== null) ?
             e2.jugador.prob.deducirCarta(_rondaActual.puntosGuardados, e1.jugador.cartasJugadas) : null;
+        
         var clasif = this.clasificarCartas(this.cartasEnMano);
         
         /*if (e1.esMano){
@@ -547,24 +548,29 @@
             }
             return '';
         }*/
+        
+        // Tener en cuenta la carta que jugue
+        
+        var mediaalta = clasif.alta + clasif.media;
         if (resp) {  // Me cantaron, tengo que responder
             switch(nroMano){
                 case 0:
                     if (clasif.alta >= 2) return 'RT';
-                    if (e2.jugador.puntosGanadosEnvido < 2 && (clasif.alta + clasif.media) >= 2 && clasif.alta >= 1)
+                    if (e2.jugador.puntosGanadosEnvido < 2 && (mediaalta) >= 2 && clasif.alta >= 1)
                         return 'S';
                     if (clasif.media === 3) return 'S';
                     if (clasif.baja === 3) return 'RT'; //esto no deberia pasar siempre
                     return 'N';
                 case 1:
-                    if(this.gane(0) > 0)
-                        return 'S';
-                    else
-                        return 'N';
+                    if(this.gane(0) > 0 && mediaalta >= 1)
+                        return ( clasif.alta >= 1 ? 'RT'  : 'S'  )  ;
+                    else if (mediaalta >= 1) 
+                        return 'S'
+                    else return 'N';
                 case 2:
                     if(e2.jugador.cartasEnMano.length > 0){
                         if(e2.jugador.cartasEnMano[0].probGanar() > .724)
-                            return (e2.jugador.cartasEnMano[0].valor - 1 >= 12 ) ? 'R' : 'S';
+                            return (e2.jugador.cartasEnMano[0].valor - 1 >= 12 ) ? 'RT' : 'S';
                         else
                             return 'N';
                     }
@@ -1342,7 +1348,7 @@
 			maso.splice(index, 1);
 			
 		}
-        _log.innerHTML = '<b> Promedio para el truco: ' + j2.prob.promedioTruco(j2.cartasEnMano) + '<br/>' + _log.innerHTML;
+        //_log.innerHTML = '<b> Promedio para el truco: ' + j2.prob.promedioTruco(j2.cartasEnMano) + '<br/>' + _log.innerHTML;
 		return maso.length;
 		
 	}
