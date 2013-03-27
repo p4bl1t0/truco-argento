@@ -1,45 +1,45 @@
-	/*******************************************************************
-	 * 
-	 * Clase IA
-	 * 
-	 *******************************************************************
-	*/ 
-	
-	IA.prototype = new Jugador();
-	
-	IA.prototype.constructor = IA;
-	
-	function IA () {
-		this.esHumano =  false;
+/*******************************************************************
+ * 
+ * Clase IA
+ * 
+ *******************************************************************
+*/ 
+
+IA.prototype = new Jugador();
+
+IA.prototype.constructor = IA;
+
+function IA () {
+    this.esHumano =  false;
+}
+//------------------------------------------------------------------
+//  Elige la carta mas baja o la mas alta segun los datos 
+//------------------------------------------------------------------
+
+IA.prototype.elegir  =  function ( orden , carta) {
+var indice = -1;
+var valor = (orden === 0) ? 99 : (carta === null ? -1: 99) ;
+    for ( var c in this.cartasEnMano ) {
+    var v_act = this.cartasEnMano[c].valor;
+    switch (orden) {
+	case 0:
+	    if ( v_act < valor ) {valor = v_act ; indice = c; }
+	    break;
+	case 1:
+	    if (carta === null) {
+		if ( v_act > valor ) {valor = v_act ; indice = c; } 
+	    } else {
+		if ( v_act < valor && v_act > carta.valor  ) {valor = v_act ; indice = c; } 
+	    }
+		break;
+	    }
 	}
-	//------------------------------------------------------------------
-	//  Elige la carta mas baja o la mas alta segun los datos 
-	//------------------------------------------------------------------
-	
-	IA.prototype.elegir  =  function ( orden , carta) {
-		var indice = -1;
-		var valor = (orden === 0) ? 99 : (carta === null ? -1: 99) ;
-		for ( var c in this.cartasEnMano ) {
-			var v_act = this.cartasEnMano[c].valor;
-			switch (orden) {
-					case 0:
-						if ( v_act < valor ) {valor = v_act ; indice = c; }
-						break;
-					case 1:
-						if (carta === null) {
-							if ( v_act > valor ) {valor = v_act ; indice = c; } 
-						} else {
-							if ( v_act < valor && v_act > carta.valor  ) {valor = v_act ; indice = c; } 
-						}
-						break;
-			}
-		}
-		return indice;
-	}
-    
-    //------------------------------------------------------------------
-    // LLeva estadistica de los cantos del humano
-    //------------------------------------------------------------------
+	return indice;
+}
+   
+   //------------------------------------------------------------------
+   // LLeva estadistica de los cantos del humano
+   //------------------------------------------------------------------
     
     IA.prototype.statsEnvido = function(cantos, quienCanto, puntos){
         if (cantos !== undefined && cantos !== null)
@@ -86,60 +86,84 @@
         return {alta:alta, media:media, baja:baja};
     }
     
-	IA.prototype.truco = function (resp , ultimo) {
-		var e1 = _rondaActual.equipoPrimero;
-        var e2 = _rondaActual.equipoSegundo;
-        var nroMano = _rondaActual.numeroDeMano;
-        var posiblesCartas = (_rondaActual.puntosGuardados !== null) ?
-            e2.jugador.prob.deducirCarta(_rondaActual.puntosGuardados, e1.jugador.cartasJugadas) : null;
+IA.prototype.truco = function (resp , ultimo) {
+	var e1 = _rondaActual.equipoPrimero;
+    var e2 = _rondaActual.equipoSegundo;
+    var nroMano = _rondaActual.numeroDeMano;
+    var posiblesCartas = (_rondaActual.puntosGuardados !== null) ?
+        e2.jugador.prob.deducirCarta(_rondaActual.puntosGuardados, e1.jugador.cartasJugadas) : null;
         
-        var enMano = e2.jugador.cartasEnMano;
-        
-        var miMesa = (e2.jugador.cartasJugadas.length === nroMano + 1 ) ?  e2.jugador.cartasJugadas[nroMano]  : null ;
-        var suMesa = (e1.jugador.cartasJugadas.length === nroMano + 1 ) ?  e1.jugador.cartasJugadas[nroMano]  : null ;
-        
-        var clasif = this.clasificarCartas(this.cartasEnMano);
-        // Tener en cuenta la carta que jugue
-        
-        var mediaalta = clasif.alta + clasif.media;
-        if (resp) {  // Me cantaron, tengo que responder
-            switch(nroMano){
-                case 0:
-                    if (clasif.alta >= 2) return 'RT';
-                    if (e2.jugador.puntosGanadosEnvido < 2 && (mediaalta) >= 2 && clasif.alta >= 1)
-                        return 'S';
-                    if (clasif.media === 3) return 'S';
-                    if (clasif.baja === 3) return 'RT'; //esto no deberia pasar siempre
-                    return 'N';
-                case 1:
-                    if(this.gane(0) > 0 && mediaalta >= 1)
-                        return ( clasif.alta >= 1 ? 'RT'  : 'S'  )  ;
-                    else if (mediaalta >= 1) 
-                        return 'S'
-                    else return 'N';
-                case 2:
-                    if(enMano.length > 0){
-                        if(enMano[0].probGanar() > .724)
-                            return (enMano[0].valor - 1 >= 12 ) ? 'RT' : 'S';
-                        else
-                            return 'N';
-                    }
-                    else{
-                        if(e2.jugador.cartasJugadas[2].valor >= 10)
-                            return 'S';
-                        else
-                            return 'N';
-                    }
+    var enMano = e2.jugador.cartasEnMano;
+    var miMesa = (e2.jugador.cartasJugadas.length === nroMano + 1 ) ?  e2.jugador.cartasJugadas[nroMano]  : null ;
+    var suMesa = (e1.jugador.cartasJugadas.length === nroMano + 1 ) ?  e1.jugador.cartasJugadas[nroMano]  : null ;
+    var clasif = this.clasificarCartas(this.cartasEnMano);
+    // Tener en cuenta la carta que jugue
+	var mediaalta = clasif.alta + clasif.media;
+    
+    if (resp) {  // Me cantaron, tengo que responder
+        switch(nroMano){
+            case 0:
+                if (clasif.alta >= 2) return 'RT';
+                if (e2.jugador.puntosGanadosEnvido < 2 && (mediaalta) >= 2 && clasif.alta >= 1)
+                    return 'S';
+                if (clasif.media === 3) return 'S';
+                if (clasif.baja === 3) return 'RT'; //esto no deberia pasar siempre
+                return 'N';
+            case 1:
+                if(this.gane(0) > 0 && mediaalta >= 1)
+                    return ( clasif.alta >= 1 ? 'RT'  : 'S'  )  ;
+                else if (mediaalta >= 1) 
+                    return 'S'
+                else return 'N';
+            case 2:
+                if(enMano.length > 0){
+                    if(enMano[0].probGanar() > .724)
+                        return (enMano[0].valor - 1 >= 12 ) ? 'RT' : 'S';
+                    else
+                        return 'N';
                 }
+                else{
+                    if(e2.jugador.cartasJugadas[2].valor >= 10)
+                        return 'S';
+                    else
+                        return 'N';
+                }
+        }
 		}else if (ultimo === null || ultimo === undefined){//todavia no se canto nada
-            if(e1.jugador.cartasJugadas.length === 3 && e2.jugador.cartasEnMano[0].valor > e1.jugador.cartasJugadas[2].valor)
-                return 'T';
-            else
-                return '';
-        }
-        else{ //tengo el quiero
-            return '';
-        }
+			switch(nroMano){
+				case 0:
+					return '';
+				case 1:
+					if (this.gane(0) > 0){//gane primera, el humano todavia no jugo la segunda carta
+						if(clasif.alta >= 1)
+							return 'T';
+					}
+					return '';
+				case 2:
+					if (this.gane(1) < 0){//perdi segunda, el humano ya jugo
+						if(e2.jugador.cartasEnMano[0].valor > e1.jugador.cartasJugadas[2].valor)
+							return 'T';
+					}
+					return '';
+			}
+		}
+		else{ //tengo el quiero
+			switch(nroMano){
+				case 0:
+				case 1:
+					if(this.gane(0) > 0){
+						if(clasif.alta >= 1)
+							return 'RT';
+					}
+					return '';
+				case 2:
+					if (this.gane(1) > 0){//gane segunda, juego yo primero
+						if(e2.jugador.cartasEnMano[0].valor >= 11)
+							return 'RT';
+					}
+					return '';
+				}
+		}
 	}
     //------------------------------------------------------------------
     // Determina el canto del envido
