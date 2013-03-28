@@ -72,7 +72,7 @@ IA.prototype.elegir  =  function ( orden , carta) {
         var e1 = _rondaActual.equipoPrimero;
         var e2 = _rondaActual.equipoSegundo;
         
-        alert('estaMano: ' + nroMano);
+        //alert('estaMano: ' + nroMano);
         return (e2.jugador.cartasJugadas[nroMano].valor - e1.jugador.cartasJugadas[nroMano].valor);
     }
 
@@ -111,10 +111,10 @@ IA.prototype.truco = function (resp , ultimo) {
     // Tener en cuenta la carta que jugue
 	var mediaalta = clasif.alta + clasif.media;
 	
-	if(posiblesCartas !== null)
+	/*if(posiblesCartas !== null)
 		for(var i = 0; i < posiblesCartas.length; i++)
 			alert(posiblesCartas[i].numero + ' ' + posiblesCartas[i].palo);
-    
+    */
     if (resp) {  // Me cantaron, tengo que responder
         switch(nroMano){
             case 0:
@@ -124,6 +124,7 @@ IA.prototype.truco = function (resp , ultimo) {
                 if (clasif.media === 3) return 'S';
                 if (clasif.baja === 3) return 'RT'; //esto no deberia pasar siempre
                 return 'N';
+                break;
             case 1:
                 if(this.gane(0) > 0){//si tengo primera
 					if(miMesa === null){//todavia no jugue -> el humano tampoco, estoy en un retruque
@@ -165,6 +166,8 @@ IA.prototype.truco = function (resp , ultimo) {
 							}
 					}
 				}
+				return 'N';
+				break;
             case 2:
                 if(this.gane(1) > 0){//perdi primera, gane segunda
 					if(miMesa === null){//todavia no jugue, me esta retrucando
@@ -249,12 +252,14 @@ IA.prototype.truco = function (resp , ultimo) {
 				else{//perdi primera, el humano ya jugo
 					return '';
 				}
+				return '';
+				break;
 			case 2:
-				alert('este caseeee');
+				//alert('este caseeee');
 				if (this.gane(1) < 0){//gane primera, perdi segunda, el humano ya jugo
 					if(this.cartasEnMano[0].valor > e1.jugador.cartasJugadas[2].valor)
 						return 'T';
-					if(posiblesCartas.length === 1 && posiblesCartas[0].valor < this.cartasEnMano[0].valor)
+					if(posiblesCartas !== null && posiblesCartas.length === 1 && posiblesCartas[0].valor < this.cartasEnMano[0].valor)
 						return 'T';
 					if(suMesa.valor < 10)//si tiene menos de un 3 le canto
 						return 'T';
@@ -262,12 +267,15 @@ IA.prototype.truco = function (resp , ultimo) {
 				else{//perdi primera, gane segunda, el humano no jugo todavia
 					return '';
 				}
+				return '';
+				break;
 		}
 	}
 	else{ //tengo el quiero
 		switch(nroMano){
 			case 0:
 				return '';
+				break;
 			case 1:
 				if(this.gane(0) > 0){//gane primera, todavia no jugo nadie
 					switch(ultimo){
@@ -290,6 +298,8 @@ IA.prototype.truco = function (resp , ultimo) {
 							return '';
 					}
 				}
+				return '';
+				break;
 			case 2:
 				if(this.gane(1) > 0){//gane segunda, juego yo primero
 					switch(ultimo){
@@ -321,6 +331,8 @@ IA.prototype.truco = function (resp , ultimo) {
 							return '';
 					}
 				}
+				return '';
+				break;
 			}
 	}
 }
@@ -376,7 +388,7 @@ IA.prototype.truco = function (resp , ultimo) {
 				else return '';
  
         } else{        //me cantaron algo *******************************
-            return 'S';
+            //return 'S';
             
             var rta = '';
             

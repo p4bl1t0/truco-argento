@@ -628,6 +628,7 @@
                     if (this.puedeTruco === null || this.puedeTruco === this.equipoEnTurno ){
 						var c = this.equipoSegundo.jugador.truco(false , _rondaActual.truco.getLast());
 						if (c !== '') {
+							audio.play(c);	
 							_rondaActual.truco.push(c);
 							_rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
                             _rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
@@ -708,6 +709,7 @@
 			});
         } else {
 			var c = this.equipoSegundo.jugador.truco(true , _rondaActual.truco.getLast());
+			audio.play(c);
 			switch (c) {
 				case 'S': // Si quiero
 					_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"S");
@@ -722,7 +724,6 @@
 					_rondaActual.logCantar(_rondaActual.equipoTruco.jugador, c);
                     _rondaActual.truco.push(c);
 					_rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
-					
 					break;
 				}
         }
