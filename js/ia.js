@@ -110,6 +110,7 @@ IA.prototype.truco = function (resp , ultimo) {
     var clasif = this.clasificarCartas(this.cartasEnMano);
     // Tener en cuenta la carta que jugue
 	var mediaalta = clasif.alta + clasif.media;
+	var p = getRandomReal(0,1);
 	
 	/*if(posiblesCartas !== null)
 		for(var i = 0; i < posiblesCartas.length; i++)
@@ -143,6 +144,20 @@ IA.prototype.truco = function (resp , ultimo) {
 					else{//ya jugue, el humano no
 						switch(ultimo){//a rellenar
 							case 'T':
+								if(miMesa.valor >= 11)
+									return 'RT';
+								if(miMesa.valor >= 7){
+									if(this.cartasEnMano[0].valor >= 11)
+										return 'RT';
+									else if(this.cartasEnMano[0].valor >= 6)
+										return 'S';
+									else return 'N';
+								}
+								if(this.cartasEnMano[0].valor >= 12)
+									return 'RT';
+								if(this.cartasEnMano[0].valor >= 9)
+									return 'S';
+								return 'N';
 							case 'RT':
 							case 'V':
 								return 'N';
@@ -153,6 +168,8 @@ IA.prototype.truco = function (resp , ultimo) {
 					if(suMesa === null){//no se tiro ninguna carta en la segunda todavia
 						switch(ultimo){//a rellenar
 							case 'T':
+								if(mediaalta === 2)
+									return 'S';
 							case 'RT':
 							case 'V':
 								return 'N';
@@ -187,6 +204,12 @@ IA.prototype.truco = function (resp , ultimo) {
 					else{//ya jugue, el humano no
 						switch(ultimo){//a rellenar
 							case 'T':
+								if(posiblesCartas !== undefined && posiblesCartas !== null){
+									if(posiblesCartas.length === 0 && posiblesCartas[0].valor < miMesa.valor)
+										return 'S';
+									else
+										return 'N'
+									}
 								if(miMesa.valor >= 10)
 									return 'S';
 								return 'N';
@@ -200,6 +223,9 @@ IA.prototype.truco = function (resp , ultimo) {
 					if(suMesa === null){//el humano no jugo todavia
 						switch(ultimo){
 							case 'T':
+								if(posiblesCartas !== null && posiblesCartas !== undefined)
+									if(posiblesCartas.length === 1 && posiblesCartas[0].valor <= this.cartasEnMano[0].valor)
+										return 'RT';
 								if(this.cartasEnMano[0].valor >= 11)
 									return 'RT';
 								if(this.cartasEnMano[0].valor >= 9)
@@ -207,6 +233,8 @@ IA.prototype.truco = function (resp , ultimo) {
 								return 'N';
 							case 'RT':
 							case 'V':
+								if(this.cartasEnMano[0].valor >= 13)
+									return 'S';
 								return 'N';
 						}
 						
@@ -224,18 +252,6 @@ IA.prototype.truco = function (resp , ultimo) {
 						}
 					}
 				}
-/*                if(enMano.length > 0){
-                    if(enMano[0].probGanar() > .724)
-                        return (enMano[0].valor - 1 >= 12 ) ? 'RT' : 'S';
-                    else
-                        return 'N';
-                }
-                else{
-                    if(this.cartasJugadas[2].valor >= 10)
-                        return 'S';
-                    else
-                        return 'N';
-                }*/
         }
 	}
 	else if (ultimo === null || ultimo === undefined){//todavia no se canto nada
