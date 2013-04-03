@@ -81,7 +81,7 @@ IA.prototype.elegir  =  function ( orden , carta) {
         var media = 0, alta = 0, baja = 0;
         
         for(var i = 0; i < cartas.length; i++)
-            if (cartas[i].valor <= 7 )
+            if (cartas[i].valor <= 6 )
                 baja++;
             else if (cartas[i].valor  <= 10)
                 media++;
@@ -111,7 +111,6 @@ IA.prototype.truco = function (resp , ultimo) {
     var clasif = this.clasificarCartas(this.cartasEnMano);
     // Tener en cuenta la carta que jugue
 	var mediaalta = clasif.alta + clasif.media;
-	this.estrategiaDeJuego = this.estrategiaClasica();
 	
 	
 	/*if(posiblesCartas !== null)
@@ -262,6 +261,7 @@ IA.prototype.truco = function (resp , ultimo) {
 				return '';
 			case 1:
 				if (this.gane(0) > 0){//gane primera, el humano todavia no jugo la segunda carta
+					this.estrategiaDeJuego = this.estrategia1;
 					if(clasif.alta === 1)
 						return '';
 					if(clasif.alta >= 1)
@@ -471,15 +471,17 @@ IA.prototype.truco = function (resp , ultimo) {
 	
 	IA.prototype.jugarCarta =  function () {
 		
-		var indice = this.estrategiaDeJuego;
+		if(this.estrategiaDeJuego === null)
+			this.estrategiaDeJuego = this.estrategiaClasica;
+		
+		var indice = this.estrategiaDeJuego();
 
 		var carta = this.cartasEnMano[indice];
 		//_log.innerHTML = '<b>' + this.nombre + ' juega un :</b> ' + carta.getNombre() + '<br /> ' + _log.innerHTML ;
 		this.cartasJugadas.push(carta);
 		this.cartasEnMano.splice(indice,1);
 		return carta;
-	}	
-
+	}
 	//------------------------------------------------------
 	// Diferentes estrategias para jugar las cartas
 	//------------------------------------------------------
@@ -498,4 +500,17 @@ IA.prototype.truco = function (resp , ultimo) {
 				indice = this.elegir(0);
 		}
 		return indice;
+	}
+	
+	//estrategia de prueba:
+	//se usa en la segunda mano
+	//
+	IA.prototype.estrategia1 = function(){
+		var indice = -1;
+		var clasif = this.clasificarCartas(this.cartasEnMano);
+		
+		if(clasif.baja === 1 && clasif.media === 1){
+			return (this.cartasEnMano[0].valor < this.cartasEnMano[1].valor) ?  1 : 0;
+		}
+		return this.estrategiaClasica();
 	}

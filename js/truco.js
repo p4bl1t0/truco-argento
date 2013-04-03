@@ -489,6 +489,7 @@
 	Ronda.prototype.iniciar = function () {
 		this.equipoPrimero.manos = 0;
 		this.equipoSegundo.manos = 0;
+		this.equipoSegundo.jugador.estrategiaDeJuego = null;
 		var c = this.repartirCartas(this.equipoPrimero.jugador, this.equipoSegundo.jugador);
 		if(this.equipoPrimero.esMano) {
 			this.equipoPrimero.esSuTurno = true;
