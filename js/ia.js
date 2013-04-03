@@ -4,13 +4,14 @@
  * 
  *******************************************************************
 */ 
-
 IA.prototype = new Jugador();
 
 IA.prototype.constructor = IA;
 
+
 function IA () {
     this.esHumano =  false;
+    this.estrategiaDeJuego = null;
 }
 //------------------------------------------------------------------
 //  Elige la carta mas baja o la mas alta segun los datos 
@@ -23,14 +24,14 @@ IA.prototype.elegir  =  function ( orden , carta) {
     for ( var c in this.cartasEnMano ) {
 		var v_act = this.cartasEnMano[c].valor;
 		switch (orden) {
-			case 0:
+			case 0://busca la carta mas chica
 				if ( v_act < valor ) {valor = v_act ; indice = c; }
 				break;
 			case 1:
-				if (carta === null) {
+				if (carta === null) {//busca la mas grande
 					if ( v_act > valor ) {valor = v_act ; indice = c; } 
 				} 
-				else {
+				else {//busca la mas chica que mate lo que jugo el otro
 					if ( v_act < valor && v_act > carta.valor  ) {valor = v_act ; indice = c; } 
 				}
 				break;
@@ -110,7 +111,8 @@ IA.prototype.truco = function (resp , ultimo) {
     var clasif = this.clasificarCartas(this.cartasEnMano);
     // Tener en cuenta la carta que jugue
 	var mediaalta = clasif.alta + clasif.media;
-	var p = getRandomReal(0,1);
+	this.estrategiaDeJuego = this.estrategiaClasica();
+	
 	
 	/*if(posiblesCartas !== null)
 		for(var i = 0; i < posiblesCartas.length; i++)
@@ -469,23 +471,31 @@ IA.prototype.truco = function (resp , ultimo) {
 	
 	IA.prototype.jugarCarta =  function () {
 		
-		var primero = (_rondaActual.jugadasEnMano === 0) ? true : false;
-		var carta = null;
-		if (!primero)
-			carta = _rondaActual.equipoPrimero.jugador.cartasJugadas.getLast();
-		//determinarGanadorMano
+		var indice = this.estrategiaDeJuego;
 
-		if (_rondaActual.numeroDeMano === 1 && _rondaActual.equipoSegundo.manos > _rondaActual.equipoPrimero.manos) {
-			var indice = this.elegir(0);
-		} else {		
-			var indice = this.elegir(1,carta);
-			if (indice < 0 ) 
-				indice = this.elegir(0);
-		}
-		
 		var carta = this.cartasEnMano[indice];
 		//_log.innerHTML = '<b>' + this.nombre + ' juega un :</b> ' + carta.getNombre() + '<br /> ' + _log.innerHTML ;
 		this.cartasJugadas.push(carta);
 		this.cartasEnMano.splice(indice,1);
 		return carta;
 	}	
+
+	//------------------------------------------------------
+	// Diferentes estrategias para jugar las cartas
+	//------------------------------------------------------
+	IA.prototype.estrategiaClasica = function(){
+		var primero = (_rondaActual.jugadasEnMano === 0) ? true : false;
+		var carta = null;
+		if (!primero)
+			carta = _rondaActual.equipoPrimero.jugador.cartasJugadas.getLast();
+
+		//determinarGanadorMano
+		if (_rondaActual.numeroDeMano === 1 && _rondaActual.equipoSegundo.manos > _rondaActual.equipoPrimero.manos) {
+			var indice = this.elegir(0);
+		} else {
+			var indice = this.elegir(1,carta);
+			if (indice < 0 ) 
+				indice = this.elegir(0);
+		}
+		return indice;
+	}
