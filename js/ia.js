@@ -262,10 +262,16 @@ IA.prototype.truco = function (resp , ultimo) {
 			case 1:
 				if (this.gane(0) > 0){//gane primera, el humano todavia no jugo la segunda carta
 					this.estrategiaDeJuego = this.estrategia1;
-					if(clasif.alta === 1)
-						return '';
-					if(clasif.alta >= 1)
+					
+					if (mediaalta >= 2)   return 'T';
+					if (clasif.alta >= 1) return 'T'; 
+					return '';
+					
+					/*if(clasif.alta === 1)
 						return 'T';
+					if(clasif.alta >= 1)
+						return 'T';*/
+						
 				}
 				else{//perdi primera, el humano ya jugo
 					return '';
@@ -298,10 +304,12 @@ IA.prototype.truco = function (resp , ultimo) {
 				if(this.gane(0) > 0){//gane primera, todavia no jugo nadie
 					switch(ultimo){
 						case 'T':
-							if(clasif.alta >= 1)
+							if (clasif.alta >= 1)
 								return 'RT';
 							return '';
 						case 'RT':
+							if (clasif.alta >= 1)
+								return 'V';
 							return '';
 						default://esta en vale 4, no se puede hacer nada mas
 							return '';
@@ -310,8 +318,11 @@ IA.prototype.truco = function (resp , ultimo) {
 				else{//perdi primera, el humano ya jugo
 					switch(ultimo){
 						case 'T':
-						case 'RT':
-							return '';
+							if (clasif.alta > 1)  return 'RT';
+							
+						case 'RT':   // Con dos altas deberia ganar casi seguro 
+							if (clasif.alta > 1)  return 'V';
+							
 						default://esta en vale 4, no se puede hacer nada mas
 							return '';
 					}
