@@ -17,12 +17,28 @@ function IA () {
 //  Elige la carta mas baja o la mas alta segun los datos 
 //------------------------------------------------------------------
 
-IA.prototype.elegir  =  function ( orden , carta) {
+
+IA.prototype.clasificar  = function(carta){
+            if (carta.valor <= 6 )
+                return 0;
+            else if (carta.valor  <= 10)
+                return 1;
+            else
+                return 2;
+}
+// El tercer argumento sirve para elegir una carta de cierta clisificacion
+// 0 - Baja
+// 1 - Media
+// 2 - Alta
+IA.prototype.elegir  =  function ( orden , carta , claseC) {
 	var indice = -1;
+	if (carta === undefined) carta = null;
 	var valor = (orden === 0) ? 99 : (carta === null ? -1: 99) ;
-    
+	
     for ( var c in this.cartasEnMano ) {
 		var v_act = this.cartasEnMano[c].valor;
+		var ctipo = this.clasificar(this.cartasEnMano[c]);
+		if ( claseC !== undefined &&  claseC !==  ctipo ) continue;
 		switch (orden) {
 			case 0://busca la carta mas chica
 				if ( v_act < valor ) {valor = v_act ; indice = c; }
@@ -37,6 +53,7 @@ IA.prototype.elegir  =  function ( orden , carta) {
 				break;
 		}
 	}
+	
 	return indice;
 }
    
@@ -94,6 +111,14 @@ IA.prototype.laMato = function (carta)
 {
 	for(var i = 0; i < this.cartasEnMano.length; i++)
 		if(carta.valor < this.cartasEnMano[i].valor)
+			return true;
+	return false;
+}
+
+IA.prototype.masBaja = function (carta)
+{
+	for(var i = 0; i < this.cartasEnMano.length; i++)
+		if(carta.valor > this.cartasEnMano[i].valor)
 			return true;
 	return false;
 }
