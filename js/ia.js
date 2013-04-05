@@ -13,9 +13,7 @@ function IA () {
     this.esHumano =  false;
     this.estrategiaDeJuego = null;
 }
-//------------------------------------------------------------------
-//  Elige la carta mas baja o la mas alta segun los datos 
-//------------------------------------------------------------------
+
 
 
 IA.prototype.clasificar  = function(carta){
@@ -26,6 +24,10 @@ IA.prototype.clasificar  = function(carta){
             else
                 return 2;
 }
+
+//------------------------------------------------------------------
+//  Elige la carta mas baja o la mas alta segun los datos 
+//------------------------------------------------------------------
 // El tercer argumento sirve para elegir una carta de cierta clisificacion
 // 0 - Baja
 // 1 - Media
@@ -34,7 +36,7 @@ IA.prototype.elegir  =  function ( orden , carta , claseC) {
 	var indice = -1;
 	if (carta === undefined) carta = null;
 	var valor = (orden === 0) ? 99 : (carta === null ? -1: 99) ;
-	
+
     for ( var c in this.cartasEnMano ) {
 		var v_act = this.cartasEnMano[c].valor;
 		var ctipo = this.clasificar(this.cartasEnMano[c]);
@@ -90,7 +92,6 @@ IA.prototype.elegir  =  function ( orden , carta , claseC) {
         var e1 = _rondaActual.equipoPrimero;
         var e2 = _rondaActual.equipoSegundo;
         
-        //alert('estaMano: ' + nroMano);
         return (e2.jugador.cartasJugadas[nroMano].valor - e1.jugador.cartasJugadas[nroMano].valor);
     }
 
@@ -106,13 +107,22 @@ IA.prototype.elegir  =  function ( orden , carta , claseC) {
                 alta++;
         return {alta:alta, media:media, baja:baja};
     }
-    
+
+//---------------------------------------------------------------
+//Devuelve el indice de la carta en mano con menor valor capaz de matar .
+//la carta pasada por argumento. Si no la puede matar, devuelve -1
+//---------------------------------------------------------------    
 IA.prototype.laMato = function (carta)
 {
+	var indice = -1, valor = 99;
+	
 	for(var i = 0; i < this.cartasEnMano.length; i++)
 		if(carta.valor < this.cartasEnMano[i].valor)
-			return true;
-	return false;
+			if(this.cartasEnMano[i].valor < valor){
+				valor = this.cartasEnMano[i].valor;
+				indice = i;
+			}
+	return indice;
 }
 
 IA.prototype.masBaja = function (carta)
@@ -164,28 +174,64 @@ IA.prototype.truco = function (resp , ultimo) {
 								else
 									return 'N';
 							case 'V':
+								if(mediaalta >= 1)
+									return 'S';
 								return 'N';
 						}
 					}
 					else{//ya jugue, el humano no
 						switch(ultimo){//a rellenar
 							case 'T':
+								//si me la re banco en 3ra le retruco
+								if(this.cartasEnMano[0].valor >= 11)
+									return 'RT';
+								//sino, veo que jugue y que me queda
 								if(miMesa.valor >= 11)
 									return 'RT';
 								if(miMesa.valor >= 7){
-									if(this.cartasEnMano[0].valor >= 11)
+									if(this.cartasEnMano[0].valor >= 10)
 										return 'RT';
-									else if(this.cartasEnMano[0].valor >= 6)
+									else
 										return 'S';
-									else return 'N';
 								}
-								if(this.cartasEnMano[0].valor >= 12)
-									return 'RT';
-								if(this.cartasEnMano[0].valor >= 9)
-									return 'S';
+								else{//jugue menos de un 12 en segunda
+									if(this.cartasEnMano[0].valor >= 6)
+										return 'S';
+								}
 								return 'N';
 							case 'RT':
+								//si me la re banco en 3ra le retruco
+								if(this.cartasEnMano[0].valor >= 11)
+									return 'V';
+								//sino, veo que jugue y que me queda
+								if(miMesa.valor >= 11)
+									return 'V';
+								if(miMesa.valor >= 9)//jugue entre un 2 y un 3 en segunda
+									return 'S';
+								if(miMesa.valor >= 6)//jugue entre un 11 y un ancho falso en segunda
+									if(this.cartasEnMano[0].valor >= 9)
+										return 'S';
+								//jugue de un 11 para abajo en segunda
+								if(this.cartasEnMano[0].valor >= 9)
+									return 'S';
+								else
+									return 'N';
+								return 'N';
 							case 'V':
+								//si me la re banco en 3ra le doy el quiero
+								if(this.cartasEnMano[0].valor >= 11)
+									return 'S';
+								if(miMesa.valor >= 11)
+									return 'S';
+								if(miMesa.valor >= 9)//jugue entre un 2 y un 3 en segunda
+									return 'S';
+								if(miMesa.valor >= 6)//jugue entre un 11 y un ancho falso en segunda
+									if(this.cartasEnMano[0].valor >= 9)
+										return 'S';
+								if(this.cartasEnMano[0].valor >= 9)	//jugue de un 11 para abajo en segunda
+									return 'S';
+								else
+									return 'N';
 								return 'N';
 						}
 					}
@@ -196,15 +242,28 @@ IA.prototype.truco = function (resp , ultimo) {
 							case 'T':
 								if(mediaalta === 2)
 									return 'S';
+								return 'N';
 							case 'RT':
+								if(clasif.alta === 2)
+									return 'S';
+								return 'N'
 							case 'V':
+								if(clasif.alta === 2)
+									return 'S';
 								return 'N';
 						}
 					}
 					else{//el humano ya jugo. Estoy en medio de un retruque
+						var mato = this.laMato(suMesa);
 						switch(ultimo){//a rellenar
-							case 'RT':
+							case 'RT'://por ahora hago lo mismo que en vale4
 							case 'V':
+								if(mato === -1)
+									return 'N';
+								if(clasif.alta === 2)
+									return (ultimo === 'V') ? 'S' : 'RT';
+								if(this.clasif(this.cartasEnMano[1 - mato]) >= 1)
+									return 'S';
 								return 'N';
 							}
 					}
@@ -231,15 +290,21 @@ IA.prototype.truco = function (resp , ultimo) {
 						switch(ultimo){//a rellenar
 							case 'T':
 								if(posiblesCartas !== undefined && posiblesCartas !== null){
-									if(posiblesCartas.length === 0 && posiblesCartas[0].valor < miMesa.valor)
+									if(posiblesCartas.length === 1 && posiblesCartas[0].valor < miMesa.valor)
 										return 'S';
 									else
 										return 'N'
 									}
-								if(miMesa.valor >= 10)
+								if(miMesa.valor >= 12)
+									return 'RT';
+								if(miMesa.valor >= 9)
 									return 'S';
 								return 'N';
 							case 'RT':
+								if(miMesa.valor >= 13)
+									'V';
+								if(miMesa.valor >= 12)
+									'S';
 							case 'V':
 								return 'S';
 						}
@@ -291,12 +356,6 @@ IA.prototype.truco = function (resp , ultimo) {
 					if (mediaalta >= 2)   return 'T';
 					if (clasif.alta >= 1) return 'T'; 
 					return '';
-					
-					/*if(clasif.alta === 1)
-						return 'T';
-					if(clasif.alta >= 1)
-						return 'T';*/
-						
 				}
 				else{//perdi primera, el humano ya jugo
 					return '';
