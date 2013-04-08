@@ -583,16 +583,34 @@ IA.prototype.truco = function (resp , ultimo) {
 	IA.prototype.estrategiaClasica = function(){
 		var primero = (_rondaActual.jugadasEnMano === 0) ? true : false;
 		var carta = null;
-		if (!primero)
+		var nro = _rondaActual.numeroDeMano ;
+		var indice = -1;
+		var clasif = this.clasificarCartas(this.cartasEnMano);
+		if (!primero) {
 			carta = _rondaActual.equipoPrimero.jugador.cartasJugadas.getLast();
-
-		//determinarGanadorMano
-		if (_rondaActual.numeroDeMano === 1 && _rondaActual.equipoSegundo.manos > _rondaActual.equipoPrimero.manos) {
-			var indice = this.elegir(0);
-		} else {
 			var indice = this.elegir(1,carta);
 			if (indice < 0 ) 
 				indice = this.elegir(0);
+		
+		} else {
+			switch (nro) {
+				case 0: 
+					if (clasif.alta >= 2) indice = this.elegir(0);  // Dejo pasar primera, tengo dos altas
+					else if ( clasif.alta + clasif.media >= 2 ) indice = this.elegir(0 , null , 1);  // Juego la carta del medio
+					else  indice = this.elegir(1);   // Voy con lo mas alto de todo (aunque no sea muy alto)
+					break;
+				case 1:
+					if ( _rondaActual.equipoSegundo.manos > _rondaActual.equipoPrimero.manos) 
+						indice = this.elegir(0);
+					else 
+						indice = this.elegir(1);
+					
+					break;
+				case 2:
+					indice = 0;
+					break;
+		
+			}
 		}
 		return indice;
 	}
