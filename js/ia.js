@@ -370,7 +370,7 @@ IA.prototype.truco = function (resp , ultimo) {
 					if(posiblesCartas !== null && posiblesCartas.length === 1 && posiblesCartas[0].valor < this.cartasEnMano[0].valor)
 						return 'T';
 					if(suMesa.valor < 10)//si tiene menos de un 3 le canto
-						return 'T';
+						return 'T';       /*  Esto no estaria bueno que pase siempre   (?)  */ 
 				}
 				else{//perdi primera, gane segunda, el humano no jugo todavia
 					if (this.cartasEnMano[0].valor >= 10) return 'T'; 
@@ -601,8 +601,13 @@ IA.prototype.truco = function (resp , ultimo) {
 			switch (nro) {
 				case 0: 
 					if (clasif.alta >= 2) indice = this.elegir(0);  // Dejo pasar primera, tengo dos altas
-					else if ( clasif.alta + clasif.media >= 2 ) indice = this.elegir(0 , null , 1);  // Juego la carta del medio
-					else  indice = this.elegir(1);   // Voy con lo mas alto de todo (aunque no sea muy alto)
+					
+					else if ( clasif.alta  >= 1 ) {  // Juego la carta del medio
+					
+							indice = this.elegir(1 , null , 1);  
+							if (indice < 0 ) indice = this.elegir(1 , null , 0); 
+					
+					} else  indice = this.elegir(1);   // Voy con lo mas alto de todo (aunque no sea muy alto)
 					break;
 				case 1:
 					if ( _rondaActual.equipoSegundo.manos > _rondaActual.equipoPrimero.manos) 
