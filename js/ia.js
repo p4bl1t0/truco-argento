@@ -373,6 +373,7 @@ IA.prototype.truco = function (resp , ultimo) {
 						return 'T';
 				}
 				else{//perdi primera, gane segunda, el humano no jugo todavia
+					if (this.cartasEnMano[0].valor >= 10) return 'T'; 
 					return '';
 				}
 				return '';
@@ -589,9 +590,13 @@ IA.prototype.truco = function (resp , ultimo) {
 		if (!primero) {
 			carta = _rondaActual.equipoPrimero.jugador.cartasJugadas.getLast();
 			var indice = this.elegir(1,carta);
-			if (indice < 0 ) 
+			if (indice < 0 ) {
 				indice = this.elegir(0);
-		
+			} else {
+				if (nro === 0 && this.cartasEnMano[indice].valor >= 11 && carta.valor <= 7   ) //  No quemo me carta alta, espero a segundo
+					indice = this.elegir(0);
+			}
+			
 		} else {
 			switch (nro) {
 				case 0: 
