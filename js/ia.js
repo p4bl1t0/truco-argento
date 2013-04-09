@@ -235,9 +235,29 @@ IA.prototype.truco = function (resp , ultimo) {
 						}
 					}
 					
+					
 				} 
-				else if ( this.gane(0)  === 0 ) {  // Pardamos primeraaa
-						return 'S';	
+				else if ( this.gane(0)  === 0 ) {  // Pardamos primeraaa  y Me cantoooooo
+						if (suMesa === null && posiblesCartas !== null) suMesa = posiblesCartas[0];  // No es lo ideal en todos los casos. 
+						
+						if (miMesa !== null && miMesa.valor < 8) return 'N';               // me retruco a una carta baja
+						if (suMesa !==  null && this.laMato(suMesa) === -1 ) return 'N';   // Vi su carta y pierdo
+						switch(ultimo){//a rellenar
+							case 'T':
+								if (suMesa !==  null && this.laMato(suMesa) > -1 ) return 'RT';   // si gano retruco
+								if(mediaalta > 0)
+									return 'S';
+								return 'N';
+							case 'RT':
+								if (suMesa !==  null && this.laMato(suMesa) > -1 ) return 'V';    // si gano retruco
+								if(clasif.alta > 0)
+									return 'S';
+								return 'N'
+							case 'V':
+								if(clasif.alta > 0)
+									return 'S';
+								return 'N';
+						}
 					
 				}
 				else{//perdi primera
@@ -316,7 +336,26 @@ IA.prototype.truco = function (resp , ultimo) {
 					}
 				} 
 				else if (this.gane(1) === 0 ) {  // Si o si Doble parda
-						return 'S';      //  Devuelvo si pòr el momento
+						if (suMesa === null && posiblesCartas !== null) suMesa = posiblesCartas[0];  // No es lo ideal en todos los casos. 
+						
+						if (miMesa !== null && miMesa.valor < 8) return 'N';               // me retruco a una carta baja
+						if (suMesa !==  null && this.laMato(suMesa) === -1 ) return 'N';   // Vi su carta y pierdo
+						switch(ultimo){//a rellenar
+							case 'T':
+								if (suMesa !==  null && this.laMato(suMesa) > -1 ) return 'RT';   // si gano retruco
+								if(mediaalta > 0)
+									return 'S';
+								return 'N';
+							case 'RT':
+								if (suMesa !==  null && this.laMato(suMesa) > -1 ) return 'V';    // si gano retruco
+								if(clasif.alta > 0)
+									return 'S';
+								return 'N'
+							case 'V':
+								if(clasif.alta > 0)
+									return 'S';
+								return 'N';
+						}
 						
 				}		
 				else{//gane primera, perdi segunda
@@ -373,8 +412,11 @@ IA.prototype.truco = function (resp , ultimo) {
 					
 				}
 				else if (this.gane(0) === 0 ) {  // Parda en primera    
+					//if (suMesa === null && posiblesCartas !== null) suMesa = posiblesCartas[0];  // No es lo ideal en todos los casos. 
+					if (suMesa !==  null && this.laMato(suMesa) > -1 )   return 'T';  
+					if (suMesa !==  null &&  suMesa.valor <= 7 ) return 'T';       
+					if (mediaalta > 0 ) return 'T';
 					return '';
-					
 				} 
 				else {//perdi primera, el humano ya jugo
 					if(this.laMato(suMesa) !== -1 ){
@@ -398,12 +440,15 @@ IA.prototype.truco = function (resp , ultimo) {
 						return 'T';
 					if(posiblesCartas !== null && posiblesCartas.length > 0 && this.laMato(posiblesCartas[0]) !== -1)
 						return 'T';
-					if(ran <= 33 && suMesa.valor < 9)//si tiene menos de un 3 le canto
+					if(ran <= 33 && suMesa.valor < 8)//si tiene menos de un 1 le canto
 						return 'T';       /*  Esto no estaria bueno que pase siempre   (?)  */ 
 					return '';	
 					
 				} 
 				else if ( this.gane(1) === 0)  { // Doble parda
+					if (suMesa !==  null && this.laMato(suMesa) > -1 ) return 'T';  
+					if (suMesa !==  null &&  suMesa.valor <= 7 ) return 'T';      
+					if (mediaalta > 0 ) return 'T';
 					return '';
 					
 				}
@@ -476,7 +521,9 @@ IA.prototype.truco = function (resp , ultimo) {
 					
 				}
 				else if (this.gane(0) === 0 ) {   // Pardamos Primeraaaaa 
-					return '';	
+					if (suMesa !==  null && this.laMato(suMesa) > -1 ) return (ultimo === 'T' ? 'RT' : 'V'  ) ;   
+					if (clasif.alta > 0 ) return (ultimo === 'T' ? 'RT' : 'V'  );
+					return '';
 					 
 				}
 				else{//perdi primera, el humano ya jugo
@@ -526,6 +573,8 @@ IA.prototype.truco = function (resp , ultimo) {
 					}
 				}
 				else if (this.gane(1) === 0 ) {  // Doble Pardaaaa	
+					if (suMesa !==  null && this.laMato(suMesa) > -1 ) return (ultimo === 'T' ? 'RT' : 'V'  ) ;   
+					if (clasif.alta > 0 ) return (ultimo === 'T' ? 'RT' : 'V'  );
 					return '';
 				}
 				else{//gane primera y perdi segunda, el humano ya jugo
@@ -709,13 +758,13 @@ IA.prototype.truco = function (resp , ultimo) {
 					} else  indice = this.elegir(1);   // Voy con lo mas alto de todo (aunque no sea muy alto)
 					break;
 				case 1:
-					if ( _rondaActual.equipoSegundo.manos > _rondaActual.equipoPrimero.manos) 
+					if ( _rondaActual.equipoSegundo.manos > _rondaActual.equipoPrimero.manos)  // Gane primera juego bajo
 						indice = this.elegir(0);
-					else 
+					else   // Perdi o empate...tengo que tirar una alta 
 						indice = this.elegir(1);
 					
 					break;
-				case 2:
+				case 2:  // No tengo nada mas por jugar
 					indice = 0;
 					break;
 		
