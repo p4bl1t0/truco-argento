@@ -347,7 +347,8 @@ IA.prototype.truco = function (resp , ultimo) {
 								if(miMesa.valor >= 12)
 									'S';
 							case 'V':
-								return 'S';
+								if(miMesa.valor >= 13) return 'S';  
+								else return 'N';  // Me cantan y ya vieron mis cartas!! 
 						}
 					}
 				} 
@@ -387,6 +388,9 @@ IA.prototype.truco = function (resp , ultimo) {
 									return 'S';
 								return 'N';
 							case 'RT':
+								if(this.cartasEnMano[0].valor >= 11)
+									return 'S';
+								return 'N';
 							case 'V':
 								if(this.cartasEnMano[0].valor >= 13)
 									return 'S';
@@ -413,7 +417,9 @@ IA.prototype.truco = function (resp , ultimo) {
 		var mato = null;
 		switch(nroMano){
 			case 0:
+				if (mediaalta >= 3) return 'T'; // Estoy re armado 
 				return '';
+				
 			case 1:
 				if (this.gane(0) > 0){ //gane primera, el humano todavia no jugo la segunda carta
 					this.estrategiaDeJuego = this.estrategia1;
@@ -444,7 +450,7 @@ IA.prototype.truco = function (resp , ultimo) {
 					}
 					else{
 						if(suMesa.valor <= 4 && posiblesCartas.length > 0 && posiblesCartas[0].valor <= 6)
-							return 'T';
+							return 'T';   // Para asustar nomas porque ya perdi (*)
 						return '';
 					}
 				}
@@ -512,7 +518,7 @@ IA.prototype.truco = function (resp , ultimo) {
 					else{//soy mano, todavia no jugo nadie
 						switch(ultimo){
 							case 'RT':
-								if(clasif.alta === 2)
+								if(clasif.alta  >= 2)
 									return 'V';
 								if(mediaalta >= 2)
 									return '';
@@ -546,24 +552,16 @@ IA.prototype.truco = function (resp , ultimo) {
 					if(this.laMato(suMesa) !== -1){
 						switch(ultimo){
 							case 'T':
-								if (clasif.media >= 1)
-									return 'RT';
-								if (clasif.alta >= 1)  return 'RT';
-									return '';
+								if (mediaalta >= 2 && clasif.alta >= 1)	  return 'RT';
 								return '';
 							case 'RT':
-								if (clasif.alta >= 1)
-									return 'V';
-								if (clasif.media >= 1)
-									return '';
-								if (clasif.mediaalta >= 1)
-									return 'V'
+								if (clasif.alta >= 2) return 'V';
 								return '';
 							default:
 								return '';
 						}
 					}
-					else{
+					else{    // Ya perdi la ronda, no queda otra que mentir o irme (*)
 						switch(ultimo){
 							case 'T':
 							case 'RT':
