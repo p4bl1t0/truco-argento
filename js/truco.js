@@ -4,6 +4,7 @@
 	var _rondaActual = null;
 	var _partidaActual = null;
 	var audio = null;
+	var limitePuntaje = 15;
 	
 	//Funciones Primitivas
 	function getRandomInt (min, max) {
@@ -1269,7 +1270,7 @@
 	//------------------------------------------------------------------
 	
 	Partida.prototype.continuar = function () {
-		var limitePuntaje = parseInt($('.rbd-ptos-partida:checked').val(), 10);
+		limitePuntaje = parseInt($('.rbd-ptos-partida:checked').val(), 10);
 	    while (this.equipoPrimero.puntos < limitePuntaje && this.equipoSegundo.puntos < limitePuntaje) {
 			var _$tbl = $('#game-score');
 			_log.innerHTML =  "";

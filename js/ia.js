@@ -4,60 +4,62 @@
  * 
  *******************************************************************
 */ 
-IA.prototype = new Jugador();
+	IA.prototype = new Jugador();
 
-IA.prototype.constructor = IA;
-
-
-function IA () {
-    this.esHumano =  false;
-    this.estrategiaDeJuego = null;
-}
+	IA.prototype.constructor = IA;
 
 
-
-IA.prototype.clasificar  = function(carta){
-            if (carta.valor <= 6 )
-                return 0;
-            else if (carta.valor  <= 10)
-                return 1;
-            else
-                return 2;
-}
-
-//------------------------------------------------------------------
-//  Elige la carta mas baja o la mas alta segun los datos 
-//------------------------------------------------------------------
-// El tercer argumento sirve para elegir una carta de cierta clisificacion
-// 0 - Baja
-// 1 - Media
-// 2 - Alta
-IA.prototype.elegir  =  function ( orden , carta , claseC) {
-	var indice = -1;
-	if (carta === undefined) carta = null;
-	var valor = (orden === 0) ? 99 : (carta === null ? -1: 99) ;
-
-    for ( var c in this.cartasEnMano ) {
-		var v_act = this.cartasEnMano[c].valor;
-		var ctipo = this.clasificar(this.cartasEnMano[c]);
-		if ( claseC !== undefined &&  claseC !==  ctipo ) continue;
-		switch (orden) {
-			case 0://busca la carta mas chica
-				if ( v_act < valor ) {valor = v_act ; indice = c; }
-				break;
-			case 1:
-				if (carta === null) {//busca la mas grande
-					if ( v_act > valor ) {valor = v_act ; indice = c; } 
-				} 
-				else {//busca la mas chica que mate lo que jugo el otro
-					if ( v_act < valor && v_act > carta.valor  ) {valor = v_act ; indice = c; } 
-				}
-				break;
-		}
+	function IA () {
+		this.esHumano =  false;
+		this.estrategiaDeJuego = null;
 	}
 
-	return indice;
-}
+	//------------------------------------------------------------------
+    // Clasifica una carta en baja, media, alta 
+    //------------------------------------------------------------------
+
+	IA.prototype.clasificar  = function(carta){
+				if (carta.valor <= 6 )
+					return 0;
+				else if (carta.valor  <= 10)
+					return 1;
+				else
+					return 2;
+	}
+
+	//------------------------------------------------------------------
+	//  Elige la carta mas baja o la mas alta segun los datos 
+	//------------------------------------------------------------------
+	// El tercer argumento sirve para elegir una carta de cierta clisificacion
+	// 0 - Baja
+	// 1 - Media
+	// 2 - Alta
+	IA.prototype.elegir  =  function ( orden , carta , claseC) {
+		var indice = -1;
+		if (carta === undefined) carta = null;
+		var valor = (orden === 0) ? 99 : (carta === null ? -1: 99) ;
+
+		for ( var c in this.cartasEnMano ) {
+			var v_act = this.cartasEnMano[c].valor;
+			var ctipo = this.clasificar(this.cartasEnMano[c]);
+			if ( claseC !== undefined &&  claseC !==  ctipo ) continue;
+			switch (orden) {
+				case 0://busca la carta mas chica
+					if ( v_act < valor ) {valor = v_act ; indice = c; }
+					break;
+				case 1:
+					if (carta === null) {//busca la mas grande
+						if ( v_act > valor ) {valor = v_act ; indice = c; } 
+					} 
+					else {//busca la mas chica que mate lo que jugo el otro
+						if ( v_act < valor && v_act > carta.valor  ) {valor = v_act ; indice = c; } 
+					}
+					break;
+			}
+		}
+
+		return indice;
+	}
    
    //------------------------------------------------------------------
    // LLeva estadistica de los cantos del humano
@@ -84,8 +86,10 @@ IA.prototype.elegir  =  function ( orden , carta , claseC) {
             }
         return;
     }
+    
+    
 	//------------------------------------------------------------------
-	//  Determina el canto del truco
+	//  Determina si gane un determinado numero de mano
 	//------------------------------------------------------------------
 	
     IA.prototype.gane = function(nroMano){
@@ -94,6 +98,10 @@ IA.prototype.elegir  =  function ( orden , carta , claseC) {
         
         return (e2.jugador.cartasJugadas[nroMano].valor - e1.jugador.cartasJugadas[nroMano].valor);
     }
+    
+	//------------------------------------------------------------------
+    // Clasifica las cartas en baja, media, alta
+    //------------------------------------------------------------------	
 
     IA.prototype.clasificarCartas = function(cartas){
         var media = 0, alta = 0, baja = 0;
@@ -108,30 +116,38 @@ IA.prototype.elegir  =  function ( orden , carta , claseC) {
         return {alta:alta, media:media, baja:baja};
     }
 
-//---------------------------------------------------------------
-//Devuelve el indice de la carta en mano con menor valor capaz de matar .
-//la carta pasada por argumento. Si no la puede matar, devuelve -1
-//---------------------------------------------------------------    
-IA.prototype.laMato = function (carta)
-{
-	var indice = -1, valor = 99;
-	
-	for(var i = 0; i < this.cartasEnMano.length; i++)
-		if(carta.valor < this.cartasEnMano[i].valor)
-			if(this.cartasEnMano[i].valor < valor){
-				valor = this.cartasEnMano[i].valor;
-				indice = i;
-			}
-	return indice;
-}
+	//---------------------------------------------------------------
+	//Devuelve el indice de la carta en mano con menor valor capaz de matar .
+	//la carta pasada por argumento. Si no la puede matar, devuelve -1
+	//---------------------------------------------------------------    
+	IA.prototype.laMato = function (carta)
+	{
+		var indice = -1, valor = 99;
+		
+		for(var i = 0; i < this.cartasEnMano.length; i++)
+			if(carta.valor < this.cartasEnMano[i].valor)
+				if(this.cartasEnMano[i].valor < valor){
+					valor = this.cartasEnMano[i].valor;
+					indice = i;
+				}
+		return indice;
+	}
 
-IA.prototype.masBaja = function (carta)
-{
-	for(var i = 0; i < this.cartasEnMano.length; i++)
-		if(carta.valor > this.cartasEnMano[i].valor)
-			return true;
-	return false;
-}
+	//------------------------------------------------------------------
+    // Determina si tengo una carta mas baja 
+    //------------------------------------------------------------------
+
+	IA.prototype.masBaja = function (carta)
+	{
+		for(var i = 0; i < this.cartasEnMano.length; i++)
+			if(carta.valor > this.cartasEnMano[i].valor)
+				return true;
+		return false;
+	}
+
+	//------------------------------------------------------------------
+    // Determina el canto del truco (muy larga la funcion jeje ) 
+    //------------------------------------------------------------------
 
 IA.prototype.truco = function (resp , ultimo) {
 	var e1 = _rondaActual.equipoPrimero;
@@ -612,7 +628,7 @@ IA.prototype.truco = function (resp , ultimo) {
 		var posible = this.prob.CartaVista(ultimaCarta);
 		var valor = this.prob.ponderarPuntos(puntos);
 		var ran = getRandomInt(0,100);
-		var loQueFalta = 30 - ((p1 > p2) ? p1 : p2);
+		var loQueFalta = limitePuntaje - ((p1 > p2) ? p1 : p2);
         var puntosNoQuerido = _rondaActual.calcularPuntosEnvido().perdedor;
 
         if ( p2 === 29 ){
@@ -709,6 +725,7 @@ IA.prototype.truco = function (resp , ultimo) {
             return rta;
         }
     }
+    
 	//------------------------------------------------------------------
 	// LA maquina elige una carta para jugar
 	//------------------------------------------------------------------
@@ -726,6 +743,7 @@ IA.prototype.truco = function (resp , ultimo) {
 		this.cartasEnMano.splice(indice,1);
 		return carta;
 	}
+	
 	//------------------------------------------------------
 	// Diferentes estrategias para jugar las cartas
 	//------------------------------------------------------
