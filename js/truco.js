@@ -491,6 +491,8 @@
 		this.equipoPrimero.manos = 0;
 		this.equipoSegundo.manos = 0;
 		this.equipoSegundo.jugador.estrategiaDeJuego = null;
+		this.equipoPrimero.jugador.puntosGanadosEnvido = 0;
+		this.equipoSegundo.jugador.puntosGanadosEnvido = 0;
 		var c = this.repartirCartas(this.equipoPrimero.jugador, this.equipoSegundo.jugador);
 		if(this.equipoPrimero.esMano) {
 			this.equipoPrimero.esSuTurno = true;

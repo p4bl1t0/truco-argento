@@ -210,8 +210,13 @@ IA.prototype.truco = function (resp , ultimo) {
 										return 'S';
 								}
 								else{//jugue menos de un 12 en segunda
-									if(this.cartasEnMano[0].valor >= 6)
-										return 'S';
+									var ran = getRandomInt(0,100);
+									if(this.cartasEnMano[0].valor >= 6){
+										if(this.puntosGanadosEnvido >= 3 && ran <= 66)//si gane bastante en el envido me quedo con
+											return 'N';                               //el 3x1 en la mayoria de los casos
+										else
+											return 'S';
+									}
 								}
 								return 'N';
 							case 'RT':
@@ -330,6 +335,7 @@ IA.prototype.truco = function (resp , ultimo) {
 					else{//ya jugue, el humano no
 						switch(ultimo){//a rellenar
 							case 'T':
+								var ran = getRandomInt(0,100);
 								if(posiblesCartas !== undefined && posiblesCartas !== null){
 									if(posiblesCartas.length > 0 && posiblesCartas[0].valor < miMesa.valor)
 										return 'S';
@@ -340,6 +346,12 @@ IA.prototype.truco = function (resp , ultimo) {
 									return 'RT';
 								if(miMesa.valor >= 9)
 									return 'S';
+								if(miMesa.valor >= 6){//si tengo entre un 12 y un ancho falso
+									if(this.puntosGanadosEnvido >= 3)//3x1 negocio
+										return 'N';
+									else if(ran <= 33)
+										return 'S';
+								}
 								return 'N';
 							case 'RT':
 								if(miMesa.valor >= 13)
@@ -386,6 +398,16 @@ IA.prototype.truco = function (resp , ultimo) {
 									return 'RT';
 								if(this.cartasEnMano[0].valor >= 9)
 									return 'S';
+								if(this.cartasEnMano[0].valor >= 7){
+									if(this.puntosGanadosEnvido >= 3)//3x1 negocio
+										return 'N';
+									else {//pequenia heuristica: si le costo mucho matar una carta media baja me la juego porque tiene algo mas
+										if((this.cartasJugadas[0].valor - e1.jugador.cartasJugadas[0].valor > 3) && e1.jugador.cartasJugadas[0].valor > 7)
+											return 'N';
+										else
+											return 'S';
+									}
+								}
 								return 'N';
 							case 'RT':
 								if(this.cartasEnMano[0].valor >= 11)
