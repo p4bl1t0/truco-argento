@@ -526,9 +526,6 @@
 					$('.label-cantos--SN').hide();
 					$(".canto").hide();
 					$(".cantot").hide();
-					
-					
-
 					//  Envido del Humano
 					if (this.puedeEnvido === true){
 						$(".canto").show();
@@ -545,35 +542,45 @@
                             $(".boton").hide();
 							_rondaActual.continuarRonda();
 						
-						} );}
+						});
+					}
 					//  Truco del humano
 					if (this.puedeTruco === null || this.puedeTruco === this.equipoEnTurno ){
                         var ultimo = this.truco.getLast();
-                        switch(ultimo){
-						case 'T':
-							$('#reTruco').show();
-							break;
-						case 'RT':
-							$('#vale4').show();
-							break;
-						case 'V':
-							break;
-						default:
-							$('#Truco').show();
-							break;
-					}
-                        $(".cantot").unbind('click').click(function(event){
+                        switch (ultimo) {
+							case 'T':
+								$('#reTruco').show();
+								break;
+							case 'RT':
+								$('#vale4').show();
+								break;
+							case 'V':
+								break;
+							default:
+								$('#Truco').show();
+								break;
+						}
+						$(".cantot").unbind('click').click(function(event){
 							//alert("AAA");
-                            var c = $(this).attr('data-truco');
-                            _rondaActual.truco.push(c);
-                            _rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
-                            _rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador, c);
-                            _rondaActual.enEspera = false;
-                            $(".boton").hide();
-                            $(this).unbind('click');
-                            _rondaActual.continuarRonda();})
+							var c = $(this).attr('data-truco');
+							_rondaActual.truco.push(c);
+							_rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
+							_rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador, c);
+							_rondaActual.enEspera = false;
+							$(".boton").hide();
+							$(this).unbind('click');
+							_rondaActual.continuarRonda();
+						});
                     }
-                    
+                    $('#IrAlMazo').unbind('click').click( function (event) {
+						if (_rondaActual.equipoEnvido !== null) {
+							_rondaActual.jugarEnvido(false);
+						}
+						var puntosTruco = _rondaActual.calcularPuntosTruco();
+						_rondaActual.equipoSegundo.puntos += puntosTruco.querido;
+					    _rondaActual.continuarRonda(_rondaActual.equipoSegundo);
+						_rondaActual.logCantar(_rondaActual.equipoPrimero.jugador, 'M');
+					});
                     //  Jugar una carta del Humano
 					$('.naipe-humano').unbind('click.jugar').not('.naipe-jugado').bind('click.jugar', function (event) {
 					    event.preventDefault();
@@ -809,8 +816,11 @@
 	// Flujo central de la ronda
 	//------------------------------------------------------------------
 	
-	Ronda.prototype.continuarRonda = function () {
+	Ronda.prototype.continuarRonda = function (argWinner) {
 		var ganador = null;
+		if(argWinner !== null && argWinner !== undefined) {
+			ganador = argWinner;
+		}
 		while (ganador === null) {
 			if(this.jugadasEnMano === 2 || this.noQuiso != null) {
 				if (this.jugadasEnMano === 2) {
@@ -847,7 +857,7 @@
 			}
 			
 			var juntarNaipes = function () {
-			$('.naipe').remove();
+				$('.naipe').remove();
 			}
 			
 			setTimeout(juntarNaipes, 2000);
@@ -993,6 +1003,9 @@
 			case "N":
 				mensaje += "No Quiero";
 				break;		
+			case "M":
+				mensaje += "Me voy al mazo.";
+				break;			
 			default :
 				mensaje += canto ;
 				break;
@@ -1153,7 +1166,7 @@
 		var e1 = this.equipoPrimero;
 		var e2 = this.equipoSegundo;
         var puntosTruco = this.calcularPuntosTruco();
-        if (this.noQuiso !== null){
+        if (this.noQuiso !== null) {
             var equipoGanador = this.equipoEnEspera(this.noQuiso);
             equipoGanador.puntos += puntosTruco.noQuerido;
             return equipoGanador.jugador;
