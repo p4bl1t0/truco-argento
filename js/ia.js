@@ -449,7 +449,7 @@ IA.prototype.truco = function (resp , ultimo) {
 						return '';
 					}
 					else{
-						if(suMesa.valor <= 4 && posiblesCartas.length > 0 && posiblesCartas[0].valor <= 6)
+						if(posiblesCartas !== null && suMesa.valor <= 4 && posiblesCartas.length > 0 && posiblesCartas[0].valor <= 6)
 							return 'T';   // Para asustar nomas porque ya perdi (*)
 						return '';
 					}
