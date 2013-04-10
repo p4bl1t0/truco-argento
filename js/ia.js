@@ -144,7 +144,24 @@
 				return true;
 		return false;
 	}
+	
+	//------------------------------------------------------------------
+    // Evalua el canto
+    //------------------------------------------------------------------
 
+	IA.prototype.ptoEnJuego = function (ultimo) {
+		switch(ultimo){  
+			case 'T' : 
+				return {now:2 , next: 'RT' , pnext : 3 } ;
+			case 'RT':
+				return {now:3 , next: 'V' , pnext : 4 };
+			case 'V':
+				return {now:4 , next: '' , pnext : 4  };
+			default:	
+				return {now:1 , next: 'T' , pnext : 2  };
+		}		
+	}
+	
 	//------------------------------------------------------------------
     // Determina el canto del truco (muy larga la funcion jeje ) 
     //------------------------------------------------------------------
@@ -166,17 +183,32 @@ IA.prototype.truco = function (resp , ultimo) {
     // Tener en cuenta la carta que jugue
 	var mediaalta = clasif.alta + clasif.media;
 	
+	var p1 =  e1.puntos; 
+	var p2 =  e2.puntos;
+	var diff = p2 - p1;
+	var loQueFalta = limitePuntaje - ((p1 > p2) ? p1 : p2);
+	var t = this.ptoEnJuego(ultimo);
 	
     if (resp) {  // Me cantaron, tengo que responder
         switch(nroMano){
             case 0:
-                if (clasif.alta >= 2) return 'RT';
-                if (e2.jugador.puntosGanadosEnvido < 2 && (mediaalta) >= 2 && clasif.alta >= 1)
-                    return 'S';
-                if (clasif.media === 3) return 'S';
-                if (clasif.baja === 3) return 'RT'; //esto no deberia pasar siempre
-                return 'N';
-                break;
+				var ran = getRandomInt(0,100);
+				switch(ultimo){
+					case 'T':
+						if (e2.jugador.puntosGanadosEnvido < 2 && (mediaalta) >= 2 && clasif.alta >= 1)
+							return 'S';
+						if (clasif.baja === 3 && ran <= 50) return 'RT'; //esto no deberia pasar siempre
+						if (mediaalta >= 1 && diff > 0  ) return 'S';
+						return 'N';
+					case 'RT':
+					case 'V':
+						if (clasif.alta >= 2) return 'S';
+						if ((mediaalta) >= 2  && diff > 3 ) return 'S';
+						if (e2.jugador.puntosGanadosEnvido >= 2) return 'N';
+						return 'N';
+					break;
+				}
+                                
             case 1:
                 if(this.gane(0) > 0){//si tengo primera
 					if(miMesa === null){//todavia no jugue -> el humano tampoco, estoy en un retruque
@@ -271,12 +303,13 @@ IA.prototype.truco = function (resp , ultimo) {
 								return 'N';
 							case 'RT':
 								if (suMesa !==  null && this.laMato(suMesa) > -1 ) return 'V';    // si gano retruco
-								if(clasif.alta > 0)
-									return 'S';
+								if (miMesa !== null && miMesa.valor >= 11) return 'S';
+								if (miMesa !== null && miMesa.valor >= 13) return 'V';
+								if(clasif.alta > 0) return 'S';
 								return 'N'
 							case 'V':
-								if(clasif.alta > 0)
-									return 'S';
+								if (miMesa !== null && miMesa.valor >= 11) return 'S';
+								if(clasif.alta > 0)	return 'S';
 								return 'N';
 						}
 					
@@ -439,7 +472,7 @@ IA.prototype.truco = function (resp , ultimo) {
 		var mato = null;
 		switch(nroMano){
 			case 0:
-				if (mediaalta >= 3) return 'T'; // Estoy re armado 
+				if (mediaalta >= 3) return 'T'; // Estoy re armado  (o eso pienso)
 				return '';
 				
 			case 1:
@@ -455,7 +488,7 @@ IA.prototype.truco = function (resp , ultimo) {
 					return '';
 					
 				}
-				else if (this.gane(0) === 0 ) {  // Parda en primera    
+				else if (this.gane(0) === 0 ) {  // Parda en primera (No juegue todavia)   
 					//if (suMesa === null && posiblesCartas !== null) suMesa = posiblesCartas[0];  // No es lo ideal en todos los casos. 
 					if (suMesa !==  null && this.laMato(suMesa) > -1 )   return 'T';  
 					if (suMesa !==  null &&  suMesa.valor <= 7 ) return 'T';       
@@ -642,16 +675,16 @@ IA.prototype.truco = function (resp , ultimo) {
         var puntos = this.getPuntosDeEnvido(this.cartas);
 		var p1 =  _rondaActual.equipoPrimero.puntos; 
 		var p2 =  _rondaActual.equipoSegundo.puntos;
-		
 		var diff = p1 - p2;
+		var loQueFalta = limitePuntaje - ((p1 > p2) ? p1 : p2);
 		
 		var posible = this.prob.CartaVista(ultimaCarta);
 		var valor = this.prob.ponderarPuntos(puntos);
 		var ran = getRandomInt(0,100);
-		var loQueFalta = limitePuntaje - ((p1 > p2) ? p1 : p2);
+		
         var puntosNoQuerido = _rondaActual.calcularPuntosEnvido().perdedor;
 
-        if ( p2 === 29 ){
+        if ( p2 >= limitePuntaje - 2  ){
             if (ultimo !== null && ultimo !== undefined)
                 switch(ultimo){ //si me cantaron algo respondo con la falta
                     case 'E':
@@ -664,7 +697,7 @@ IA.prototype.truco = function (resp , ultimo) {
                  // de ultima 
                     var pRE = this.prob.promedioPuntos(this.envidoS)  ;
 					var pRE =  pRE === null ? 0 : -(15 -  pRE) ; 
-					if (ran + diff <  valor  * 150 ) return   'F'  ;
+					if (ran + diff <  valor  * 100 ) return   'F'  ;
 					else return '';
                 }
         }
