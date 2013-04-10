@@ -198,8 +198,9 @@ IA.prototype.truco = function (resp , ultimo) {
 						if (e2.jugador.puntosGanadosEnvido < 2 && (mediaalta) >= 2 && clasif.alta >= 1)
 							return 'S';
 						if (clasif.baja === 3 && ran <= 50) return 'RT'; //esto no deberia pasar siempre
+						if (mediaalta >= 2 && diff < 0  ) return 'RT';    // Te trato de correr
 						if (mediaalta >= 1 && diff > 0  ) return 'S';
-						return 'N';
+						return ( ran < 66 ? 'N' : 'S' );                  //  (*) Rompe con la reglas staticas
 					case 'RT':
 					case 'V':
 						if (clasif.alta >= 2) return 'S';
