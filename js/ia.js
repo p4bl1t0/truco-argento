@@ -209,7 +209,6 @@ IA.prototype.truco = function (resp , ultimo) {
 						return 'N';
 					break;
 				}
-                                
             case 1:
                 if(this.gane(0) > 0){//si tengo primera
 					if(miMesa === null){//todavia no jugue -> el humano tampoco, estoy en un retruque
@@ -388,12 +387,21 @@ IA.prototype.truco = function (resp , ultimo) {
 								}
 								return 'N';
 							case 'RT':
+								var ran = getRandomInt(0,100);
 								if(miMesa.valor >= 13)
-									'V';
-								if(miMesa.valor >= 12)
-									'S';
+									return 'V';
+								if(miMesa.valor >= 9) //con un 2 le doy
+									return 'S';
+								if(miMesa.valor >= 6){//si tengo entre un 12 y un ancho falso
+									if(this.puntosGanadosEnvido >= 3)//3x2 negocio
+										return 'N';
+									else if(ran <= 33)
+										return 'S';
+								}
+								return 'N';
 							case 'V':
-								if(miMesa.valor >= 13) return 'S';  
+								if(miMesa.valor >= 13) return 'S'; 
+								
 								else return 'N';  // Me cantan y ya vieron mis cartas!! 
 						}
 					}
@@ -444,12 +452,29 @@ IA.prototype.truco = function (resp , ultimo) {
 								}
 								return 'N';
 							case 'RT':
+								var ran = getRandomInt(0,100);
+								if(this.cartasEnMano[0].valor >= 13)
+									return 'V';
 								if(this.cartasEnMano[0].valor >= 11)
 									return 'S';
+								if(this.cartasEnMano[0].valor >= 8) //tengo un 2 o un 3 por ahora doy el quiero
+									return 'S';
+								if(this.cartasEnMano[0].valor >= 7){
+									if(this.puntosGanadosEnvido >= 3)//3x2 negocio
+										return 'N';
+									else {//pequenia heuristica: si le costo mucho matar una carta media baja
+									      // 2/3 de las vecesme la juego porque tiene algo mas
+										if((this.cartasJugadas[0].valor - e1.jugador.cartasJugadas[0].valor > 3) && e1.jugador.cartasJugadas[0].valor > 7)
+											if(ran <= 66) return 'N'; 
+											else return 'S';
+									}
+								}
+								
 								return 'N';
 							case 'V':
-								if(this.cartasEnMano[0].valor >= 13)
+								if(this.cartasEnMano[0].valor >= 11)
 									return 'S';
+								
 								return 'N';
 						}
 						
