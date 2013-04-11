@@ -326,6 +326,7 @@ IA.prototype.truco = function (resp , ultimo) {
 									return 'S';
 								return 'N'
 							case 'V':
+
 								if(clasif.alta === 2)
 									return 'S';
 								return 'N';
@@ -339,7 +340,7 @@ IA.prototype.truco = function (resp , ultimo) {
 								if(mato === -1)
 									return 'N';
 								if(clasif.alta === 2)
-									return (ultimo === 'V') ? 'S' : 'RT';
+									return (ultimo === 'V') ? 'S' : 'V';
 								if(this.clasificar(this.cartasEnMano[1 - mato]) >= 1)
 									return 'S';
 								return 'N';
