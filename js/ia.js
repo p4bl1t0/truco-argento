@@ -792,7 +792,7 @@ IA.prototype.truco = function (resp , ultimo) {
 		var indice = this.estrategiaDeJuego();
 
 		var carta = this.cartasEnMano[indice];
-		//_log.innerHTML = '<b>' + this.nombre + ' juega un :</b> ' + carta.getNombre() + '<br /> ' + _log.innerHTML ;
+		_log.innerHTML = '<b>' + this.nombre + ' juega un :</b> ' + carta.getNombre() + '<br /> ' + _log.innerHTML ;
 		this.cartasJugadas.push(carta);
 		this.cartasEnMano.splice(indice,1);
 		return carta;

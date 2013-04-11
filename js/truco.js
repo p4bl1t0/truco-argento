@@ -5,6 +5,8 @@
 	var _partidaActual = null;
 	var audio = null;
 	var limitePuntaje = 15;
+	var Debug = false;
+	
 	
 	//Funciones Primitivas
 	function getRandomInt (min, max) {
@@ -211,7 +213,7 @@
 	Jugador.prototype.jugarCarta =  function (indice) {
 		if(indice !== null && indice !== undefined && this.cartasEnMano.length > indice) {
 			var carta = this.cartasEnMano[indice];
-			//_log.innerHTML = '<b>' + this.nombre + ' juega un :</b> ' + carta.getNombre() + '<br /> ' + _log.innerHTML ;
+			_log.innerHTML = '<b>' + this.nombre + ' juega un :</b> ' + carta.getNombre() + '<br /> ' + _log.innerHTML ;
 			this.cartasJugadas.push(carta);
 			this.cartasEnMano.splice(indice,1);
 			return carta;
@@ -505,9 +507,11 @@
 		
 		//_log.innerHTML = '<strong>Número de cartas en el mazo:</strong> ' + c +' naipes. <br />' + _log.innerHTML ;
 		this.equipoPrimero.jugador.sayCartasEnMano();
-		_log.innerHTML = this.equipoPrimero.jugador.nombre + ' puntos para el envido: ' + this.equipoPrimero.jugador.getPuntosDeEnvido(this.equipoPrimero.jugador.cartas) + '<br />' + _log.innerHTML ;
+		if (Debug) 
+			_log.innerHTML = this.equipoPrimero.jugador.nombre + ' puntos para el envido: ' + this.equipoPrimero.jugador.getPuntosDeEnvido(this.equipoPrimero.jugador.cartas) + '<br />' + _log.innerHTML ;
 		this.equipoSegundo.jugador.sayCartasEnMano();
-		_log.innerHTML = this.equipoSegundo.jugador.nombre + ' puntos para el envido: ' + this.equipoSegundo.jugador.getPuntosDeEnvido(this.equipoSegundo.jugador.cartas) + '<br />'  + _log.innerHTML ;
+		if (Debug)
+			_log.innerHTML = this.equipoSegundo.jugador.nombre + ' puntos para el envido: ' + this.equipoSegundo.jugador.getPuntosDeEnvido(this.equipoSegundo.jugador.cartas) + '<br />'  + _log.innerHTML ;
 		//---------------------------------
 		$('.game-deck').find('.card').css('background-image', 'none');
 		this.continuarRonda();
@@ -935,7 +939,7 @@
 					p += 1;
 					break;
 				case 'F':
-					g = 30 - (this.equipoPrimero.puntos < this.equipoSegundo.puntos ? this.equipoSegundo.puntos : this.equipoPrimero.puntos)  ;          // GANA EL PARTIDO POR EL MOMENTO
+					g = limitePuntaje - (this.equipoPrimero.puntos < this.equipoSegundo.puntos ? this.equipoSegundo.puntos : this.equipoPrimero.puntos)  ;          // GANA EL PARTIDO POR EL MOMENTO
 					p += 1; 
 					break;
 			}
@@ -1055,7 +1059,8 @@
 				j2.cartas.push(maso[index]);
 				j2.cartasEnMano.push(maso[index]);
                 _rondaActual = this;
-				_log.innerHTML = '<b>' + j2.nombre + ' tiene un :</b> ' + maso[index].getNombre() + '('  + maso[index].probGanar()  + ') <br /> ' + _log.innerHTML ;
+                if (Debug)
+					_log.innerHTML = '<b>' + j2.nombre + ' tiene un :</b> ' + maso[index].getNombre() + '('  + maso[index].probGanar()  + ') <br /> ' + _log.innerHTML ;
 			} else {
 				j1.cartas.push(maso[index]);
 				j1.cartasEnMano.push(maso[index]);
@@ -1126,12 +1131,12 @@
 		var j1 = this.equipoPrimero.jugador;
 		var j2 = this.equipoSegundo.jugador;
         
-        _log.innerHTML = '<b> Promedio para el truco: ' + j2.prob.promedioTruco(j2.cartasEnMano) + '<br/>' + _log.innerHTML;
+        //_log.innerHTML = '<b> Promedio para el truco: ' + j2.prob.promedioTruco(j2.cartasEnMano) + '<br/>' + _log.innerHTML;
 		if (j1.cartasJugadas[indice].valor > j2.cartasJugadas[indice].valor) {
 			if(acumularPuntos) {
 				this.equipoPrimero.manos = this.equipoPrimero.manos + 1;
 			}
-			_log.innerHTML = 'Resultado de la mano: <i>GANADOR ' + this.equipoPrimero.jugador.nombre + '</i><br />'  + _log.innerHTML ;
+			_log.innerHTML = '<i> GANA ' + this.equipoPrimero.jugador.nombre + '</i><br />'  + _log.innerHTML ;
 			// Deberíamos buscar una forma mas elegante
 			$('.game-deck').find('.card-' + (this.numeroDeMano * 2 + 1).toString() ).css('z-index', 100);
 			$('.game-deck').find('.card-' + (this.numeroDeMano * 2 + 2).toString() ).css('z-index', 0);
@@ -1145,14 +1150,14 @@
 				
 				$('.game-deck').find('.card-' + ((this.numeroDeMano + 1) * 2).toString() ).css('z-index', 100);
 				$('.game-deck').find('.card-' + ((this.numeroDeMano + 1) * 2 - 1).toString() ).css('z-index', 0);
-				_log.innerHTML = 'Resultado de la mano: <i>GANADOR ' + this.equipoSegundo.jugador.nombre + '</i><br />'  + _log.innerHTML ;
+				_log.innerHTML = ' <i> GANA ' + this.equipoSegundo.jugador.nombre + '</i><br />'  + _log.innerHTML ;
 				return this.equipoSegundo;
 			} else {
 				if(acumularPuntos) {
 					this.equipoPrimero.manos = this.equipoPrimero.manos + 1;
 					this.equipoSegundo.manos = this.equipoSegundo.manos + 1;
 				}
-				_log.innerHTML = 'Resultado de la mano: <i>PARDA</i><br />' + _log.innerHTML ;
+				_log.innerHTML = '<i>PARDA</i><br />' + _log.innerHTML ;
 				if(this.equipoPrimero.esMano) {
 					return this.equipoPrimero;
 				} else {
@@ -1278,7 +1283,7 @@
 			_log.innerHTML =  "";
 			_$tbl.find('.player-one-points').html(this.equipoPrimero.puntos);
 			_$tbl.find('.player-two-points').html(this.equipoSegundo.puntos);
-			_log.innerHTML = '<hr />' + '<br /> Puntaje parcial : ' + this.equipoPrimero.jugador.nombre + ' ' + this.equipoPrimero.puntos + ' - '+ this.equipoSegundo.jugador.nombre + ' ' + this.equipoSegundo.puntos + '<br /> ' + '<hr />' + _log.innerHTML ;
+			//_log.innerHTML = '<hr />' + '<br /> Puntaje parcial : ' + this.equipoPrimero.jugador.nombre + ' ' + this.equipoPrimero.puntos + ' - '+ this.equipoSegundo.jugador.nombre + ' ' + this.equipoSegundo.puntos + '<br /> ' + '<hr />' + _log.innerHTML ;
 			if(this.equipoSegundo.esMano) {
 				this.equipoSegundo.esMano = false;
 				this.equipoPrimero.esMano = true;
@@ -1286,12 +1291,13 @@
 				this.equipoSegundo.esMano = true;
 				this.equipoPrimero.esMano = false;
 			}
-			$('#player-one').find('.player-name').html("Envido: " + this.equipoSegundo.jugador.prob.promedioPuntos(this.equipoSegundo.jugador.envidoS) +  " - " +
+			if (Debug)
+				$('#player-one').find('.player-name').html("Envido: " + this.equipoSegundo.jugador.prob.promedioPuntos(this.equipoSegundo.jugador.envidoS) +  " - " +
  			                                           "EE: " + this.equipoSegundo.jugador.prob.promedioPuntos(this.equipoSegundo.jugador.revire) +  " - "  + 
 			                                           "RE: " + this.equipoSegundo.jugador.prob.promedioPuntos(this.equipoSegundo.jugador.realEnvido) +  " - " +
 			                                           "TODO: " + this.equipoSegundo.jugador.prob.promedioPuntos(this.equipoSegundo.jugador.realEnvido.concat(this.equipoSegundo.jugador.revire,this.equipoSegundo.jugador.envidoS))  
 			                                          );
-           
+				
             var ronda = new Ronda(this.equipoPrimero, this.equipoSegundo);
 			ronda.iniciar();
 			if(ronda.enEspera) {
@@ -1350,6 +1356,10 @@
 		
 	});
 	
+	$('#cbxDebug').change(function () {
+		Debug = $(this).is(':checked');
+	});
+	$("#cbxDebug").attr('checked',false);
 
 		
 //})(window);
