@@ -712,6 +712,7 @@
 				_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"S");
 				_rondaActual.equipoTruco = null;
 				_rondaActual.enEspera = false;
+				_rondaActual.puedeTruco = _rondaActual.equipoPrimero;
 				$(this).unbind('click');
 				_rondaActual.continuarRonda();
 			});
