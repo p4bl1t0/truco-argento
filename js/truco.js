@@ -1353,14 +1353,45 @@
 		audio.fx['V'] = a;
 		//Comienza la acción
 		_partidaActual = new Partida();
-		_partidaActual.iniciar('Pablo', 'Computadora');
+		_partidaActual.iniciar('Jugador 1', 'Computadora');
+
+		//Events Bindings
+		var _inputsName = $('.human-name');
+		var _nAnterior = '';
+		var _nNuevo = '';
+		var _estabaEditando = false;
+		_inputName.keydown(function(event) {
+			if (event.keyCode === 13) {
+				event.preventDefault();
+			}
+		});
+		_inputName.keyup(function(event) {
+			if (event.keyCode !== 13) {
+				var name = $(this).html();
+				var _other = _inputsName.not(this);
+				if(!_estabaEditando) {
+					_nAnterior = _other.html();
+					_estabaEditando = true;
+				}
+				_other.html(name);
+				_nNuevo = _partidaActual.equipoPrimero.jugador.nombre = name;
+			} else {
+				event.preventDefault();
+			}
+		});
+		_inputName.blur(function() {
+			_log.innerHTML = "<br />" + _nAnterior + " cambia su nombre a: " + _nNuevo + _log.innerHTML ;
+			_estabaEditando = false;
+		});
+
+		$('#cbxDebug').change(function () {
+			Debug = $(this).is(':checked');
+		}).attr('checked',false);
 		
 	});
 	
-	$('#cbxDebug').change(function () {
-		Debug = $(this).is(':checked');
-	});
-	$("#cbxDebug").attr('checked',false);
+	
+
 
 		
 //})(window);
