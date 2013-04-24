@@ -1364,12 +1364,12 @@
 		var _nAnterior = '';
 		var _nNuevo = '';
 		var _estabaEditando = false;
-		_inputName.keydown(function(event) {
+		_inputsName.keydown(function(event) {
 			if (event.keyCode === 13) {
 				event.preventDefault();
 			}
 		});
-		_inputName.keyup(function(event) {
+		_inputsName.keyup(function(event) {
 			if (event.keyCode !== 13) {
 				var name = $(this).html();
 				var _other = _inputsName.not(this);
@@ -1383,7 +1383,7 @@
 				event.preventDefault();
 			}
 		});
-		_inputName.blur(function() {
+		_inputsName.blur(function() {
 			_log.innerHTML = "<br />" + _nAnterior + " cambia su nombre a: " + _nNuevo + _log.innerHTML ;
 			_estabaEditando = false;
 		});
