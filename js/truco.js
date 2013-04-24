@@ -604,7 +604,11 @@
 						var delay = function () { 
 							$elementoPosicionador.css('background-image', $naipe.css('background-image'));
 							$elementoPosicionador.css('background-position', $naipe.css('background-position'));
-							$naipe.attr('style', 'display:none!important;');
+							//$naipe.attr('style', 'display:none!important;');
+							$naipe.parent().addClass('naipe-animated');
+							setTimeout(function() {
+								$naipe.parent().addClass('naipe-remove');
+							}, 150);
 						}
 						
 						setTimeout(delay, 1000);

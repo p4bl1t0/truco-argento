@@ -582,10 +582,12 @@ ul li {
 }
 .player {
 	width:100%;
-	text-align:center;
 }
 .player-cards {
-	padding:0;
+	display: table;
+    padding: 0;
+    text-align: left;
+    margin: 0 auto;
 }
 .player-name {
 	font-size:1em;
@@ -593,6 +595,7 @@ ul li {
 }
 .player-content {
 	position:relative;
+    text-align: center;
 }
 .player-voice {
 	position:absolute;
@@ -606,6 +609,20 @@ ul li {
 	-ms-transition: all .5s linear;
 	-o-transition: all .5s linear;
 	transition: all .5s linear;
+}
+.naipe-animated {
+    background: transparent;
+    width: 98px;
+    -webkit-transition: all  .25s linear;
+    -moz-transition: all .25s linear;
+    -ms-transition: all .25s linear;
+    -o-transition: all .25s linear;
+    transition: all .25s linear;
+}
+.naipe-remove {
+    width:0!important;
+    /*margin:0!important;*/
+    overflow: hidden;
 }
 .recien-cantado {
 	background-color: #C10000;
