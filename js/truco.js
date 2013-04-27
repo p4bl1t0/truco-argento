@@ -646,13 +646,23 @@
                     
                     // La maquina decide si cantar el truco
                     if (this.puedeTruco === null || this.puedeTruco === this.equipoEnTurno ){
-						var c = this.equipoSegundo.jugador.truco(false , _rondaActual.truco.getLast());
-						if (c !== '') {
-							audio.play(c);	
-							_rondaActual.truco.push(c);
+						var cantoMaquina = this.equipoSegundo.jugador.truco(false , _rondaActual.truco.getLast());
+						if (cantoMaquina !== '') {
+							var delay = 0;
+							_playerVoice = $('#player-two').find('.player-voice');
+							if(_playerVoice.hasClass('recien-cantado')) {
+								delay = 1500;
+							}
+							setTimeout(function() {
+								audio.play(cantoMaquina);
+								_rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador, cantoMaquina);
+
+							}, delay);
+							//audio.play(c);	
+							_rondaActual.truco.push(cantoMaquina);
 							_rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
                             _rondaActual.puedeTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoEnTurno);
-							_rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador, c);
+							//_rondaActual.logCantar(_rondaActual.equipoEnTurno.jugador, c);
 							return ;
 						}
                     }
@@ -688,10 +698,10 @@
 	
     Ronda.prototype.decidirTruco = function(){
         if (this.equipoTruco.jugador.esHumano) {
-            $('.cantot').hide();
+            var _btnsCantoTruco = $('.cantot').hide();
             $('.boton').show();
-            var ultimo = this.truco.getLast();
-            switch(ultimo){
+            var ultimoCanto = this.truco.getLast();
+            switch(ultimoCanto){
                 case 'T':
                     $('#reTruco').show();
                     break;
@@ -702,7 +712,7 @@
             this.enEspera = true;
             _rondaActual = this;
             
-            $('.cantot').unbind('click').click(function (event){
+            _btnsCantoTruco.unbind('click').click(function (event){
                 var c = $(this).attr('data-truco');
 				_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,c);
 				_rondaActual.truco.push(c);
@@ -729,21 +739,22 @@
 				_rondaActual.continuarRonda();
 			});
         } else {
-			var c = this.equipoSegundo.jugador.truco(true , _rondaActual.truco.getLast());
-			audio.play(c);
-			switch (c) {
+			var cantoRespuesta = this.equipoSegundo.jugador.truco(true , _rondaActual.truco.getLast());
+			audio.play(cantoRespuesta);
+			_rondaActual.logCantar(_rondaActual.equipoTruco.jugador, cantoRespuesta);
+			switch (cantoRespuesta) {
 				case 'S': // Si quiero
-					_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"S");
+					//Saqué el logCantar afuera
 					_rondaActual.puedeTruco = _rondaActual.equipoSegundo;
                     _rondaActual.equipoTruco = null;
                     break;
 				case 'N': // No quiero
-					_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"N");
+					//_rondaActual.logCantar(_rondaActual.equipoTruco.jugador,"N");
 					_rondaActual.noQuiso = _rondaActual.equipoTruco;
                     break;
 				default:  // Re Truco
-					_rondaActual.logCantar(_rondaActual.equipoTruco.jugador, c);
-                    _rondaActual.truco.push(c);
+					//_rondaActual.logCantar(_rondaActual.equipoTruco.jugador, cantoRespuesta);
+                    _rondaActual.truco.push(cantoRespuesta);
 					_rondaActual.equipoTruco = _rondaActual.equipoEnEspera(_rondaActual.equipoTruco);
 					break;
 				}
@@ -755,12 +766,12 @@
 	
 	Ronda.prototype.decidirEnvido = function () {
 		if (this.equipoEnvido.jugador.esHumano) {   // Creo los bind para que el jugador decida
-			var ultimo = this.cantos.getLast();
-			$('.canto').hide();
-			$("#Quiero").show();
-			$("#NoQuiero").show();
+			var ultimoCanto = this.cantos.getLast();
+			var _canto      = $('.canto').hide();
+			var _quiero     = $("#Quiero").show();
+			var _noQuiero   = $("#NoQuiero").show();
 			$('.label-cantos--SN').show();
-			switch (ultimo) {
+			switch (ultimoCanto) {
 				case 'E':
 					$('#Envido').show();
 				case 'EE':
@@ -771,9 +782,9 @@
 			this.enEspera = true;
 			_rondaActual = this;
 			
-			$(".canto").unbind('click').click(function (event){ 
+			_canto.unbind('click').click(function (event){ 
 				var c = $(this).attr('data-envido');
-				if (ultimo === "E" && c === "E") c = "EE";
+				if (ultimoCanto === "E" && c === "E") c = "EE";
 				_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,c);
 				_rondaActual.cantos.push(c);
                 _rondaActual.quienCanto.push('H');
@@ -785,7 +796,7 @@
 			
 			
 			
-			$("#Quiero").unbind('click').click(function (event){
+			_quiero.unbind('click').click(function (event){
 				_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,"S");
 				_rondaActual.jugarEnvido(true);
 				_rondaActual.enEspera = false;
@@ -793,7 +804,7 @@
 				_rondaActual.continuarRonda();
 			});
 			
-			$("#NoQuiero").unbind('click').click(function (event)  {
+			_noQuiero.unbind('click').click(function (event)  {
 				_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,"N");
 				_rondaActual.jugarEnvido(false);
 				_rondaActual.enEspera = false;
@@ -808,11 +819,10 @@
             var accion = this.equipoSegundo.jugador.envido(this.cantos.getLast(),  this.calcularPuntosEnvido().ganador,carta);
             if(accion !== '') {
 				audio.play(accion);
-				if (accion === 'S' || accion === 'N'){
+				if (accion === 'S' || accion === 'N') {
 					_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,accion);
 					_rondaActual.jugarEnvido((accion === 'S') ? true : false);
-				}
-				else{
+				} else {
 					_rondaActual.cantos.push(accion);
                     _rondaActual.quienCanto.push('M');
 					_rondaActual.logCantar(_rondaActual.equipoEnvido.jugador,accion);
@@ -1022,13 +1032,15 @@
 				mensaje += canto ;
 				break;
 		}		
-		_playerVoice.html(mensaje).addClass('recien-cantado');
+		_playerVoice.html(mensaje).addClass('recien-cantado').attr('data-mensaje', mensaje);
 		setTimeout(function () {
-			_playerVoice.removeClass('recien-cantado');
+			_playerVoice.html('').removeClass('recien-cantado');
 			setTimeout(function () {
-				_playerVoice.html('');
+				if(_playerVoice.attr('data-mensaje') === mensaje) {
+					_playerVoice.html('');
+				}
 			}, 500);
-		}, 1500);
+		}, 1300);
 		_log.innerHTML = "<b>" + jugador.nombre + " canto: " + "</b> " + mensaje + '<br /> ' + _log.innerHTML ;
 		
 	}
