@@ -700,6 +700,7 @@
         if (this.equipoTruco.jugador.esHumano) {
             var _btnsCantoTruco = $('.cantot').hide();
             $('.boton').show();
+			$('.label-cantos--SN').show();
             var ultimoCanto = this.truco.getLast();
             switch(ultimoCanto){
                 case 'T':
@@ -1410,10 +1411,10 @@
 			_cajasCollapsables.find('.box-title').addClass('box-title--hidden').click(function(){
 				var _title = $(this);
 				if(_title.hasClass('box-title--hidden')) {
-					_title.removeClass('box-title--hidden');
+					_title.removeClass('box-title--hidden').children('img').addClass('title-rotate');
 					_title.parent().children('.box-content--hidden').removeClass('box-content--hidden');
 				} else {
-					_title.addClass('box-title--hidden');
+					_title.addClass('box-title--hidden').children('img').removeClass('title-rotate');
 					_title.parent().children('.box-content').addClass('box-content--hidden');
 				}
 			});

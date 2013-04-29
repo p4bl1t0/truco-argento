@@ -27,24 +27,8 @@
 						</tr>
 					</tbody>
 				</table>
-				<div id="configuraciones" class="box box--collapsable">
-					<div class="box-title">Configuraciones</div>
-					<div class="box-content">
-						<input type="checkbox" id="cbxAudio" checked="checked" />
-						<label for="cbxAudio">Sonido</label>
-						<input type="checkbox" id="cbxDebug" checked="" />
-						<label for="cbxDebug">Debug</label>
-						<div>
-							<div class="label">Jugar a:</div>
-							<input type="radio" value="15" id="rdb15" class="rbd-ptos-partida" checked="checked" name="pto" />
-							<label for="rdb10">15 pts.</label>
-							<input type="radio" value="30" id="rdb30" class="rbd-ptos-partida" name="pto" />
-							<label for="rdb10">30 pts.</label>
-						</div>
-					</div>
-				</div>
 				<div class="game-action">
-					<fieldset id="cantos">
+					<fieldset id="cantos" class="cantos-panel">
 						<legend>Cantos</legend>
 						<div class="label-cantos label-cantos--first">Para la mentira ...</div>
 						<input type="button" value="Envido"       id="Envido"         class="canto btn btn-primary"  data-envido='E' />
@@ -59,12 +43,29 @@
 						<input type="button" value="Quiero"    id="Quiero"   class="boton btn"/>
 						<input type="button" value="No Quiero" id="NoQuiero" class="boton btn" />
 					</fieldset>
-					
-					
 				</div>
+				<h2 class="log-title">Gameplay</h2>
 				<div id="log"></div>
 			</div>
 			<div class="game-main" style="position: relative;">
+				<div id="configuraciones" class="box box--collapsable">
+					<div class="box-title">
+						<img src="images/gear.png" alt="Acceso a las configuraciones" title="Acceso a las configuraciones" width="32" /> 
+					</div>
+					<div class="box-content">
+						<input type="checkbox" id="cbxAudio" checked="checked" />
+						<label for="cbxAudio">Sonido</label>
+						<input type="checkbox" id="cbxDebug" checked="" />
+						<label for="cbxDebug">Debug</label>
+						<div>
+							<div class="label">Jugar a:</div>
+							<input type="radio" value="15" id="rdb15" class="rbd-ptos-partida" checked="checked" name="pto" />
+							<label for="rdb10">15 pts.</label>
+							<input type="radio" value="30" id="rdb30" class="rbd-ptos-partida" name="pto" />
+							<label for="rdb10">30 pts.</label>
+						</div>
+					</div>
+				</div>
 				<div id="player-two" class="player">
 					<h3 class="player-content">
 						<span class="player-name"></span>

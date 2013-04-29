@@ -547,14 +547,13 @@ h1 {
 	height: 100%;
 	background: none repeat scroll 0 0 #111111;
     border-right: 2px solid white;
-    background: -webkit-gradient(linear, 50% 100%, 50% 0%, color-stop(0%, #142B0F), color-stop(100%, #000));
-	background: -webkit-linear-gradient(bottom, #142B0F,#000);
-	background: -moz-linear-gradient(bottom, #142B0F,#000);
-	background: -o-linear-gradient(bottom, #142B0F,#000);
-	background: -ms-linear-gradient(bottom, #142B0F,#000);
-	background: linear-gradient(bottom, #142B0F,#000);
+    background: -webkit-gradient(linear, 50% 100%, 50% 0%, color-stop(0%, #111), color-stop(100%, #222)); /*#142B0F*/
+	background: -webkit-linear-gradient(bottom, #111, #000);
+	background: -moz-linear-gradient(bottom, #111, #222);
+	background: -o-linear-gradient(bottom, #111, #222);
+	background: -ms-linear-gradient(bottom, #111, #222);
+	background: linear-gradient(bottom, #111, #222);
 }
-.game-panel fieldset,
 .game-panel .box {
 	width:80%;
 	margin:.5em auto 0;
@@ -563,8 +562,24 @@ h1 {
 	box-sizing: border-box;         /* Opera/IE 8+ */
     border: 1px solid #999;
 }
+.game-action {
+    position: absolute;
+    bottom: 0;
+    width: 35%;
+    left:0;
+}
+.game-action .cantos-panel {
+    width: 80%;
+    margin:.5em auto 0;
+    border: 1px solid #999;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+    border-bottom: 0;
+
+}
 .box-title {
-    padding: 1.5% 3%;
+    padding: .2em .2em 0 .2em;
     text-align: center;
     background: #333;
     border-bottom: 1px solid #999;
@@ -581,13 +596,40 @@ h1 {
 .box-content--hidden {
     padding: 0 3%;
     overflow: hidden;
+}
+#configuraciones .box-content {
+    width: 12em;
+    height: 4em;
+    background: #555;
+    -webkit-transition: all  .1s linear;
+    -moz-transition: all .1s linear;
+    -ms-transition: all .1s linear;
+    -o-transition: all .1s linear;
+    transition: all .1s linear;
+}
+#configuraciones .box-content--hidden {
+    width: 0;
     height: 0;
+}
+#configuraciones .title-rotate {
+    -webkit-animation: inifintyRotate 2s infinite linear; /* Safari 4+ */
+    -moz-animation:    inifintyRotate 2s infinite linear; /* Fx 5+ */
+    -o-animation:      inifintyRotate 2s infinite linear; /* Opera 12+ */
+    animation:         inifintyRotate 2s infinite linear;
 }
 .label-cantos {
 	margin:.8em 0 .4em;
 }
 .label-cantos--first {
 	margin:0 0 .4em;
+}
+#configuraciones {
+    position: fixed;
+    top: 0;
+    right: 0;
+    border: 1px solid #999;
+    border-top: 0;
+    border-right: 0;
 }
 .game-main {
 	display: inline-block;
@@ -605,6 +647,7 @@ ul li {
 }
 .player {
 	width:100%;
+    min-height: 180px;
 }
 .player-cards {
 	display: table;
@@ -707,9 +750,16 @@ ul li {
 	border:1px solid white;
 	width:50%;
 }
-#log {
+#log, .log-title {
 	overflow-y:auto;
-	height:80%;
+    width: 80%;
+    margin: .2em auto;
+}
+.log-title {
+    text-align: center;
+}
+#log {
+    height:50%;
 }
 .green {
 	color:green;
@@ -756,3 +806,19 @@ ul li {
 	top:0;
 	left:330px;
 }					
+@-webkit-keyframes inifintyRotate {
+  0%   { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+@-moz-keyframes inifintyRotate {
+  0%   { -moz-transform: rotate(0deg); }
+  100% { -moz-transform: rotate(360deg); }
+}
+@-o-keyframes inifintyRotate {
+  0%   { -o-transform: rotate(0deg); }
+  100% { -o-transform: rotate(360deg); }
+}
+@keyframes inifintyRotate {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
