@@ -891,9 +891,9 @@
 	// Determina quien gana el envido 
 	//------------------------------------------------------------------
 	
-	Ronda.prototype.jugarEnvido = function (d) {
+	Ronda.prototype.jugarEnvido = function (esQuerido) {
 		var puntos = this.calcularPuntosEnvido();
-		if (d) { // Dijo Quiero
+		if (esQuerido) { // Dijo Quiero
 			if (this.equipoPrimero.esMano) {
 				var primero = this.equipoPrimero; var p1 = primero.jugador.getPuntosDeEnvido(primero.jugador.cartas);
 				var segundo = this.equipoSegundo; var p2 = segundo.jugador.getPuntosDeEnvido(segundo.jugador.cartas);
@@ -903,7 +903,7 @@
 			}
 		
 			this.logCantar(primero.jugador , p1);
-			if (this.envidoStatsFlag && primero === this.equipoPrimero){ // Humano Canta primero, Registro los puntos
+			if (this.envidoStatsFlag && primero === this.equipoPrimero) { // Humano Canta primero, Registro los puntos
                     this.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, p1);
                     this.puntosGuardados = p1;
                     this.envidoStatsFlag = false;
@@ -911,7 +911,7 @@
 			
 			if (p2 > p1) {
 				this.logCantar(segundo.jugador , p2);
-				if (this.envidoStatsFlag && segundo === this.equipoPrimero){ // Humano canta para ganarme
+				if (this.envidoStatsFlag && segundo === this.equipoPrimero) { // Humano canta para ganarme
                     this.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, p2);
                     this.puntosGuardados = p2;
                     this.envidoStatsFlag = false;
@@ -919,7 +919,12 @@
                 segundo.jugador.puntosGanadosEnvido = puntos.ganador;
                 segundo.puntos += puntos.ganador;
                 
-			}else{ // Humano NO CANTA, NO REGISTRO NADA
+			} else { // Humano NO CANTA, NO REGISTRO NADA
+				this.logCantar(segundo.jugador , 'SB');
+				//Si segundo == MAQUINA entonces audio
+				if(!segundo.jugador.esHumano) {
+					audio.play('SB');
+				}
 				primero.puntos += puntos.ganador;
                 primero.jugador.puntosGanadosEnvido = puntos.ganador;
 			}
@@ -1028,7 +1033,10 @@
 				break;		
 			case "M":
 				mensaje += "Me voy al mazo.";
-				break;			
+				break;		
+			case "SB":
+				mensaje += "Son buenas.";
+				break;				
 			default :
 				mensaje += canto ;
 				break;
@@ -1368,6 +1376,10 @@
 		a.setAttribute("src","audio/vale-cuatro.wav");
 		a.load();
 		audio.fx['V'] = a;
+		a = new Audio();
+		a.setAttribute("src","audio/son-buenas.wav");
+		a.load();
+		audio.fx['SB'] = a;
 		//Comienza la acción
 		_partidaActual = new Partida();
 		_partidaActual.iniciar('Jugador 1', 'Computadora');
