@@ -1430,10 +1430,16 @@
 			Debug = $(this).is(':checked');
 		}).attr('checked',false);
 		
+		$('#ReiniciarPartida').click(function (event) {
+			event.preventDefault();
+			_partidaActual = new Partida();
+			_partidaActual.iniciar( _inputsName.html(), 'Computadora');
+		});
+
 		var _cajasCollapsables = $('.box--collapsable');
 		if(_cajasCollapsables.length > 0) {
 			_cajasCollapsables.find('.box-content').addClass('box-content--hidden');
-			_cajasCollapsables.find('.box-title').addClass('box-title--hidden').click(function(){
+			_cajasCollapsables.find('.box-title').addClass('box-title--hidden').click(function () {
 				var _title = $(this);
 				if(_title.hasClass('box-title--hidden')) {
 					_title.removeClass('box-title--hidden').children('img').addClass('title-rotate');

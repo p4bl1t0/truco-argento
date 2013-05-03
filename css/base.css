@@ -578,6 +578,15 @@ h1 {
     border-bottom: 0;
 
 }
+#configuraciones {
+    position: fixed;
+    top: 0;
+    right: 0;
+    border: 1px solid #999;
+    border-top: 0;
+    border-right: 0;
+    width: auto;
+}
 .box-title {
     padding: .2em .2em 0 .2em;
     text-align: center;
@@ -611,6 +620,9 @@ h1 {
     width: 0;
     height: 0;
 }
+#configuraciones .box-title--hidden {
+    width: 32px;
+}
 #configuraciones .title-rotate {
     -webkit-animation: inifintyRotate 2s infinite linear; /* Safari 4+ */
     -moz-animation:    inifintyRotate 2s infinite linear; /* Fx 5+ */
@@ -622,14 +634,6 @@ h1 {
 }
 .label-cantos--first {
 	margin:0 0 .4em;
-}
-#configuraciones {
-    position: fixed;
-    top: 0;
-    right: 0;
-    border: 1px solid #999;
-    border-top: 0;
-    border-right: 0;
 }
 .game-main {
 	display: inline-block;
@@ -805,6 +809,12 @@ ul li {
 .card-6 {
 	top:0;
 	left:330px;
+}
+#ReiniciarPartida {
+    background: none repeat scroll 0 0 transparent;
+    border: 0 none;
+    padding: 0;
+    vertical-align: sub;
 }					
 @-webkit-keyframes inifintyRotate {
   0%   { -webkit-transform: rotate(0deg); }
