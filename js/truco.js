@@ -893,6 +893,7 @@
 	
 	Ronda.prototype.jugarEnvido = function (esQuerido) {
 		var puntos = this.calcularPuntosEnvido();
+		var postponedTime = 1500; //1.5s
 		if (esQuerido) { // Dijo Quiero
 			if (this.equipoPrimero.esMano) {
 				var primero = this.equipoPrimero; var p1 = primero.jugador.getPuntosDeEnvido(primero.jugador.cartas);
@@ -901,8 +902,8 @@
 				var primero = this.equipoSegundo; var p1 = primero.jugador.getPuntosDeEnvido(primero.jugador.cartas);
 				var segundo = this.equipoPrimero; var p2 = segundo.jugador.getPuntosDeEnvido(segundo.jugador.cartas);
 			}
-		
-			this.logCantar(primero.jugador , p1);
+			this.logCantar(primero.jugador , p1, postponedTime);
+			postponedTime = postponedTime + 1000; //2.5s
 			if (this.envidoStatsFlag && primero === this.equipoPrimero) { // Humano Canta primero, Registro los puntos
                     this.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, p1);
                     this.puntosGuardados = p1;
@@ -910,7 +911,7 @@
             }
 			
 			if (p2 > p1) {
-				this.logCantar(segundo.jugador , p2);
+				this.logCantar(segundo.jugador , p2, postponedTime);
 				if (this.envidoStatsFlag && segundo === this.equipoPrimero) { // Humano canta para ganarme
                     this.equipoSegundo.jugador.statsEnvido(this.cantos, this.quienCanto, p2);
                     this.puntosGuardados = p2;
@@ -920,10 +921,12 @@
                 segundo.puntos += puntos.ganador;
                 
 			} else { // Humano NO CANTA, NO REGISTRO NADA
-				this.logCantar(segundo.jugador , 'SB');
+				this.logCantar(segundo.jugador, 'SB', postponedTime);
 				//Si segundo == MAQUINA entonces audio
 				if(!segundo.jugador.esHumano) {
-					audio.play('SB');
+					setTimeout(function() {
+						audio.play('SB');
+					}, postponedTime);
 				}
 				primero.puntos += puntos.ganador;
                 primero.jugador.puntosGanadosEnvido = puntos.ganador;
@@ -997,8 +1000,11 @@
 	// Escribe en el log quien canto
 	//------------------------------------------------------------------
 	
-	Ronda.prototype.logCantar = function (jugador, canto) {
+	Ronda.prototype.logCantar = function (jugador, canto, delay) {
 		var _playerVoice = null;
+		if(delay === null || delay === undefined) {
+			delay = 0;
+		}
 		if(this.equipoPrimero.jugador == jugador) {
 			_playerVoice = $('#player-one').find('.player-voice');
 		} else {
@@ -1040,17 +1046,24 @@
 			default :
 				mensaje += canto ;
 				break;
-		}		
-		_playerVoice.html(mensaje).addClass('recien-cantado').attr('data-mensaje', mensaje);
-		setTimeout(function () {
-			_playerVoice.html('').removeClass('recien-cantado');
+		}
+		var func_delayed = function () {		
+			_playerVoice.html(mensaje).addClass('recien-cantado').attr('data-mensaje', mensaje);
 			setTimeout(function () {
-				if(_playerVoice.attr('data-mensaje') === mensaje) {
-					_playerVoice.html('');
-				}
-			}, 500);
-		}, 1300);
-		_log.innerHTML = "<b>" + jugador.nombre + " canto: " + "</b> " + mensaje + '<br /> ' + _log.innerHTML ;
+				_playerVoice.html('').removeClass('recien-cantado');
+				setTimeout(function () {
+					if(_playerVoice.attr('data-mensaje') === mensaje) {
+						_playerVoice.html('');
+					}
+				}, 1000);
+			}, 1300);
+			_log.innerHTML = "<strong>" + jugador.nombre + " cantó: " + "</strong> " + mensaje + '<br /> ' + _log.innerHTML ;
+		}
+		if(delay === 0) {
+			func_delayed();
+		} else {
+			setTimeout(func_delayed, delay);
+		}
 		
 	}
 	//------------------------------------------------------------------
