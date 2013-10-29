@@ -19,11 +19,9 @@
 \maketitle 
 \section{Introducci\'on}
 El proyecto consiste en diseñar y desarrollar una inteligencia artificial capaz de jugar al juego de cartas conocido como Truco.
-Una descripci\'on completa del juego puede verse en \cite{reglas}. Aunque no se tuvo en cuenta todas las caracter\'isticas del jugo. 
-Por ejemplo, el canto de "Flor" no esta soportado. 
+Una descripci\'on completa del juego puede verse en \cite{reglas}. Igualmente no se tuvieron en cuenta todas las caracter\'isticas del jugo, por ejemplo el canto de "Flor" no esta soportado. 
 
-Luego de un an\'alisis del juego, decidimos realizar la inteligencia como un sistema basado en conocimientos, más precisamente un sistema experto con reglas de 
-producción de tipo deductivo (Forward Chaining)
+Luego de un an\'alisis del juego, decidimos realizar la inteligencia como un sistema basado en conocimientos, más precisamente un sistema experto con reglas de producción de tipo deductivo (Forward Chaining)
 
 \section{Lenguaje y Desarrollo}
 El juego junto con la inteligencia fueron desarrollados desde cero en una interfaz web. 
@@ -34,45 +32,72 @@ La interfaz gr\'afica esta hecha con HTML y CSS. La l\'ogica del juego est\'a es
 En este caso el humano contra la computadora. 
 
 \item El modulo ia.js provee la inteligencia artificial del jugador. Aqu\'i se encuentran ocultas todas las desiciones del jugador.
-Durante el juego, hay tres situaciones bien marcadas: 
+
+
+\section{Conocimiento de Dominio}
+Luego de analizar la metodología de juego, se llego a una división en 3 partes diferentes:
 \begin{itemize}
 \item Truco: se encarga de decidir los cantos del truco
 \item Envido: decide el canto del envido
 \item Jugar Carta: decide que carta jugar
 \end{itemize}
-\end{itemize}
-
-\section{Conocimiento de Dominio}
-Luego de analizar la metodología de juego, se llego a una división en 3 partes diferentes:
-El canto del envido
-El canto del truco
-Selección de carta a jugar
  
 
-Una mirada sobre la función truco
+\subsection{Truco}:
 El conocimiento de dominio que utiliza comprende:
-resp: valor booleano que indica si el humano cantó algo y tiene que contestar o si puede cantar.
-ultimo: el último canto hasta el momento en la ronda actual.
-El numero de la mano actual (primera, segunda o tercera)
-Resultado de las manos anteriores
-Cartas jugadas en la mano actual (propias o del oponente)
-Clasificación de las cartas en mano.
-Posibles cartas del oponente según los puntos cantados en el envido y las cartas que jugó.
+\begin{itemize}
+\item resp: valor booleano que indica si el humano cantó algo y tiene que contestar o si puede cantar.
+\item ultimo: el último canto hasta el momento en la ronda actual.
+\item El numero de la mano actual (primera, segunda o tercera)
+\item Resultado de las manos anteriores
+\item Cartas jugadas en la mano actual (propias o del oponente)
+\item Clasificación de las cartas en mano.
+\item Posibles cartas del oponente según los puntos cantados en el envido y las cartas que jugó.
+\end{itemize}
 
 Mediante todos estos atributos se conforman las reglas de inferencia que se dividen (a grandes rasgos) de la 
-siguiente forma
-1) Contestar un canto:
-	a) Se determina cual es la mano actual
-	b) Se determina el resultado de la mano anterior (para las manos 2 y 3)
-	c) En función de la situación en la que se encuentre y teniendo en cuenta los datos correspondientes al dominio
+siguiente forma:
+
+\begin{itemize}
+\item 1) Contestar un canto o Cantar
+\item 2) Se determina cual es la mano actual
+\item 3) Se determina el resultado de la mano anterior (para las manos 2 y 3)
+\item 4) Se clasifican las cartas que poseo
+\item 5) En función de la situación en la que se encuentre y teniendo en cuenta los datos correspondientes al dominio
 	   se decide que cantar (Si, No, Re-Truco, Vale 4)
-2) Si tengo el quiero 
+\end{itemize}
+
+\subsection{Envido}
+El conocimiento de dominio que utiliza comprende:
+\begin{itemize}
+\item ultimo: Ultimo canto 
+\item acumulado: La cantidad de puntos en juego
+\item ultimaCarta: Carta jugada por el oponente(si es que existe). Deduccion de puntos
+\item puntos: Puntos de Envido en mano
+\item Puntos restantes para terminar el partido
+\item Puntos con lo que el oponente canto en otras manos
+\end{itemize}
+
+\subsection{Jugar Carta}
+El conocimiento de dominio que utiliza comprende:
+\begin{itemize}
+\item Juego primero o  el oponente ya jugo
+\item Clasificaci\'on de las cartas
+\item Numero de Mano
+\item Carta jugada por el oponente
+\end{itemize}
+
+Para determinar que carta jugar primero se tiene en cuenta si el oponente jugo. Si es as\'i elige la carta en 
+funci\'on de la que esta en la mesa. Depende de si le puede ganar o no.
+Si la m\'aquina es mano, por lo general opta por la siguiente f\'ormula: Ganar primera, dejar pasar segunda y ganar tercera. 
+Por supuesto hay reglas , que capturan situaciones especiales, provocando una variaci\'on al juego de la m\'aquina. Por ejemplo, si es mano y posee dos cartas altas.
+
 
 El conocimiento de dominio necesario fue aportado por los integrantes del grupo 
 
 \section{Futuro Trabajo}
 %% Esto que estoy poniendo es para justificar los random pero hay que chamuyarlo mas
-Este juego es muy plarticular, no existe una f\'ormula ganadora. Depende mucho de la picard\'ia del jugador. Por eso, apesar de estar basado en un sistema experto
+Este juego es muy particular, no existe una f\'ormula ganadora. Depende mucho de la picard\'ia del jugador. Por eso, apesar de estar basado en un sistema experto
 con reglas, en muchos cosas como \'ultima opci\'on se agrego un poco de no-determinismo para crear una sensaci\'on  de que no es una maquin\'a est\'atica. 
 Esto podr\'ia cambiarse agregando diferentes estilos de juegos, como el mentiroso, el defensivo o el agresivo.   
 

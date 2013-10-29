@@ -738,11 +738,11 @@ IA.prototype.truco = function (resp , ultimo) {
                         else return 'R';
                     }else {
                         if (ultimaCarta.puntosEnvido > puntos) return '';          // Si me gana con la mesa no canto...podria ser opcion para mentir
-                        if (ran + posible + diff  <  valor  * 100 ) return   'E';
+                        if (ran + posible + diff  <  valor  * 100 ) return   'E';  // Como ultima opcion un poco de determinismo
                         else return '';
                     }
 			} else //Soy mano
-				if (ran + posible  <  valor  * 100 ) return   'E';
+				if (ran + posible  <  valor  * 100 ) return 'E';
 				else return '';
  
         } else{        //me cantaron algo *******************************
@@ -761,7 +761,7 @@ IA.prototype.truco = function (resp , ultimo) {
             if (acumulado > loQueFalta && p2 > p1 && ultimo !== 'F') {
                 var pRE = this.prob.promedioPuntos(this.realEnvido.concat(this.envidoS, this.revire));
                 pRE = pRE === null ? 0 : -(15 -  pRE);
-                alert ((ran + posible + diff + acumulado + pRE)  + '<' + (valor * 100));
+                //alert ((ran + posible + diff + acumulado + pRE)  + '<' + (valor * 100));
                 if(ran + posible + diff + acumulado + pRE < valor * 100) return 'F';
             }
 
@@ -778,7 +778,7 @@ IA.prototype.truco = function (resp , ultimo) {
 										                  
                     if (ran + posible + diff + acumulado + pRE  <  valor  * 100 ) {
 						if (puntos >= 30 ) return  'EE' ; 
-						else return 'S';
+			 			else return 'S';
 					} else { if (puntos >= 30 ) return 'S'; 
 					         else  return 'N';  
 					}
