@@ -25,8 +25,8 @@ entre un humano y una maquina. No se tuvieron en cuenta todas las caracter\'isti
 no esta soportado. 
 
 Luego de un an\'alisis del juego optamos por representar la inteligencia artificial mediante un sistema basado en conocimientos, 
-más precisamente un sistema experto con reglas de producción de tipo deductivo (Forward Chaining). Si bien no se utilizo un motor
-deductivo en particular, creemos que los pasos seguidos por el sistema a la hora de tomar las desiciones, representan el ciclo
+más precisamente un sistema experto con reglas de producción de tipo deductivo (Forward Chaining). Si bien no se utiliz\'o un motor
+deductivo en particular, creemos que los pasos seguidos por el sistema a la hora de tomar las desiciones representan el ciclo
 base de un motor deductivo.
 
 \section{Lenguaje y Desarrollo}
@@ -34,15 +34,24 @@ El juego junto con la inteligencia fueron desarrollados desde cero en una interf
 
 La interfaz gr\'afica esta hecha con HTML y CSS. La l\'ogica del juego est\'a escrita en Javascript y est\'a separada en 2 modulos principales.  
 \begin{itemize}
-\item El modulo truco.js provee las estructuras de datos necesarias para la representacion de la informacion utilizada durante el juego
-asi como tambi\'en controla la interacci\'on entre el jugador y la m\'aquina, es decir, determina quien puede jugar en un momento determinado.
+\item El modulo \textbf{truco.js} provee las estructuras de datos necesarias para la representacion de la informacion utilizada durante el juego,
+controla la interacci\'on entre el jugador y la m\'aquina, es decir, determina quien puede jugar en un momento determinado y lleva cuenta del
+estado global del juego.
 
-\item El modulo ia.js provee la inteligencia artificial de la m\'aquina. Aqu\'i se encuentran ocultas todas las desiciones del jugador.
+\item El modulo \textbf{ia.js} continene la inteligencia artificial de la m\'aquina. Aqui se encuentra codificado el razonamiento realizado por la maquina
+a la hora de tomar una desici\'on.
 
 \end{itemize}
 
+A modo de dar una visi\'on general, el sistema funciona de la siguiente manera: \\
+Si el usuario es mano, cualquier acci\'ion que este haga ser\'a procesada por el modulo \textbf{truco.js}. Este se encargar\'a de contextualizar la
+acci\'on (por ejemplo, determinar en que mano se realiz\'o el canto y/o si hubo un canto anterior a ese) y llamar\'a al correspondiente m\'etodo del
+m\'odulo \textbf{ia.js} que usando esta informaci\'on como conocimiento de dominio, determinar\'a con qu\'e acci\'on responder.
+
+
+
 \section{Conocimiento de Dominio}
-Luego de analizar la metodología de juego, se llego a una división en 3 partes diferentes:
+Luego de analizar la metodolog\'ia de juego, se llego a una divisi\'on en 3 partes diferentes:
 \begin{itemize}
 \item Truco: se encarga de decidir los cantos del truco
 \item Envido: decide el canto del envido
