@@ -1,38 +1,45 @@
 \documentclass[12pt,a4paper]{article}
 \usepackage[spanish]{babel}
-\usepackage[utf8]{inputenc}
-\usepackage[dvips]{graphicx}
-\usepackage{listings}
+% \usepackage[utf8]{inputenc}
+% \usepackage[dvips]{graphicx}
+% \usepackage{listings}
 
 
 \newcommand{\HRule}{\rule{\linewidth}{1mm}}
 
 
-\title{Inteligencia Artificial\\
-\\ 
+\title{Inteligencia Artificial\\ 
 \large Informe Final
 }
 \author{Botta Mariano \\ Campostrini Esteban}
 \date{ \small 13 de Septiembre del 2013}
 
 \begin{document}
+
 \maketitle 
+
 \section{Introducci\'on}
 El proyecto consiste en diseñar y desarrollar una inteligencia artificial capaz de jugar al juego de cartas conocido como Truco.
-Una descripci\'on completa del juego puede verse en \cite{reglas}. Igualmente no se tuvieron en cuenta todas las caracter\'isticas del jugo, por ejemplo el canto de "Flor" no esta soportado. 
+Una descripci\'on completa del juego puede verse en \cite{reglas}. El dise\~no del juego fue pensado para permitir partidas 
+entre un humano y una maquina. No se tuvieron en cuenta todas las caracter\'isticas del juego, por ejemplo el canto de "Flor" 
+no esta soportado. 
 
-Luego de un an\'alisis del juego, decidimos realizar la inteligencia como un sistema basado en conocimientos, más precisamente un sistema experto con reglas de producción de tipo deductivo (Forward Chaining)
+Luego de un an\'alisis del juego optamos por representar la inteligencia artificial mediante un sistema basado en conocimientos, 
+más precisamente un sistema experto con reglas de producción de tipo deductivo (Forward Chaining). Si bien no se utilizo un motor
+deductivo en particular, creemos que los pasos seguidos por el sistema a la hora de tomar las desiciones, representan el ciclo
+base de un motor deductivo.
 
 \section{Lenguaje y Desarrollo}
 El juego junto con la inteligencia fueron desarrollados desde cero en una interfaz web. 
 
 La interfaz gr\'afica esta hecha con HTML y CSS. La l\'ogica del juego est\'a escrita en Javascript y est\'a separada en 2 modulos principales.  
 \begin{itemize}
-\item El modulo truco.js provee las estructuras para la representación de los datos necesarios del juego asi como la interacci\'on entre los dos jugadores. 
-En este caso el humano contra la computadora. 
+\item El modulo truco.js provee las estructuras de datos necesarias para la representacion de la informacion utilizada durante el juego
+asi como tambi\'en controla la interacci\'on entre el jugador y la m\'aquina, es decir, determina quien puede jugar en un momento determinado.
 
-\item El modulo ia.js provee la inteligencia artificial del jugador. Aqu\'i se encuentran ocultas todas las desiciones del jugador.
+\item El modulo ia.js provee la inteligencia artificial de la m\'aquina. Aqu\'i se encuentran ocultas todas las desiciones del jugador.
 
+\end{itemize}
 
 \section{Conocimiento de Dominio}
 Luego de analizar la metodología de juego, se llego a una división en 3 partes diferentes:
@@ -101,24 +108,10 @@ Este juego es muy particular, no existe una f\'ormula ganadora. Depende mucho de
 con reglas, en muchos cosas como \'ultima opci\'on se agrego un poco de no-determinismo para crear una sensaci\'on  de que no es una maquin\'a est\'atica. 
 Esto podr\'ia cambiarse agregando diferentes estilos de juegos, como el mentiroso, el defensivo o el agresivo.   
 
+\begin{thebibliography}{9}
 
-\begin{thebibliography}{XXX99}
-
-\bibitem[1]{Reglas} \emph{Descripci\'on y Reglas del Truco }. http://es.wikipedia.org/wiki/Truco\_argentino .
-
-\bibitem[2]{Reglas12} Federico Bergero, Xenofon Floros, Joaqu\'in Fern\'andez, Ernesto Kofman, and
-ın a Francois E. Cellier. \emph{Simulating Modelica models with a Stand–Alone Quantized State Systems Solver}. 
-In 9th International Modelica Conference, 2012. Aceptado.
-
-\bibitem[3]{Reglas12} Modelica Association. \emph{Modelica 
- - A Unified Object-Oriented Language for Physical Systems Modeling. Language Specification}. 
-February 2, 2005.
-
-
-
-\bibitem[4]{ModelicaSite} \emph{Sitio de Modelica C Compiler en SourceForge}. http://sourceforge.net/projects/modelicacc/ . 
-
-
+	\bibitem{reglas} \emph{Descripci\'on y Reglas del Truco }. 
+	http://es.wikipedia.org/wiki/Truco\_argentino .
 
 \end{thebibliography}
 \end{document}
