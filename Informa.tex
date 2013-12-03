@@ -29,6 +29,7 @@ más precisamente un sistema experto con reglas de producción de tipo deductivo
 deductivo en particular, creemos que los pasos seguidos por el sistema a la hora de tomar las desiciones representan el ciclo
 base de un motor deductivo.
 
+
 \section{Lenguaje y Desarrollo}
 El juego junto con la inteligencia fueron desarrollados desde cero en una interfaz web. 
 
@@ -51,6 +52,11 @@ m\'odulo \textbf{ia.js} que usando esta informaci\'on como conocimiento de domin
 
 
 \section{Conocimiento de Dominio}
+
+Este juego es muy particular, no existe una f\'ormula ganadora. Depende mucho de la picard\'ia del jugador. Por eso, apesar de estar basado en un sistema experto
+con reglas, en muchos cosas como \'ultima opci\'on se agrego un poco de no-determinismo para crear una sensaci\'on  de que no es una maquin\'a est\'atica. 
+Este no determinismo esta fuertemente influenciado por el conocimiento de dominio.
+
 Luego de analizar la metodolog\'ia de juego, se llego a una divisi\'on en 3 partes diferentes:
 \begin{itemize}
 \item Truco: se encarga de decidir los cantos del truco
@@ -94,6 +100,16 @@ El conocimiento de dominio que utiliza comprende:
 \item Puntos con lo que el oponente canto en otras manos
 \end{itemize}
 
+Para decidir el canto del envidio, primero se analiza los puntos restantes para terminar la partida debido a que la Falta Envido es diferente al 
+resto de los cantos. Si faltan dos o menos puntos para ganar, se responde a un canto con la Falta Envido o si se canta se elige esta.
+En caso de estar a mediados del juego se analiza si hubo cantos previos, si el oponente ya jug\'o una carta y los puntos que tengo en manos. 
+Todos estos valores generan una decisi\'on de juego, que por \'ultimo es avalada por un poco de  no-determinismo, para generar la sensaci\'on 
+de cambios en la mentalidad de juego. 
+
+%% Revisar estooo ultimo!!!! 
+
+
+
 \subsection{Jugar Carta}
 El conocimiento de dominio que utiliza comprende:
 \begin{itemize}
@@ -111,11 +127,11 @@ Por supuesto hay reglas , que capturan situaciones especiales, provocando una va
 
 El conocimiento de dominio necesario fue aportado por los integrantes del grupo 
 
-\section{Futuro Trabajo}
+%%\section{Futuro Trabajo}
 %% Esto que estoy poniendo es para justificar los random pero hay que chamuyarlo mas
-Este juego es muy particular, no existe una f\'ormula ganadora. Depende mucho de la picard\'ia del jugador. Por eso, apesar de estar basado en un sistema experto
-con reglas, en muchos cosas como \'ultima opci\'on se agrego un poco de no-determinismo para crear una sensaci\'on  de que no es una maquin\'a est\'atica. 
-Esto podr\'ia cambiarse agregando diferentes estilos de juegos, como el mentiroso, el defensivo o el agresivo.   
+%%Este juego es muy particular, no existe una f\'ormula ganadora. Depende mucho de la picard\'ia del jugador. Por eso, apesar de estar basado en un sistema experto
+%%con reglas, en muchos cosas como \'ultima opci\'on se agrego un poco de no-determinismo para crear una sensaci\'on  de que no es una maquin\'a est\'atica. 
+%%Esto podr\'ia cambiarse agregando diferentes estilos de juegos, como el mentiroso, el defensivo o el agresivo.   
 
 \begin{thebibliography}{9}
 
