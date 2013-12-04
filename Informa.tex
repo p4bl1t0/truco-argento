@@ -1,0 +1,219 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[spanish]{babel}
+% \usepackage[utf8]{inputenc}
+% \usepackage[dvips]{graphicx}
+\usepackage{listings}
+
+
+\newcommand{\HRule}{\rule{\linewidth}{1mm}}
+
+%\lstset{fancyvrb=true}
+\lstset{
+	basicstyle=\small,
+	tabsize=2,
+	numbers=left,
+	captionpos=b		
+}
+
+
+\title{Inteligencia Artificial\\ 
+\large Informe Final
+}
+\author{Botta Mariano \\ Campostrini Esteban}
+\date{ \small 13 de Septiembre del 2013}
+
+\begin{document}
+
+\maketitle 
+
+\section{Introducci\'on}
+El proyecto consiste en diseñar y desarrollar una inteligencia artificial capaz de jugar al juego de cartas conocido como Truco.
+Una descripci\'on completa del juego puede verse en \cite{reglas}. El dise\~no del juego fue pensado para permitir partidas 
+entre un humano y una maquina. No se tuvieron en cuenta todas las caracter\'isticas del juego, por ejemplo el canto de "Flor" 
+no esta soportado. 
+
+Luego de un an\'alisis del juego optamos por representar la inteligencia artificial mediante un sistema basado en conocimientos, 
+más precisamente un sistema experto con reglas de producción de tipo deductivo (Forward Chaining). Si bien no se utiliz\'o un motor
+deductivo en particular, creemos que los pasos seguidos por el sistema a la hora de tomar las desiciones representan el ciclo
+base de un motor deductivo.
+
+
+\section{Lenguaje y Desarrollo}
+El juego junto con la inteligencia fueron desarrollados desde cero en una interfaz web. 
+
+La interfaz gr\'afica esta hecha con HTML y CSS. La l\'ogica del juego est\'a escrita en Javascript y est\'a separada en 2 modulos principales.  
+\begin{itemize}
+\item El modulo \textbf{truco.js} provee las estructuras de datos necesarias para la representacion de la informacion utilizada durante el juego,
+controla la interacci\'on entre el jugador y la m\'aquina, es decir, determina quien puede jugar en un momento determinado y lleva cuenta del
+estado global del juego.
+
+\item El modulo \textbf{ia.js} continene la inteligencia artificial de la m\'aquina. Aqui se encuentra codificado el razonamiento realizado por la maquina
+a la hora de tomar una desici\'on.
+
+\end{itemize}
+
+A modo de dar una visi\'on general, el sistema funciona de la siguiente manera: \\
+Si el usuario es mano, cualquier acci\'ion que este haga ser\'a procesada por el modulo \textbf{truco.js}. Este se encargar\'a de contextualizar la
+acci\'on (por ejemplo, determinar en que mano se realiz\'o el canto y/o si hubo un canto anterior a ese) y llamar\'a al correspondiente m\'etodo del
+m\'odulo \textbf{ia.js} que usando esta informaci\'on como conocimiento de dominio, determinar\'a con qu\'e acci\'on responder.
+
+
+
+\section{Conocimiento de Dominio}
+
+\subsection{Sobre el enga\~no en el truco}
+
+El truco es un tipo de juego con informaci\'on parcial en el sentido en que al menos uno de los jugadores
+conoce solo un estado parcial del juego (en caso de un desarrollo "normal" del juego, esto deber\'ia 
+pasar para todos los jugadores involucrados). Esto implica una complejidad mayor a la hora de tomar desiciones
+ya que es necesario tener en cuenta las jugadas pasadas como las posibles jugadas. 
+El hecho de que los jugadores no conozcan exactamente el estado del resto de los jugadores puede ser aprovechado
+de manera beneficiosa para intentar inducir estados falsos que den lugar a malas desiciones de juego 
+por parte de otro de los jugadores. En el truco este enga\~no puede manifestarse de dos formas (que osamos en llamar
+activa y pasiva)\\
+\textbf{Activa:} el jugador toma la iniciativa mediante alg\'un canto (envido o truco) con el fin de hacerle creer al oponente que tiene
+cartas o puntos que en realidad no tiene.\\
+\textbf{Pasiva:} el jugador plantea un escenario (generalmente mediante el orden en el que juega las cartas) de manera tal de que 
+la hipotetizaci\'on hecha por el oponente sobre el estado sea err\'onea llevandolo a tomar acciones 'activas' poco favorables para 
+este (basicamente que el jugador que esta intentando ser enga\~nado piense que el otro jugador tiene mas o menos puntos o cartas de 
+mayor o menor valor que en las que realidad tiene).\\
+Cabe destacar que un intento de enga\~no tanto activo como pasivo esta influenciado tambien por la informaci\'on que uno tiene del otro jugador,
+que en la mayoria de los casos sigue siendo parcial,  por lo cual hay una especie de ciclo de mentiras.\\
+De aqu\'i, que el enga\~no juega un rol importante en el truco.
+
+\subsection{Funciones principales}
+Como se explica en la secci\'on anterior, el enga\~no es parte del juego y este est\'a generalmente influenciado por
+la informaci\'on disponible, lo cual tambi\'en implica que no hay una estrategia ganadora. 
+A continuaci\'on haremos una descripci\'on de las funciones principales de la IA comentando c\'omo fue tenida en cuenta la 
+informaci\'on disponible y de que manera se intento darle "picard\'ia" a la m\'aquina.
+
+%Este juego es muy particular, no existe una f\'ormula ganadora. Depende mucho de la picard\'ia del jugador. Por eso, apesar de estar basado en un sistema experto
+%con reglas, en muchos cosas como \'ultima opci\'on se agrego un poco de no-determinismo para crear una sensaci\'on  de que no es una maquin\'a est\'atica. 
+%Este no determinismo esta fuertemente influenciado por el conocimiento de dominio.
+
+Luego de analizar la metodolog\'ia de juego, se llego a una divisi\'on en 3 partes diferentes:
+\begin{itemize}
+\item Truco: se encarga de decidir los cantos del truco
+\item Envido: decide el canto del envido
+\item Jugar Carta: decide que carta jugar
+\end{itemize}
+ 
+
+\subsubsection{Truco}:
+%La informaci\'on que consideramos pertinente a la hora de decidir el canto del truco esta
+%representada por las siguientes variables:
+Esta es la informaci\'on que consideramos pertinente a la hora de decidir el canto del truco:
+\begin{itemize}
+\item Informaci\'on sobre si el humano cant\'o algo y la m\'aquina debe contestar o si esta puede cantar (variable \textbf{resp})
+%\item resp: valor booleano que indica si el humano cantó algo y por lo tanto la m\'aquina tiene que contestar o si esta puede cantar.
+\item El \'ultimo canto hasta el momento en la ronda actual (variable \textbf{ultimo})
+\item El n\'umero de la mano actual (primera, segunda o tercera)
+\item Resultado de las manos anteriores
+\item Cartas jugadas en la mano actual (propias o del oponente)
+\item Clasificaci\'on de las cartas en mano (cantidad de cartas altas, medias o bajas que tengo).
+\item Posibles cartas del oponente seg\'un los puntos cantados en el envido y las cartas que jug\'o.
+\end{itemize}
+
+Mediante todos estos atributos se conforman las reglas de inferencia que se dividen (a grandes rasgos) de la 
+siguiente forma:
+
+\begin{itemize}
+\item 1) Contestar un canto o Cantar
+\item 2) Se determina cual es la mano actual
+\item 3) Se determina el resultado de la mano anterior (para las manos 2 y 3)
+\item 4) Se clasifican las cartas que poseo
+\item 5) En función de la situación en la que se encuentre y teniendo en cuenta los datos correspondientes al dominio
+	   se decide que cantar (Si, No, Re-Truco, Vale 4)
+\end{itemize}
+
+De manera m\'as ilustrativa veamos un extracto del c\'odigo de la funci\'on truco
+\begin{figure}[h]
+\lstset{language=java,caption=Extracto de la funci\'on truco,label=lst:nicecode}
+\begin{lstlisting}
+
+if (resp) {  // Me cantaron, tengo que responder
+	switch(nroMano){
+		case 0:
+			var ran = getRandomInt(0,100);
+			switch(ultimo){
+		case 'T':
+			if (e2.jugador.puntosGanadosEnvido < 2 && 
+					(mediaalta) >= 2 && clasif.alta >= 1)
+				return 'S';
+			if (clasif.baja === 3 && ran <= 50) return 'RT'; 
+			if (mediaalta >= 2 && diff < 0  ) return 'RT';  // Te trato de correr
+			if (mediaalta >= 1 && diff > 0  ) return 'S';
+			return ( ran < 66 ? 'N' : 'S' ); //  (*) Rompe con la reglas staticas
+		case 'RT':
+		case 'V':
+			if (clasif.alta >= 2) return 'S';
+			if ((mediaalta) >= 2  && diff > 3 ) return 'S';
+			if (e2.jugador.puntosGanadosEnvido >= 2) return 'N';
+			return 'N';
+			break;
+		}
+	}
+}
+\end{lstlisting}
+\end{figure}
+
+
+En este caso vemos qu\'e sucede cuando el oponente canta algo (la variable \textbf{resp} toma el valor true). Primero determinamos
+en que n\'umero de mano nos encontramos. Luego en funci\'on de lo que fue cantado por el oponente (truco - T, re-truco - RT, o vale 4 - V)
+y en funci\'on de las cartas en mano as\'i como de los puntos obtenidos en el envido se decide que acci\'on tomar. Se puede ver tambi\'en
+una componente aleatorio. Si bien no es un recurso ideal, nos encontramos con el hecho de que una vez colectada toda la informaci\'on posible
+(que es incompleta) siempre hay un factor no determinista (simpre hay m\'as de un camino a seguir)
+que podr\'ia ser ignorado poniendo reglas fijas pero esto har\'ia que el comportamiento de la m\'aquina sea bastante "r\'igido".
+
+\subsubsection{Envido}
+El conocimiento de dominio que utiliza comprende:
+\begin{itemize}
+\item ultimo: Ultimo canto 
+\item acumulado: La cantidad de puntos en juego
+\item ultimaCarta: Carta jugada por el oponente(si es que existe). Deduccion de puntos
+\item puntos: Puntos de Envido en mano
+\item Puntos restantes para terminar el partido
+\item Puntos con lo que el oponente canto en otras manos
+\end{itemize}
+
+Para decidir el canto del envidio, primero se analiza los puntos restantes para terminar la partida debido a que la Falta Envido es diferente al 
+resto de los cantos. Si faltan dos o menos puntos para ganar, se responde a un canto con la Falta Envido o si se canta se elige esta.
+En caso de estar a mediados del juego se analiza si hubo cantos previos, si el oponente ya jug\'o una carta y los puntos que tengo en manos. 
+Todos estos valores generan una decisi\'on de juego, que por \'ultimo es avalada por un poco de  no-determinismo, para generar la sensaci\'on 
+de cambios en la mentalidad de juego. 
+
+%% Revisar estooo ultimo!!!! 
+
+
+
+\subsubsection{Jugar Carta}
+El conocimiento de dominio que utiliza comprende:
+\begin{itemize}
+\item Juego primero o  el oponente ya jugo
+\item Clasificaci\'on de las cartas
+\item Numero de Mano
+\item Carta jugada por el oponente
+\end{itemize}
+
+Para determinar que carta jugar primero se tiene en cuenta si el oponente jugo. Si es as\'i elige la carta en 
+funci\'on de la que esta en la mesa. Depende de si le puede ganar o no.
+Si la m\'aquina es mano, por lo general opta por la siguiente f\'ormula: Ganar primera, dejar pasar segunda y ganar tercera. 
+Por supuesto hay reglas , que capturan situaciones especiales, provocando una variaci\'on al juego de la m\'aquina. Por ejemplo, si es mano y posee dos cartas altas.
+
+
+El conocimiento de dominio necesario fue aportado por los integrantes del grupo 
+
+%%\section{Futuro Trabajo}
+%% Esto que estoy poniendo es para justificar los random pero hay que chamuyarlo mas
+%%Este juego es muy particular, no existe una f\'ormula ganadora. Depende mucho de la picard\'ia del jugador. Por eso, apesar de estar basado en un sistema experto
+%%con reglas, en muchos cosas como \'ultima opci\'on se agrego un poco de no-determinismo para crear una sensaci\'on  de que no es una maquin\'a est\'atica. 
+%%Esto podr\'ia cambiarse agregando diferentes estilos de juegos, como el mentiroso, el defensivo o el agresivo.   
+
+\begin{thebibliography}{9}
+
+	\bibitem{reglas} \emph{Descripci\'on y Reglas del Truco }. 
+	http://es.wikipedia.org/wiki/Truco\_argentino .
+
+\end{thebibliography}
+\end{document}
+
