@@ -2,10 +2,18 @@
 \usepackage[spanish]{babel}
 % \usepackage[utf8]{inputenc}
 % \usepackage[dvips]{graphicx}
-% \usepackage{listings}
+\usepackage{listings}
 
 
 \newcommand{\HRule}{\rule{\linewidth}{1mm}}
+
+%\lstset{fancyvrb=true}
+\lstset{
+	basicstyle=\small,
+	tabsize=2,
+	numbers=left,
+	captionpos=b		
+}
 
 
 \title{Inteligencia Artificial\\ 
@@ -73,10 +81,15 @@ Cabe destacar que un intento de enga\~no tanto activo como pasivo esta influenci
 que en la mayoria de los casos sigue siendo parcial,  por lo cual hay una especie de ciclo de mentiras.\\
 De aqu\'i, que el enga\~no juega un rol importante en el truco.
 
+\subsection*{Funciones principales}
+Como se explica en la secci\'on anterior, el enga\~no es parte del juego y este esta generalmente influenciado por
+la informaci\'on disponible, lo cual tambi\'en implica que no hay una estrategia ganadora. 
+A continuaci\'on haremos una descripci\'on de las funciones principales de la IA comentando c\'omo fue tenida en cuenta la 
+informaci\'on disponible y de que manera se intento darle "personalidad mentirosa" a la m\'aquina.
 
-Este juego es muy particular, no existe una f\'ormula ganadora. Depende mucho de la picard\'ia del jugador. Por eso, apesar de estar basado en un sistema experto
-con reglas, en muchos cosas como \'ultima opci\'on se agrego un poco de no-determinismo para crear una sensaci\'on  de que no es una maquin\'a est\'atica. 
-Este no determinismo esta fuertemente influenciado por el conocimiento de dominio.
+%Este juego es muy particular, no existe una f\'ormula ganadora. Depende mucho de la picard\'ia del jugador. Por eso, apesar de estar basado en un sistema experto
+%con reglas, en muchos cosas como \'ultima opci\'on se agrego un poco de no-determinismo para crear una sensaci\'on  de que no es una maquin\'a est\'atica. 
+%Este no determinismo esta fuertemente influenciado por el conocimiento de dominio.
 
 Luego de analizar la metodolog\'ia de juego, se llego a una divisi\'on en 3 partes diferentes:
 \begin{itemize}
@@ -86,16 +99,19 @@ Luego de analizar la metodolog\'ia de juego, se llego a una divisi\'on en 3 part
 \end{itemize}
  
 
-\subsection{Truco}:
-El conocimiento de dominio que utiliza comprende:
+\subsubsection{Truco}:
+%La informaci\'on que consideramos pertinente a la hora de decidir el canto del truco esta
+%representada por las siguientes variables:
+Esta es la informaci\'on que consideramos pertinente a la hora de decidir el canto del truco:
 \begin{itemize}
-\item resp: valor booleano que indica si el humano cantó algo y tiene que contestar o si puede cantar.
-\item ultimo: el último canto hasta el momento en la ronda actual.
-\item El numero de la mano actual (primera, segunda o tercera)
+\item Informaci\'on sobre si el humano cant\'o algo y la m\'aquina debe contestar o si esta puede cantar (variable \textbf{resp})
+%\item resp: valor booleano que indica si el humano cantó algo y por lo tanto la m\'aquina tiene que contestar o si esta puede cantar.
+\item El \'ultimo canto hasta el momento en la ronda actual (variable \textbf{ultimo})
+\item El n\'umero de la mano actual (primera, segunda o tercera)
 \item Resultado de las manos anteriores
 \item Cartas jugadas en la mano actual (propias o del oponente)
-\item Clasificación de las cartas en mano.
-\item Posibles cartas del oponente según los puntos cantados en el envido y las cartas que jugó.
+\item Clasificaci\'on de las cartas en mano (cantidad de cartas altas, medias o bajas que tengo).
+\item Posibles cartas del oponente seg\'un los puntos cantados en el envido y las cartas que jug\'o.
 \end{itemize}
 
 Mediante todos estos atributos se conforman las reglas de inferencia que se dividen (a grandes rasgos) de la 
@@ -110,7 +126,47 @@ siguiente forma:
 	   se decide que cantar (Si, No, Re-Truco, Vale 4)
 \end{itemize}
 
-\subsection{Envido}
+De manera m\'as ilustrativa veamos un extracto del c\'odigo de la funci\'on truco
+\begin{figure}[h]
+\lstset{language=java,caption=Extracto de la funci\'on truco,label=lst:nicecode}
+\begin{lstlisting}
+
+if (resp) {  // Me cantaron, tengo que responder
+	switch(nroMano){
+		case 0:
+			var ran = getRandomInt(0,100);
+			switch(ultimo){
+		case 'T':
+			if (e2.jugador.puntosGanadosEnvido < 2 && 
+					(mediaalta) >= 2 && clasif.alta >= 1)
+				return 'S';
+			if (clasif.baja === 3 && ran <= 50) return 'RT'; 
+			if (mediaalta >= 2 && diff < 0  ) return 'RT';  // Te trato de correr
+			if (mediaalta >= 1 && diff > 0  ) return 'S';
+			return ( ran < 66 ? 'N' : 'S' ); //  (*) Rompe con la reglas staticas
+		case 'RT':
+		case 'V':
+			if (clasif.alta >= 2) return 'S';
+			if ((mediaalta) >= 2  && diff > 3 ) return 'S';
+			if (e2.jugador.puntosGanadosEnvido >= 2) return 'N';
+			return 'N';
+			break;
+		}
+	}
+}
+\end{lstlisting}
+\end{figure}
+
+
+
+En este caso vemos qu\'e sucede cuando el oponente canta algo (la variable \textbf{resp} toma el valor true). Primero determinamos
+en que n\'umero de mano nos encontramos. Luego en funci\'on de lo que fue cantado por el oponente (truco - T, re-truco - RT, o vale 4 - V)
+y en funci\'on de las cartas en mano asi como de los puntos obtenidos en el envido se decide que acci\'on tomar. Se puede ver tambi\'en
+una componente aleatorio. Si bien no es un recurso ideal, nos encontramos con el hecho de que una vez colectada toda la informaci\'on posible
+(que es incompleta) siempre hay un factor no determinista (simpre hay m\'as de un camino a seguir)
+que podr\'ia ser ignorado poniendo reglas fijas pero esto har\'ia que el comportamiento de la m\'aquina sea bastante "r\'igido".
+
+\subsubsection{Envido}
 El conocimiento de dominio que utiliza comprende:
 \begin{itemize}
 \item ultimo: Ultimo canto 
@@ -131,7 +187,7 @@ de cambios en la mentalidad de juego.
 
 
 
-\subsection{Jugar Carta}
+\subsubsection{Jugar Carta}
 El conocimiento de dominio que utiliza comprende:
 \begin{itemize}
 \item Juego primero o  el oponente ya jugo
