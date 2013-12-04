@@ -61,31 +61,31 @@ m\'odulo \textbf{ia.js} que usando esta informaci\'on como conocimiento de domin
 
 \section{Conocimiento de Dominio}
 
-\subsection*{Sobre el enga\~no en el truco}
+\subsection{Sobre el enga\~no en el truco}
 
-El truco es un tipo de juego con informaci\'on parcial en el sentido en que al menos 1 de los jugadores
-conoce solo un estado parcial del juego (en caso de un desarrollo "normal" del juego, esto deberia 
+El truco es un tipo de juego con informaci\'on parcial en el sentido en que al menos uno de los jugadores
+conoce solo un estado parcial del juego (en caso de un desarrollo "normal" del juego, esto deber\'ia 
 pasar para todos los jugadores involucrados). Esto implica una complejidad mayor a la hora de tomar desiciones
 ya que es necesario tener en cuenta las jugadas pasadas como las posibles jugadas. 
 El hecho de que los jugadores no conozcan exactamente el estado del resto de los jugadores puede ser aprovechado
-de manera beneficiosa para para intentar inducir estados falsos que den lugar a malas desiciones de juego 
+de manera beneficiosa para intentar inducir estados falsos que den lugar a malas desiciones de juego 
 por parte de otro de los jugadores. En el truco este enga\~no puede manifestarse de dos formas (que osamos en llamar
 activa y pasiva)\\
-\textbf{Activa:} el jugador toma la iniciativa mediante alun canto (envido o truco) con el fin de hacerle creer al oponente que tiene
+\textbf{Activa:} el jugador toma la iniciativa mediante alg\'un canto (envido o truco) con el fin de hacerle creer al oponente que tiene
 cartas o puntos que en realidad no tiene.\\
 \textbf{Pasiva:} el jugador plantea un escenario (generalmente mediante el orden en el que juega las cartas) de manera tal de que 
-la hipotetizaci\'on hecha por el oponente sobre el estado sea erronea llevandolo a tomar acciones 'activas' poco favorables para 
+la hipotetizaci\'on hecha por el oponente sobre el estado sea err\'onea llevandolo a tomar acciones 'activas' poco favorables para 
 este (basicamente que el jugador que esta intentando ser enga\~nado piense que el otro jugador tiene mas o menos puntos o cartas de 
 mayor o menor valor que en las que realidad tiene).\\
 Cabe destacar que un intento de enga\~no tanto activo como pasivo esta influenciado tambien por la informaci\'on que uno tiene del otro jugador,
 que en la mayoria de los casos sigue siendo parcial,  por lo cual hay una especie de ciclo de mentiras.\\
 De aqu\'i, que el enga\~no juega un rol importante en el truco.
 
-\subsection*{Funciones principales}
-Como se explica en la secci\'on anterior, el enga\~no es parte del juego y este esta generalmente influenciado por
+\subsection{Funciones principales}
+Como se explica en la secci\'on anterior, el enga\~no es parte del juego y este est\'a generalmente influenciado por
 la informaci\'on disponible, lo cual tambi\'en implica que no hay una estrategia ganadora. 
 A continuaci\'on haremos una descripci\'on de las funciones principales de la IA comentando c\'omo fue tenida en cuenta la 
-informaci\'on disponible y de que manera se intento darle "personalidad mentirosa" a la m\'aquina.
+informaci\'on disponible y de que manera se intento darle "picard\'ia" a la m\'aquina.
 
 %Este juego es muy particular, no existe una f\'ormula ganadora. Depende mucho de la picard\'ia del jugador. Por eso, apesar de estar basado en un sistema experto
 %con reglas, en muchos cosas como \'ultima opci\'on se agrego un poco de no-determinismo para crear una sensaci\'on  de que no es una maquin\'a est\'atica. 
@@ -158,10 +158,9 @@ if (resp) {  // Me cantaron, tengo que responder
 \end{figure}
 
 
-
 En este caso vemos qu\'e sucede cuando el oponente canta algo (la variable \textbf{resp} toma el valor true). Primero determinamos
 en que n\'umero de mano nos encontramos. Luego en funci\'on de lo que fue cantado por el oponente (truco - T, re-truco - RT, o vale 4 - V)
-y en funci\'on de las cartas en mano asi como de los puntos obtenidos en el envido se decide que acci\'on tomar. Se puede ver tambi\'en
+y en funci\'on de las cartas en mano as\'i como de los puntos obtenidos en el envido se decide que acci\'on tomar. Se puede ver tambi\'en
 una componente aleatorio. Si bien no es un recurso ideal, nos encontramos con el hecho de que una vez colectada toda la informaci\'on posible
 (que es incompleta) siempre hay un factor no determinista (simpre hay m\'as de un camino a seguir)
 que podr\'ia ser ignorado poniendo reglas fijas pero esto har\'ia que el comportamiento de la m\'aquina sea bastante "r\'igido".
