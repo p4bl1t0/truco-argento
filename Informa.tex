@@ -99,7 +99,7 @@ Luego de analizar la metodolog\'ia de juego, se llego a una divisi\'on en 3 part
 \end{itemize}
  
 
-\subsubsection{Truco}:
+\subsubsection{Truco}
 %La informaci\'on que consideramos pertinente a la hora de decidir el canto del truco esta
 %representada por las siguientes variables:
 Esta es la informaci\'on que consideramos pertinente a la hora de decidir el canto del truco:
@@ -158,7 +158,7 @@ if (resp) {  // Me cantaron, tengo que responder
 \end{figure}
 
 
-En este caso vemos qu\'e sucede cuando el oponente canta algo (la variable \textbf{resp} toma el valor true). Primero determinamos
+\noindent En este caso vemos qu\'e sucede cuando el oponente canta algo (la variable \textbf{resp} toma el valor true). Primero determinamos
 en que n\'umero de mano nos encontramos. Luego en funci\'on de lo que fue cantado por el oponente (truco - T, re-truco - RT, o vale 4 - V)
 y en funci\'on de las cartas en mano as\'i como de los puntos obtenidos en el envido se decide que acci\'on tomar. Se puede ver tambi\'en
 una componente aleatorio. Si bien no es un recurso ideal, nos encontramos con el hecho de que una vez colectada toda la informaci\'on posible
@@ -166,22 +166,69 @@ una componente aleatorio. Si bien no es un recurso ideal, nos encontramos con el
 que podr\'ia ser ignorado poniendo reglas fijas pero esto har\'ia que el comportamiento de la m\'aquina sea bastante "r\'igido".
 
 \subsubsection{Envido}
-El conocimiento de dominio que utiliza comprende:
+%El conocimiento de dominio que utiliza comprende:
+La informaci\'on tenida en cuenta comprende:
 \begin{itemize}
-\item ultimo: Ultimo canto 
-\item acumulado: La cantidad de puntos en juego
-\item ultimaCarta: Carta jugada por el oponente(si es que existe). Deduccion de puntos
-\item puntos: Puntos de Envido en mano
+\item El \'ultimo canto realizado (variable \textbf{ultimo})
+\item La cantidad de puntos en juego (variable \textbf{acumulado})
+\item Carta jugada por el oponente (si es que existe) y deducci\'on de posibles puntos (variable \textbf{ultimaCarta})
+\item Puntos de Envido en mano (variable \textbf{puntos})
 \item Puntos restantes para terminar el partido
 \item Puntos con lo que el oponente canto en otras manos
+\item Puntos que se pierden si no se acepta el envido (variable \textbf{puntosNoQuerido})
 \end{itemize}
 
-Para decidir el canto del envidio, primero se analiza los puntos restantes para terminar la partida debido a que la Falta Envido es diferente al 
-resto de los cantos. Si faltan dos o menos puntos para ganar, se responde a un canto con la Falta Envido o si se canta se elige esta.
-En caso de estar a mediados del juego se analiza si hubo cantos previos, si el oponente ya jug\'o una carta y los puntos que tengo en manos. 
-Todos estos valores generan una decisi\'on de juego, que por \'ultimo es avalada por un poco de  no-determinismo, para generar la sensaci\'on 
-de cambios en la mentalidad de juego. 
 
+Para decidir el canto del envidio, primero se analiza los puntos restantes para terminar la partida debido a que la Falta Envido es diferente al 
+resto de los cantos. Si faltan dos o menos puntos para ganar, se responde a cualquier canto de envido cantando la Falta. De igual manera, dadas
+las mismas condiciones si no se cant\'o nada y es el turno de la m\'aquina, se canta la Falta.\\
+\noindent En caso de estar a mediados del juego se tiene en cuenta si hubo cantos previos, si el oponente ya jug\'o una carta y la cantidad de puntos que tengo en mano. 
+Todos estos valores generan una decisi\'on de juego, a la que en \'ultima instancia se le agrega un factor aleatorio, con el fin de evitar nuevamente
+un comportamiento fijo en la m\'aquina.
+
+\newpage
+
+
+\begin{figure}[h]
+\lstset{language=java,caption=Extracto de la funci\'on envido,label=lst:nicecode}
+\begin{lstlisting}
+switch(ultimo){
+	case 'E':
+		var pRE = this.prob.promedioPuntos(this.envidoS)  ;
+		pRE =  pRE === null ? 0 :  pRE - 15 ; 
+										                  
+		if (ran + posible + diff + acumulado + pRE  <  valor  * 100 ) {
+			if (puntos >= 30 ) return  'EE' ; 
+			else return 'S';
+		} 
+		else { 
+			if (puntos >= 30 ) return 'S'; 
+			else  return 'N';  
+		}
+		break;
+}
+
+\end{lstlisting}
+\end{figure}
+
+\noindent En el extracto anterior se puede ver como se procesa el caso en el que el humano canta Envido.
+La variable \textbf{pRE} se inicializa con el promedio del historial de puntos con los que el humano
+cant\'o envido hasta ese momento. En la siguiente linea	se hace un corrimiento, centrando en cero el valor
+(tomando 15 como la mitad de los puntos que uno puede tener en el envido). La idea es que si el humano
+solia cantar hasta ese momento con menos de 15 puntos, el valor de pRE va a ser negativo y va a contribuir
+a que el primer if evalue a verdadero, dando lugar a que la m\'aquina revire (en terminos m\'as familiares,
+si el oponente suele cantar con pocos puntos, despu\'es de un tiempo va a perder algo de credibilidad y voy 
+a considerar revirarle en alg\'un momento).\\
+\noindent En el If siguiente se puede ver la expresi\'on: 
+\begin{center}
+	$ ran + posible + diff + acumulado + pRE  <  valor  * 100 $
+\end{center}
+que representa el recurso que usamos para introducir no determinismo. La idea es tener en cuenta a la hora de revirar
+o aceptar el envido, las variables que uno analizar\'ia en un juego normal, ante otras personas. B\'asicamente son 
+(est\'an tambi\'en explicadas m\'as arriba): qu\'e es lo que puede tener el oponente, cu\'al es la diferencia de puntos
+en el partido entre el opoente y yo, cuantos puntos hay en juego en este momento y el historial de canto del oponente.\\
+\noindent A esto decidimos agregarle la componente aleatoria y lo que hacemos es compararlo con un valor que asignamos a
+los puntos que tenemos en mano. Los valores a ambos lados de la desigualdad est\'an entre 0 y 100.
 %% Revisar estooo ultimo!!!! 
 
 
