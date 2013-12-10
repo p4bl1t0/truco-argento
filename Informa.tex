@@ -30,7 +30,7 @@
 El proyecto consiste en diseñar y desarrollar una inteligencia artificial capaz de jugar al juego de cartas conocido como Truco.
 Una descripci\'on completa del juego puede verse en \cite{reglas}. El dise\~no del juego fue pensado para permitir partidas 
 entre un humano y una maquina. No se tuvieron en cuenta todas las caracter\'isticas del juego, por ejemplo el canto de "Flor" 
-no esta soportado. 
+no esta soportado. El juego esta online en la direcci\'on: http://truco-argento.com.ar/
 
 Luego de un an\'alisis del juego optamos por representar la inteligencia artificial mediante un sistema basado en conocimientos, 
 más precisamente un sistema experto con reglas de producción de tipo deductivo (Forward Chaining). Si bien no se utiliz\'o un motor
@@ -47,7 +47,7 @@ La interfaz gr\'afica esta hecha con HTML y CSS. La l\'ogica del juego est\'a es
 controla la interacci\'on entre el jugador y la m\'aquina, es decir, determina quien puede jugar en un momento determinado y lleva cuenta del
 estado global del juego.
 
-\item El modulo \textbf{ia.js} continene la inteligencia artificial de la m\'aquina. Aqui se encuentra codificado el razonamiento realizado por la maquina
+\item El modulo \textbf{ia.js} continene la inteligencia artificial de la m\'aquina. Aqu\'i se encuentra codificado el razonamiento realizado por la maquina
 a la hora de tomar una desici\'on.
 
 \end{itemize}
@@ -213,7 +213,7 @@ switch(ultimo){
 
 \noindent En el extracto anterior se puede ver como se procesa el caso en el que el humano canta Envido.
 La variable \textbf{pRE} se inicializa con el promedio del historial de puntos con los que el humano
-cant\'o envido hasta ese momento. En la siguiente linea	se hace un corrimiento, centrando en cero el valor
+cant\'o envido hasta ese momento. En la siguiente l\'inea se hace un corrimiento, centrando en cero el valor
 (tomando 15 como la mitad de los puntos que uno puede tener en el envido). La idea es que si el humano
 solia cantar hasta ese momento con menos de 15 puntos, el valor de pRE va a ser negativo y va a contribuir
 a que el primer if evalue a verdadero, dando lugar a que la m\'aquina revire (en terminos m\'as familiares,
@@ -226,7 +226,7 @@ a considerar revirarle en alg\'un momento).\\
 que representa el recurso que usamos para introducir no determinismo. La idea es tener en cuenta a la hora de revirar
 o aceptar el envido, las variables que uno analizar\'ia en un juego normal, ante otras personas. B\'asicamente son 
 (est\'an tambi\'en explicadas m\'as arriba): qu\'e es lo que puede tener el oponente, cu\'al es la diferencia de puntos
-en el partido entre el opoente y yo, cuantos puntos hay en juego en este momento y el historial de canto del oponente.\\
+,en el partido ,entre el oponente y yo, cuantos puntos hay en juego en este momento y el historial de canto del oponente.\\
 \noindent A esto decidimos agregarle la componente aleatoria y lo que hacemos es compararlo con un valor que asignamos a
 los puntos que tenemos en mano. Los valores a ambos lados de la desigualdad est\'an entre 0 y 100.
 %% Revisar estooo ultimo!!!! 
