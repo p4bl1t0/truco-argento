@@ -26,16 +26,28 @@
 
 \maketitle 
 
-\section{Introducci\'on}
-El proyecto consiste en diseñar y desarrollar una inteligencia artificial capaz de jugar al juego de cartas conocido como Truco.
+\begin{abstract}
+El proyecto consiste en dise\~nar y desarrollar un sistema basado en t\'ecnicas de inteligencia artificial capaz de jugar al 
+juego de cartas conocido como Truco.
 Una descripci\'on completa del juego puede verse en \cite{reglas}. El dise\~no del juego fue pensado para permitir partidas 
-entre un humano y una maquina. No se tuvieron en cuenta todas las caracter\'isticas del juego, por ejemplo el canto de "Flor" 
-no esta soportado. El juego esta online en la direcci\'on: http://truco-argento.com.ar/
+entre un humano y una m\'aquina. No se tuvieron en cuenta todas las caracter\'isticas del juego, por ejemplo el canto de "Flor" 
+no est\'a soportado. El juego puede jugarse on-line entrando a la direcci\'on: http://truco-argento.com.ar/
 
 Luego de un an\'alisis del juego optamos por representar la inteligencia artificial mediante un sistema basado en conocimientos, 
-más precisamente un sistema experto con reglas de producción de tipo deductivo (Forward Chaining). Si bien no se utiliz\'o un motor
-deductivo en particular, creemos que los pasos seguidos por el sistema a la hora de tomar las desiciones representan el ciclo
-base de un motor deductivo.
+m\'as precisamente un sistema experto con reglas de producci\'on de tipo deductivo (Forward Chaining). Si bien no se utiliz\'o un motor
+deductivo en particular, los pasos seguidos por el sistema a la hora de tomar las desiciones representan el ciclo b\'asico de un motor deductivo.
+\end{abstract}
+\pagebreak
+
+\section{Introducci\'on}
+El proyecto consiste en el dise\~no e implementaci\'on de un sistema de inteligencia artificial capaz de jugar, de manera realista
+una partida de truco contra un oponente humano. Parte de la motivaci\'on que llev\'o a la elecci\'on surgi\'o del hecho de
+que es un cl\'asico argentino del que no hay muchas implementaciones disponibles que permitan desafiar la m\'aquina. Entre
+estas, se destaca la primera, conocida como TRUCO Arbister \cite{arbister}, nombrada asi en honor a sus creadores (Ariel y Enrique Arbister).\\
+La versi\'on que presentamos cuenta con pr\'acticamente todas las caracteristicas o cantos del juego original, siendo la
+\'unica excepci\'on el canto de la Flor que por el momento fue dejado afuera. Si bien esto responde a una de las modalidades de 
+juego (sin Flor), este canto posiblemente sea a\~nadido en el futuro.
+Para la implementaci\'on se eleigi\'o JavaScript y HTML haciendo de esta manera posible su ejecuci\'on desde diferentes plataformas. 
 
 
 \section{Lenguaje y Desarrollo}
@@ -53,7 +65,7 @@ a la hora de tomar una desici\'on.
 \end{itemize}
 
 A modo de dar una visi\'on general, el sistema funciona de la siguiente manera: \\
-Si el usuario es mano, cualquier acci\'ion que este haga ser\'a procesada por el modulo \textbf{truco.js}. Este se encargar\'a de contextualizar la
+Si el usuario es mano, cualquier acci\'on que este haga ser\'a procesada por el modulo \textbf{truco.js}. Este se encargar\'a de contextualizar la
 acci\'on (por ejemplo, determinar en que mano se realiz\'o el canto y/o si hubo un canto anterior a ese) y llamar\'a al correspondiente m\'etodo del
 m\'odulo \textbf{ia.js} que usando esta informaci\'on como conocimiento de dominio, determinar\'a con qu\'e acci\'on responder.
 
@@ -66,32 +78,32 @@ m\'odulo \textbf{ia.js} que usando esta informaci\'on como conocimiento de domin
 El truco es un tipo de juego con informaci\'on parcial en el sentido en que al menos uno de los jugadores
 conoce solo un estado parcial del juego (en caso de un desarrollo "normal" del juego, esto deber\'ia 
 pasar para todos los jugadores involucrados). Esto implica una complejidad mayor a la hora de tomar desiciones
-ya que es necesario tener en cuenta las jugadas pasadas como las posibles jugadas. 
+ya que es necesario tener en cuenta las jugadas pasadas como las posibles jugadas futuras. 
 El hecho de que los jugadores no conozcan exactamente el estado del resto de los jugadores puede ser aprovechado
 de manera beneficiosa para intentar inducir estados falsos que den lugar a malas desiciones de juego 
 por parte de otro de los jugadores. En el truco este enga\~no puede manifestarse de dos formas (que osamos en llamar
 activa y pasiva)\\
 \textbf{Activa:} el jugador toma la iniciativa mediante alg\'un canto (envido o truco) con el fin de hacerle creer al oponente que tiene
-cartas o puntos que en realidad no tiene.\\
+cartas o puntos que en \\ realidad no tiene.\\
 \textbf{Pasiva:} el jugador plantea un escenario (generalmente mediante el orden en el que juega las cartas) de manera tal de que 
-la hipotetizaci\'on hecha por el oponente sobre el estado sea err\'onea llevandolo a tomar acciones 'activas' poco favorables para 
-este (basicamente que el jugador que esta intentando ser enga\~nado piense que el otro jugador tiene mas o menos puntos o cartas de 
+la hipotetizaci\'on hecha por el oponente sobre el estado sea err\'onea llev\'andolo a tomar acciones 'activas' poco favorables para 
+\'este (b\'asicamente que el jugador que est\'a intentando ser enga\~nado piense que el otro jugador tiene m\'as o menos puntos o cartas de 
 mayor o menor valor que en las que realidad tiene).\\
-Cabe destacar que un intento de enga\~no tanto activo como pasivo esta influenciado tambien por la informaci\'on que uno tiene del otro jugador,
+Cabe destacar que un intento de enga\~no tanto activo como pasivo est\'a influenciado tambi\'en por la informaci\'on que uno tiene del otro jugador,
 que en la mayoria de los casos sigue siendo parcial,  por lo cual hay una especie de ciclo de mentiras.\\
 De aqu\'i, que el enga\~no juega un rol importante en el truco.
 
 \subsection{Funciones principales}
 Como se explica en la secci\'on anterior, el enga\~no es parte del juego y este est\'a generalmente influenciado por
 la informaci\'on disponible, lo cual tambi\'en implica que no hay una estrategia ganadora. 
-A continuaci\'on haremos una descripci\'on de las funciones principales de la IA comentando c\'omo fue tenida en cuenta la 
-informaci\'on disponible y de que manera se intento darle "picard\'ia" a la m\'aquina.
+A continuaci\'on haremos una descripci\'on de las funciones principales de la Inteligencia Artificial comentando c\'omo fue tenida en cuenta la 
+informaci\'on disponible y de qu\'e manera se intent\'o darle "picard\'ia" al programa.
 
 %Este juego es muy particular, no existe una f\'ormula ganadora. Depende mucho de la picard\'ia del jugador. Por eso, apesar de estar basado en un sistema experto
 %con reglas, en muchos cosas como \'ultima opci\'on se agrego un poco de no-determinismo para crear una sensaci\'on  de que no es una maquin\'a est\'atica. 
 %Este no determinismo esta fuertemente influenciado por el conocimiento de dominio.
 
-Luego de analizar la metodolog\'ia de juego, se llego a una divisi\'on en 3 partes diferentes:
+Luego de analizar la metodolog\'ia de juego, se opt\'o por dividir el dise\~no del programa en 3 partes diferentes:
 \begin{itemize}
 \item Truco: se encarga de decidir los cantos del truco
 \item Envido: decide el canto del envido
@@ -114,7 +126,7 @@ Esta es la informaci\'on que consideramos pertinente a la hora de decidir el can
 \item Posibles cartas del oponente seg\'un los puntos cantados en el envido y las cartas que jug\'o.
 \end{itemize}
 
-Mediante todos estos atributos se conforman las reglas de inferencia que se dividen (a grandes rasgos) de la 
+Mediante todos estos atributos se conforman las reglas de inferencia que se dividen, de manera general, de la 
 siguiente forma:
 
 \begin{itemize}
@@ -122,11 +134,11 @@ siguiente forma:
 \item 2) Se determina cual es la mano actual
 \item 3) Se determina el resultado de la mano anterior (para las manos 2 y 3)
 \item 4) Se clasifican las cartas que poseo
-\item 5) En función de la situación en la que se encuentre y teniendo en cuenta los datos correspondientes al dominio
+\item 5) En funci\'on de la situaci\'on en la que se encuentre y teniendo en cuenta los datos correspondientes al dominio
 	   se decide que cantar (Si, No, Re-Truco, Vale 4)
 \end{itemize}
 
-De manera m\'as ilustrativa veamos un extracto del c\'odigo de la funci\'on truco
+Veamos un extracto del c\'odigo de la funci\'on truco a modo ilustrativo:
 \begin{figure}[h]
 \lstset{language=java,caption=Extracto de la funci\'on truco,label=lst:nicecode}
 \begin{lstlisting}
@@ -186,7 +198,7 @@ las mismas condiciones si no se cant\'o nada y es el turno de la m\'aquina, se c
 Todos estos valores generan una decisi\'on de juego, a la que en \'ultima instancia se le agrega un factor aleatorio, con el fin de evitar nuevamente
 un comportamiento fijo en la m\'aquina.
 
-\newpage
+%\newpage
 
 
 \begin{figure}[h]
@@ -226,7 +238,7 @@ a considerar revirarle en alg\'un momento).\\
 que representa el recurso que usamos para introducir no determinismo. La idea es tener en cuenta a la hora de revirar
 o aceptar el envido, las variables que uno analizar\'ia en un juego normal, ante otras personas. B\'asicamente son 
 (est\'an tambi\'en explicadas m\'as arriba): qu\'e es lo que puede tener el oponente, cu\'al es la diferencia de puntos
-,en el partido ,entre el oponente y yo, cuantos puntos hay en juego en este momento y el historial de canto del oponente.\\
+en el partido entre el oponente y yo, cuantos puntos hay en juego en este momento y el historial de canto del oponente.\\
 \noindent A esto decidimos agregarle la componente aleatoria y lo que hacemos es compararlo con un valor que asignamos a
 los puntos que tenemos en mano. Los valores a ambos lados de la desigualdad est\'an entre 0 y 100.
 %% Revisar estooo ultimo!!!! 
@@ -260,6 +272,10 @@ El conocimiento de dominio necesario fue aportado por los integrantes del grupo
 
 	\bibitem{reglas} \emph{Descripci\'on y Reglas del Truco }. 
 	http://es.wikipedia.org/wiki/Truco\_argentino .
+
+	\bibitem{arbister} \emph{Primer truco interactivo }. 
+	http://www-2.dc.uba.ar/charlas/lud/truco .
+
 
 \end{thebibliography}
 \end{document}
