@@ -3,6 +3,7 @@
 % \usepackage[utf8]{inputenc}
 % \usepackage[dvips]{graphicx}
 \usepackage{listings}
+\usepackage{graphicx}
 
 
 \newcommand{\HRule}{\rule{\linewidth}{1mm}}
@@ -276,12 +277,41 @@ podemos decir que el comportamiento del programa se asemeja razonablemente al de
 Sin duda, si una persona se sienta con una libreta y juega lo sufuciente, tomando nota de los distintos escenarios y las
 distintas respuestas del programa, pueden quedar expuestos patrones que permitan determinar una gran parte
 ,o quiz\'a la totalidad, del conjunto de reglas que conforman la inteligencia artificial. Esto es algo
-que puede hacerse con m\'as de un juego y que sin poder evitarlo, intentamos hacer que sea lo m\'as dif\'icil
-posible de hacer.
+que puede hacerse con m\'as de un juego y que sin poder evitarlo, intentamos que sea lo m\'as dif\'icil
+posible de hacer. \\
+Con respecto a la implementaci\'on, llegamos a la conclusi\'on de que es un juego que cuenta con un 
+gran nivel de no determinismo que dificulta su modelado mediante el uso de reglas. El hecho
+de que se cuenta solo con informaci\'on parcial da lugar que en ciertos momentos sea imposible determinar 
+cual es la jugada \'optima.
+De todas maneras la bater\'ia de reglas que componen la inteligencia artificial puede ser extendida de 
+manera incremental haciendo que la granularidad en los detalles tenidos en cuenta por el programa
+a la hora de tomar una desici\'on sea mayor, obteniendo asi un comportamiento m\'as complejo 
+y "real".
 
+\section{Capturas de pantalla}
+Las siguientes capturas de pantalla grafican distintas etapas del juego.
 
-llegamos a la conclusi\'on de que es un juego que cuenta con un gran nivel de no determinismo lo que lo 
-hace dificil de modelar mediante el uso de reglas. Cuenta con una bater\'ia de reglas que hacen que 
+\begin{figure}
+%\begin{center}
+\noindent \makebox[\textwidth] {\includegraphics[width=\linewidth]{truco1.png}}
+\caption{Comienzo del juego.}
+%\end{center}
+\end{figure}
+
+\begin{figure}
+\noindent \makebox[\textwidth]{\includegraphics[width=\linewidth]{envido1.png}}
+\caption{El programa canta envido.}
+\end{figure}
+
+\begin{figure}
+\noindent \makebox[\textwidth]{\includegraphics[width=\linewidth]{envido2.png}}
+\caption {El humano canta envido y el programa acepta.}
+\end{figure}
+
+\begin{figure}
+\noindent \makebox[\textwidth]{\includegraphics[width=\linewidth]{retruco.png}}
+\caption {El humano retruca y el programa no acepta.}
+\end{figure}
 
 %%\section{Futuro Trabajo}
 %% Esto que estoy poniendo es para justificar los random pero hay que chamuyarlo mas
