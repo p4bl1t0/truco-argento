@@ -50,8 +50,16 @@ juego (sin Flor), este canto posiblemente sea a\~nadido en el futuro.
 Para la implementaci\'on se eleigi\'o JavaScript y HTML haciendo de esta manera posible su ejecuci\'on desde diferentes plataformas. 
 
 
-\section{Lenguaje y Desarrollo}
-El juego junto con la inteligencia fueron desarrollados desde cero en una interfaz web. 
+\section{Lenguaje y Desarollo}
+\subsection{Sobre el lenguaje usado}
+El lenguaje en el que se escribi\'o el juego es JavaScript. Si bien durante el cursado de la materia se vieron motores de reglas 
+apropiados para modelar este tipo de sistemas (como JESS por ejemplo) no encontramos un recurso de este tipo que estuviese enfocado
+al desarrollo de aplicaciones web. Como una de las metas que te\'iamos en realaci\'on a la implementaci\'on era aprovechar la "generalidad" que
+provee una p\'agina web para hacer una aplicaci\'on multiplataforma, decidimos continuar y modelar la toma de decisiones de 
+una manera que respeta, a nuestro entender, la filosof\'ia de un motor de reglas.
+
+\subsection{Breve descripcion de la arquitectura}
+El juego junto con la inteligencia artificial fueron desarrollados desde cero en una interfaz web. 
 
 La interfaz gr\'afica esta hecha con HTML y CSS. La l\'ogica del juego est\'a escrita en Javascript y est\'a separada en 2 modulos principales.  
 \begin{itemize}
@@ -261,6 +269,19 @@ Por supuesto hay reglas , que capturan situaciones especiales, provocando una va
 
 
 El conocimiento de dominio necesario fue aportado por los integrantes del grupo 
+
+\section{Resultados y conclusiones}
+Luego de varias partidas llevadas a cabo por voluntarios gentilmente ofrecidos asi como por nosotros,
+podemos decir que el comportamiento del programa se asemeja razonablemente al de un humano no-experto. 
+Sin duda, si una persona se sienta con una libreta y juega lo sufuciente, tomando nota de los distintos escenarios y las
+distintas respuestas del programa, pueden quedar expuestos patrones que permitan determinar una gran parte
+,o quiz\'a la totalidad, del conjunto de reglas que conforman la inteligencia artificial. Esto es algo
+que puede hacerse con m\'as de un juego y que sin poder evitarlo, intentamos hacer que sea lo m\'as dif\'icil
+posible de hacer.
+
+
+llegamos a la conclusi\'on de que es un juego que cuenta con un gran nivel de no determinismo lo que lo 
+hace dificil de modelar mediante el uso de reglas. Cuenta con una bater\'ia de reglas que hacen que 
 
 %%\section{Futuro Trabajo}
 %% Esto que estoy poniendo es para justificar los random pero hay que chamuyarlo mas
