@@ -32,11 +32,11 @@ El proyecto consiste en dise\~nar y desarrollar un sistema basado en t\'ecnicas 
 juego de cartas conocido como Truco.
 Una descripci\'on completa del juego puede verse en \cite{reglas}. El dise\~no del juego fue pensado para permitir partidas 
 entre un humano y una m\'aquina. No se tuvieron en cuenta todas las caracter\'isticas del juego, por ejemplo el canto de "Flor" 
-no est\'a soportado. El juego puede jugarse on-line entrando a la direcci\'on: http://truco-argento.com.ar/
+no est\'a soportado. El juego puede jugarse on-line entrando a la direcci\'on: http://truco-argento.com.ar
 
 Luego de un an\'alisis del juego optamos por representar la inteligencia artificial mediante un sistema basado en conocimientos, 
 m\'as precisamente un sistema experto con reglas de producci\'on de tipo deductivo (Forward Chaining). Si bien no se utiliz\'o un motor
-deductivo en particular, los pasos seguidos por el sistema a la hora de tomar las desiciones representan el ciclo b\'asico de un motor deductivo.
+deductivo en particular, los pasos seguidos por el sistema a la hora de tomar las decisiones representan el ciclo b\'asico de un motor deductivo.
 \end{abstract}
 \pagebreak
 
@@ -69,12 +69,12 @@ controla la interacci\'on entre el jugador y la m\'aquina, es decir, determina q
 estado global del juego.
 
 \item El modulo \textbf{ia.js} continene la inteligencia artificial de la m\'aquina. Aqu\'i se encuentra codificado el razonamiento realizado por la maquina
-a la hora de tomar una desici\'on.
+a la hora de tomar una decisi\'on.
 
 \end{itemize}
 
 A modo de dar una visi\'on general, el sistema funciona de la siguiente manera: \\
-Si el usuario es mano, cualquier acci\'on que este haga ser\'a procesada por el modulo \textbf{truco.js}. Este se encargar\'a de contextualizar la
+Si el usuario es mano, cualquier acci\'on que ejecute ser\'a procesada por el modulo \textbf{truco.js}. Este se encargar\'a de contextualizar la
 acci\'on (por ejemplo, determinar en que mano se realiz\'o el canto y/o si hubo un canto anterior a ese) y llamar\'a al correspondiente m\'etodo del
 m\'odulo \textbf{ia.js} que usando esta informaci\'on como conocimiento de dominio, determinar\'a con qu\'e acci\'on responder.
 
@@ -86,11 +86,11 @@ m\'odulo \textbf{ia.js} que usando esta informaci\'on como conocimiento de domin
 
 El truco es un tipo de juego con informaci\'on parcial en el sentido en que al menos uno de los jugadores
 conoce solo un estado parcial del juego (en caso de un desarrollo "normal" del juego, esto deber\'ia 
-pasar para todos los jugadores involucrados). Esto implica una complejidad mayor a la hora de tomar desiciones
+pasar para todos los jugadores involucrados). Esto implica una complejidad mayor a la hora de tomar decisiones
 ya que es necesario tener en cuenta las jugadas pasadas como las posibles jugadas futuras. 
-El hecho de que los jugadores no conozcan exactamente el estado del resto de los jugadores puede ser aprovechado
-de manera beneficiosa para intentar inducir estados falsos que den lugar a malas desiciones de juego 
-por parte de otro de los jugadores. En el truco este enga\~no puede manifestarse de dos formas (que osamos en llamar
+El hecho de que cada jugador ignore una parcialidad del estado del resto de los oponentes puede ser aprovechado
+de manera "maliciosa" por parte de alguno de ellos para intentar inducir estados falsos que den lugar a que otro jugador
+tome una mala decisi\'on de juego. En el truco este enga\~no puede manifestarse de dos formas (que osamos en llamar
 activa y pasiva)\\
 \textbf{Activa:} el jugador toma la iniciativa mediante alg\'un canto (envido o truco) con el fin de hacerle creer al oponente que tiene
 cartas o puntos que en \\ realidad no tiene.\\
@@ -99,7 +99,7 @@ la hipotetizaci\'on hecha por el oponente sobre el estado sea err\'onea llev\'an
 \'este (b\'asicamente que el jugador que est\'a intentando ser enga\~nado piense que el otro jugador tiene m\'as o menos puntos o cartas de 
 mayor o menor valor que en las que realidad tiene).\\
 Cabe destacar que un intento de enga\~no tanto activo como pasivo est\'a influenciado tambi\'en por la informaci\'on que uno tiene del otro jugador,
-que en la mayoria de los casos sigue siendo parcial,  por lo cual hay una especie de ciclo de mentiras.\\
+que en la mayoria de los casos sigue siendo parcial,  por lo cual hay una especie de circulo de mentiras.\\
 De aqu\'i, que el enga\~no juega un rol importante en el truco.
 
 \subsection{Funciones principales}
@@ -182,7 +182,7 @@ if (resp) {  // Me cantaron, tengo que responder
 \noindent En este caso vemos qu\'e sucede cuando el oponente canta algo (la variable \textbf{resp} toma el valor true). Primero determinamos
 en que n\'umero de mano nos encontramos. Luego en funci\'on de lo que fue cantado por el oponente (truco - T, re-truco - RT, o vale 4 - V)
 y en funci\'on de las cartas en mano as\'i como de los puntos obtenidos en el envido se decide que acci\'on tomar. Se puede ver tambi\'en
-una componente aleatorio. Si bien no es un recurso ideal, nos encontramos con el hecho de que una vez colectada toda la informaci\'on posible
+una componente aleatoria. Si bien no es un recurso ideal, nos encontramos con el hecho de que una vez colectada toda la informaci\'on posible
 (que es incompleta) siempre hay un factor no determinista (simpre hay m\'as de un camino a seguir)
 que podr\'ia ser ignorado poniendo reglas fijas pero esto har\'ia que el comportamiento de la m\'aquina sea bastante "r\'igido".
 
@@ -248,8 +248,15 @@ que representa el recurso que usamos para introducir no determinismo. La idea es
 o aceptar el envido, las variables que uno analizar\'ia en un juego normal, ante otras personas. B\'asicamente son 
 (est\'an tambi\'en explicadas m\'as arriba): qu\'e es lo que puede tener el oponente, cu\'al es la diferencia de puntos
 en el partido entre el oponente y yo, cuantos puntos hay en juego en este momento y el historial de canto del oponente.\\
-\noindent A esto decidimos agregarle la componente aleatoria y lo que hacemos es compararlo con un valor que asignamos a
-los puntos que tenemos en mano. Los valores a ambos lados de la desigualdad est\'an entre 0 y 100.
+\noindent A esto le agregamos una componente aleatoria como valor final a tener en cuenta.
+Como ya mencionamos, los jugadores siempre tienen informaci\'on parcial o incompleta, lo que imposibilita
+determinar la elecci\'on \'optima y da lugar al no-determinismo. Es por esto que se induce un sesgo o arbitrariedad
+a la hora de tomar la decisi\'on, que creemos no es completamente artificial (no es de extra\~narse que durante una partida entre
+2 humanos surjan en m\'as de una ocasi\'on situaciones como esta que terminan siendo resueltas por arbitrariedades, algunas de
+ellas basadas en caracteristicas inherentes a una persona como gestos faciales o modulaci\'on de la voz, pero arbitrariedades
+al fin). 
+La componente aleatoria es comparada con un valor que asignamos a los puntos que tenemos en mano. 
+Los valores a ambos lados de la desigualdad est\'an entre 0 y 100.
 %% Revisar estooo ultimo!!!! 
 
 
@@ -285,7 +292,7 @@ de que se cuenta solo con informaci\'on parcial da lugar que en ciertos momentos
 cual es la jugada \'optima.
 De todas maneras la bater\'ia de reglas que componen la inteligencia artificial puede ser extendida de 
 manera incremental haciendo que la granularidad en los detalles tenidos en cuenta por el programa
-a la hora de tomar una desici\'on sea mayor, obteniendo asi un comportamiento m\'as complejo 
+a la hora de tomar una decisi\'on sea mayor, obteniendo asi un comportamiento m\'as complejo 
 y "real".
 
 \section{Capturas de pantalla}
