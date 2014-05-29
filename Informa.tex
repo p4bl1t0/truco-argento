@@ -4,6 +4,7 @@
 % \usepackage[dvips]{graphicx}
 \usepackage{listings}
 \usepackage{graphicx}
+\usepackage{afterpage}
 
 
 \newcommand{\HRule}{\rule{\linewidth}{1mm}}
@@ -31,7 +32,7 @@
 El proyecto consiste en dise\~nar y desarrollar un sistema basado en t\'ecnicas de inteligencia artificial capaz de jugar al 
 juego de cartas conocido como Truco.
 Una descripci\'on completa del juego puede verse en \cite{reglas}. El dise\~no del juego fue pensado para permitir partidas 
-entre un humano y una m\'aquina. No se tuvieron en cuenta todas las caracter\'isticas del juego, por ejemplo el canto de "Flor" 
+entre un humano y una m\'aquina. No se tuvieron en cuenta todas las caracter\'isticas del juego, por ejemplo el canto de ``Flor'' 
 no est\'a soportado. El juego puede jugarse on-line entrando a la direcci\'on: http://truco-argento.com.ar
 
 Luego de un an\'alisis del juego optamos por representar la inteligencia artificial mediante un sistema basado en conocimientos, 
@@ -55,7 +56,7 @@ Para la implementaci\'on se eleigi\'o JavaScript y HTML haciendo de esta manera 
 \subsection{Sobre el lenguaje usado}
 El lenguaje en el que se escribi\'o el juego es JavaScript. Si bien durante el cursado de la materia se vieron motores de reglas 
 apropiados para modelar este tipo de sistemas (como JESS por ejemplo) no encontramos un recurso de este tipo que estuviese enfocado
-al desarrollo de aplicaciones web. Como una de las metas que te\'iamos en realaci\'on a la implementaci\'on era aprovechar la "generalidad" que
+al desarrollo de aplicaciones web. Como una de las metas que te\'iamos en realaci\'on a la implementaci\'on era aprovechar la ``generalidad'' que
 provee una p\'agina web para hacer una aplicaci\'on multiplataforma, decidimos continuar y modelar la toma de decisiones de 
 una manera que respeta, a nuestro entender, la filosof\'ia de un motor de reglas.
 
@@ -85,11 +86,11 @@ m\'odulo \textbf{ia.js} que usando esta informaci\'on como conocimiento de domin
 \subsection{Sobre el enga\~no en el truco}
 
 El truco es un tipo de juego con informaci\'on parcial en el sentido en que al menos uno de los jugadores
-conoce solo un estado parcial del juego (en caso de un desarrollo "normal" del juego, esto deber\'ia 
+conoce solo un estado parcial del juego (en caso de un desarrollo ``normal'' del juego, esto deber\'ia 
 pasar para todos los jugadores involucrados). Esto implica una complejidad mayor a la hora de tomar decisiones
 ya que es necesario tener en cuenta las jugadas pasadas como las posibles jugadas futuras. 
 El hecho de que cada jugador ignore una parcialidad del estado del resto de los oponentes puede ser aprovechado
-de manera "maliciosa" por parte de alguno de ellos para intentar inducir estados falsos que den lugar a que otro jugador
+de manera ``maliciosa'' por parte de alguno de ellos para intentar inducir estados falsos que den lugar a que otro jugador
 tome una mala decisi\'on de juego. En el truco este enga\~no puede manifestarse de dos formas (que osamos en llamar
 activa y pasiva)\\
 \textbf{Activa:} el jugador toma la iniciativa mediante alg\'un canto (envido o truco) con el fin de hacerle creer al oponente que tiene
@@ -103,10 +104,11 @@ que en la mayoria de los casos sigue siendo parcial,  por lo cual hay una especi
 De aqu\'i, que el enga\~no juega un rol importante en el truco.
 
 \subsection{Funciones principales}
+El c\'odigo del juego est\'a disponible en \cite{codigo}
 Como se explica en la secci\'on anterior, el enga\~no es parte del juego y este est\'a generalmente influenciado por
 la informaci\'on disponible, lo cual tambi\'en implica que no hay una estrategia ganadora. 
 A continuaci\'on haremos una descripci\'on de las funciones principales de la Inteligencia Artificial comentando c\'omo fue tenida en cuenta la 
-informaci\'on disponible y de qu\'e manera se intent\'o darle "picard\'ia" al programa.
+informaci\'on disponible y de qu\'e manera se intent\'o darle ``picard\'ia'' al programa.
 
 %Este juego es muy particular, no existe una f\'ormula ganadora. Depende mucho de la picard\'ia del jugador. Por eso, apesar de estar basado en un sistema experto
 %con reglas, en muchos cosas como \'ultima opci\'on se agrego un poco de no-determinismo para crear una sensaci\'on  de que no es una maquin\'a est\'atica. 
@@ -184,7 +186,7 @@ en que n\'umero de mano nos encontramos. Luego en funci\'on de lo que fue cantad
 y en funci\'on de las cartas en mano as\'i como de los puntos obtenidos en el envido se decide que acci\'on tomar. Se puede ver tambi\'en
 una componente aleatoria. Si bien no es un recurso ideal, nos encontramos con el hecho de que una vez colectada toda la informaci\'on posible
 (que es incompleta) siempre hay un factor no determinista (simpre hay m\'as de un camino a seguir)
-que podr\'ia ser ignorado poniendo reglas fijas pero esto har\'ia que el comportamiento de la m\'aquina sea bastante "r\'igido".
+que podr\'ia ser ignorado poniendo reglas fijas pero esto har\'ia que el comportamiento de la m\'aquina sea bastante ``r\'igido''.
 
 \subsubsection{Envido}
 %El conocimiento de dominio que utiliza comprende:
@@ -293,16 +295,17 @@ cual es la jugada \'optima.
 De todas maneras la bater\'ia de reglas que componen la inteligencia artificial puede ser extendida de 
 manera incremental haciendo que la granularidad en los detalles tenidos en cuenta por el programa
 a la hora de tomar una decisi\'on sea mayor, obteniendo asi un comportamiento m\'as complejo 
-y "real".
+y ``real''.
 
 \section{Capturas de pantalla}
 Las siguientes capturas de pantalla grafican distintas etapas del juego.
 
+\clearpage
 \begin{figure}
-%\begin{center}
+\begin{center}
 \noindent \makebox[\textwidth] {\includegraphics[width=\linewidth]{truco1.png}}
 \caption{Comienzo del juego.}
-%\end{center}
+\end{center}
 \end{figure}
 
 \begin{figure}
@@ -320,12 +323,7 @@ Las siguientes capturas de pantalla grafican distintas etapas del juego.
 \caption {El humano retruca y el programa no acepta.}
 \end{figure}
 
-%%\section{Futuro Trabajo}
-%% Esto que estoy poniendo es para justificar los random pero hay que chamuyarlo mas
-%%Este juego es muy particular, no existe una f\'ormula ganadora. Depende mucho de la picard\'ia del jugador. Por eso, apesar de estar basado en un sistema experto
-%%con reglas, en muchos cosas como \'ultima opci\'on se agrego un poco de no-determinismo para crear una sensaci\'on  de que no es una maquin\'a est\'atica. 
-%%Esto podr\'ia cambiarse agregando diferentes estilos de juegos, como el mentiroso, el defensivo o el agresivo.   
-
+\clearpage
 \begin{thebibliography}{9}
 
 	\bibitem{reglas} \emph{Descripci\'on y Reglas del Truco }. 
@@ -333,6 +331,10 @@ Las siguientes capturas de pantalla grafican distintas etapas del juego.
 
 	\bibitem{arbister} \emph{Primer truco interactivo }. 
 	http://www-2.dc.uba.ar/charlas/lud/truco .
+
+	\bibitem{codigo} \emph{C\'odigo del juego}.
+	https://github.com/p4bl1t0/truco-argento.git
+
 
 
 \end{thebibliography}
