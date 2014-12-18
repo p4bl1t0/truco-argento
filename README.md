@@ -9,3 +9,6 @@ Handcrafted by
 * Pablo Botta
 * Esteban Campostrini
   
+Browser Compatibility: IE 9+, Firefox, Chrome and Opera
+
+GPL v3.0
