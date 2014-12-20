@@ -42,7 +42,7 @@
 	 	} else {
 			this.cbx.checked = true;
 		}
-		 
+		  
 		this.play = function (soundName) {
 			if(this.cbx.checked && this.fx[soundName] !== null && this.fx[soundName] !== undefined) {
 				this.fx[soundName].play();
@@ -1354,44 +1354,34 @@
 	//******************************************************************
 	//******************************************************************
 	
-	$(document).ready(function () {
+	function getPhoneGapPath() {
+		var path = window.location.pathname;
+		path = path.substr( path, path.length - 10 );
+		return 'file://' + path;
+	}; 
+	
+	//$(document).ready(function () {
+	document.addEventListener("deviceready", function () { 
 		audio = new Sonido($('#cbxAudio').get(0));
 		//Cargo recursos
-		var a = new Audio();
-		a.setAttribute("src","audio/envido.wav");
-		a.load();
+		console.log("File path: " + getPhoneGapPath() + "audio/envido.wav");
+		var a = new Media(getPhoneGapPath() + "audio/envido.mp3");
 		audio.fx['E'] = a;
-		a = new Audio();
-		a.setAttribute("src","audio/real-envido.wav");
-		a.load();
+		a = new Media(getPhoneGapPath() + "audio/real-envido.mp3");
 		audio.fx['R'] = a;
-		a = new Audio();
-		a.setAttribute("src","audio/falta-envido.wav");
-		a.load();
+		a = new Media(getPhoneGapPath() + "audio/falta-envido.mp3");
 		audio.fx['F'] = a;
-		a = new Audio();
-		a.setAttribute("src","audio/quiero.wav");
-		a.load();
+		a = new Media(getPhoneGapPath() + "audio/quiero.mp3");
 		audio.fx['S'] = a;
-		a = new Audio();
-		a.setAttribute("src","audio/no-quiero.wav");
-		a.load();
+		a = new Media(getPhoneGapPath() + "audio/no-quiero.mp3");
 		audio.fx['N'] = a;
-		a = new Audio();
-		a.setAttribute("src","audio/truco.wav");
-		a.load();
+		a = new Media(getPhoneGapPath() + "audio/truco.mp3");
 		audio.fx['T'] = a;
-		a = new Audio();
-		a.setAttribute("src","audio/re-truco.wav");
-		a.load();
+		a = new Media(getPhoneGapPath() + "audio/re-truco.mp3");
 		audio.fx['RT'] = a;
-		a = new Audio();
-		a.setAttribute("src","audio/vale-cuatro.wav");
-		a.load();
+		a = new Media(getPhoneGapPath() + "audio/vale-cuatro.mp3");
 		audio.fx['V'] = a;
-		a = new Audio();
-		a.setAttribute("src","audio/son-buenas.wav");
-		a.load();
+		a = new Media(getPhoneGapPath() + "audio/son-buenas.mp3");
 		audio.fx['SB'] = a;
 		//Comienza la acción
 		_partidaActual = new Partida();
