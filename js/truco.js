@@ -5,7 +5,7 @@
 	var _partidaActual = null;
 	var audio = null;
 	var limitePuntaje = 15;
-	var Debug = false;
+	var Debug = false; 
 	
 	
 	//Funciones Primitivas
@@ -1301,7 +1301,7 @@
 		}
 		this.equipoSegundo.jugador = maquina;
 		
-		var _$tbl = $('#game-score');
+		var _$tbl = $('#game-score'); 
 		_$tbl.find('.player-one-name').html(jugador1.nombre);
 		_$tbl.find('.player-two-name').html(maquina.nombre);
 		_$tbl.find('.player-one-points').html('0');
@@ -1316,7 +1316,7 @@
 	//------------------------------------------------------------------
 	
 	Partida.prototype.continuar = function () {
-		limitePuntaje = parseInt($('.rbd-ptos-partida:checked').val(), 10);
+		//limitePuntaje = parseInt($('.rbd-ptos-partida:checked').val(), 10);
 	    while (this.equipoPrimero.puntos < limitePuntaje && this.equipoSegundo.puntos < limitePuntaje) {
 			var _$tbl = $('#game-score');
 			_log.innerHTML =  "";
@@ -1361,31 +1361,46 @@
 	}; 
 	
 	//$(document).ready(function () {
-	document.addEventListener("deviceready", function () { 
+	if (window.device) {
+		document.addEventListener("deviceready", Init);
+	} else {
+		$(document).ready(Init);
+	}	
+	
+	function Init() { 
+		$('.bs-example-modal-lg').modal("show");
+	}
+	
+	$("#btIniciar").click(function () {
+		limitePuntaje = parseInt($('.rbd-ptos-partida:checked').val(), 15);
+		var usrName = $('#userName').val();
+		$('.bs-example-modal-lg').modal("hide");
+
 		audio = new Sonido($('#cbxAudio').get(0));
 		//Cargo recursos
-		console.log("File path: " + getPhoneGapPath() + "audio/envido.wav");
-		var a = new Media(getPhoneGapPath() + "audio/envido.mp3");
-		audio.fx['E'] = a;
-		a = new Media(getPhoneGapPath() + "audio/real-envido.mp3");
-		audio.fx['R'] = a;
-		a = new Media(getPhoneGapPath() + "audio/falta-envido.mp3");
-		audio.fx['F'] = a;
-		a = new Media(getPhoneGapPath() + "audio/quiero.mp3");
-		audio.fx['S'] = a;
-		a = new Media(getPhoneGapPath() + "audio/no-quiero.mp3");
-		audio.fx['N'] = a;
-		a = new Media(getPhoneGapPath() + "audio/truco.mp3");
-		audio.fx['T'] = a;
-		a = new Media(getPhoneGapPath() + "audio/re-truco.mp3");
-		audio.fx['RT'] = a;
-		a = new Media(getPhoneGapPath() + "audio/vale-cuatro.mp3");
-		audio.fx['V'] = a;
-		a = new Media(getPhoneGapPath() + "audio/son-buenas.mp3");
-		audio.fx['SB'] = a;
+		if (window.device) {
+			var a = new Media(getPhoneGapPath() + "audio/envido.mp3");
+			audio.fx['E'] = a;
+			a = new Media(getPhoneGapPath() + "audio/real-envido.mp3");
+			audio.fx['R'] = a;
+			a = new Media(getPhoneGapPath() + "audio/falta-envido.mp3");
+			audio.fx['F'] = a;
+			a = new Media(getPhoneGapPath() + "audio/quiero.mp3");
+			audio.fx['S'] = a;
+			a = new Media(getPhoneGapPath() + "audio/no-quiero.mp3");
+			audio.fx['N'] = a;
+			a = new Media(getPhoneGapPath() + "audio/truco.mp3");
+			audio.fx['T'] = a;
+			a = new Media(getPhoneGapPath() + "audio/re-truco.mp3");
+			audio.fx['RT'] = a;
+			a = new Media(getPhoneGapPath() + "audio/vale-cuatro.mp3");
+			audio.fx['V'] = a;
+			a = new Media(getPhoneGapPath() + "audio/son-buenas.mp3");
+			audio.fx['SB'] = a;
+		} else audio = new Sonido(false);
 		//Comienza la acción
 		_partidaActual = new Partida();
-		_partidaActual.iniciar('Jugador 1', 'Computadora');
+		_partidaActual.iniciar(usrName, 'Computadora');
 
 		//Events Bindings
 		var _inputsName = $('.human-name');

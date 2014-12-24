@@ -52,15 +52,16 @@
 				<div id="log"></div>
 			</div>
 			<div class="game-main" style="position: relative;">
-				<div id="configuraciones" class="box box--collapsable">
+				<!-- Confiugraciones al principio --> 
+				<!--<div id="configuraciones" class="box box--collapsable">
 					<div class="box-title">
 						<img src="images/gear.png" alt="Acceso a las configuraciones" title="Acceso a las configuraciones" width="32" /> 
 					</div>
 					<div class="box-content">
 						<input type="checkbox" id="cbxAudio" checked="checked" />
 						<label for="cbxAudio">Sonido</label>
-						<!--<input type="checkbox" id="cbxDebug" checked="" />
-						<label for="cbxDebug">Debug</label>-->
+						 <input type="checkbox" id="cbxDebug" checked="" />
+						<label for="cbxDebug">Debug</label> 
 						<div>
 							<div class="label">Jugar a:</div>
 							<input type="radio" value="15" id="rdb15" class="rbd-ptos-partida" checked="checked" name="pto" />
@@ -69,7 +70,7 @@
 							<label for="rdb10">30 pts.</label>
 						</div>
 					</div>
-				</div>
+				</div>-->
 				<div id="player-two" class="player">
 					<h3 class="player-content">
 						<span class="player-name"></span>
@@ -97,9 +98,44 @@
 			<div class="game-footer">
 			</div>
 		</div>
+		<!-- Bootstrap Modal -->
+		<!-- Init Modal -->
+		<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content"> 
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h3 class="modal-title" id="myModalLabel">Configuraciones</h3>
+					</div>
+				<div class="modal-body"> 
+					<div class="form-group">
+						<label for="exampleInputEmail1">Nombre</label>
+						<input type="text" class="form-control" id="userName" placeholder="Ingrese su nombre">
+					</div>
+					<div class="form-group">
+						<label class="control-label">Jugar a: </label>
+						<label class="radio-inline">
+							<input type="radio" class="rbd-ptos-partida" name="radioPtos" id="rbpto15" value="15" checked> 15 Puntos
+						</label>
+						<label class="radio-inline">
+							<input type="radio" class="rbd-ptos-partida" name="radioPtos" id="rbpto30" value="30"> 30 Puntos
+						</label>
+					</div>	
+					<label class="checkbox-inline">
+						<input type="checkbox" id="cbxAudio" value="true" checked> Sonido
+					</label>
+					
+				</div>
+				<div class="modal-footer"> 
+					<button type="button" class="btn btn-primary"  id="btIniciar" >Iniciar</button>
+				</div>
+			</div>
+		  </div>
+		</div>
+		
 	</body>
-	<script type="text/javascript" src="js/jquery.min.js"></script>
-	<script type="text/javascript" src="cordova.js"></script>
+	<script type="text/javascript" src="js/jquery.min.js"></script> 
+	<script type="text/javascript" src="js/bootstrap.js"></script>
 	<script type="text/javascript" src="js/truco.js"></script>
 	<script type="text/javascript" src="js/ia.js"></script>
 </html>
