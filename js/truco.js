@@ -1368,12 +1368,27 @@
 	}	
 	
 	function Init() { 
-		$('.bs-example-modal-lg').modal("show");
+		$('.bs-example-modal-lg').modal("show");	
+		if (window.localStorage) { 		
+			var nombre = localStorage.getItem("nombre");
+			$('#userName').val(nombre);
+			$('#userName').focus();
+		}
 	}
 	
 	$("#btIniciar").click(function () {
-		limitePuntaje = parseInt($('.rbd-ptos-partida:checked').val(), 15);
 		var usrName = $('#userName').val();
+		if (usrName == "") {
+			$("#txtName").addClass('has-error');			
+			$('#userName').focus();
+			return ;
+		}
+		
+		if (window.localStorage) { 
+			localStorage.setItem("nombre", usrName); 
+		}	
+		
+		limitePuntaje = parseInt($('.rbd-ptos-partida:checked').val()); 
 		$('.bs-example-modal-lg').modal("hide");
 
 		audio = new Sonido($('#cbxAudio').get(0));
