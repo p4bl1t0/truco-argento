@@ -1370,7 +1370,19 @@
 	function Init() { 
 		$('.bs-example-modal-lg').modal("show");	
 		if (window.localStorage) { 		
-			var nombre = localStorage.getItem("nombre");
+			var puntos = localStorage.getItem("puntos");
+			if (puntos == 15) {
+				$('#rbpto15').prop('checked', true);
+				$('#rbpto30').prop('checked', false);
+				$('#btpto15').addClass('active');
+				$('#btpto30').removeClass('active');
+			} else {
+				$('#rbpto15').prop('checked', false);
+				$('#rbpto30').prop('checked', true);
+				$('#btpto15').removeClass('active');
+				$('#btpto30').addClass('active');
+			}
+			var nombre = localStorage.getItem("nombre");			
 			$('#userName').val(nombre);
 			$('#userName').focus();
 		}
@@ -1383,12 +1395,14 @@
 			$('#userName').focus();
 			return ;
 		}
+		limitePuntaje = parseInt($('.rbd-ptos-partida:checked').val()); 
 		
 		if (window.localStorage) { 
 			localStorage.setItem("nombre", usrName); 
+			localStorage.setItem("puntos", limitePuntaje); 
 		}	
 		
-		limitePuntaje = parseInt($('.rbd-ptos-partida:checked').val()); 
+		
 		$('.bs-example-modal-lg').modal("hide");
 
 		audio = new Sonido($('#cbxAudio').get(0));
