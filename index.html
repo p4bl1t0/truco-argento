@@ -104,38 +104,72 @@
 			<div class="modal-dialog modal-sm">
 				<div class="modal-content"> 
 					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
 						<h3 class="modal-title" id="myModalLabel">Configuraciones</h3>
 					</div>
-				<div class="modal-body"> 
-					<div id="txtName" class="form-group">
-						<label for="exampleInputEmail1">Nombre</label>
-						<input type="text" class="form-control" id="userName" placeholder="Ingrese su nombre">
-					</div>
-					<div class="form-group">
-						<label class="control-label">Jugar a: </label>
-						<div class="btn-group" data-toggle="buttons"> 
-							<label class="btn btn-primary active" id="btpto15">
-								<input type="radio" class="rbd-ptos-partida" name="radioPtos" id="rbpto15" value="15" checked> 15 Puntos
-							</label>
-							<label class="btn btn-primary" id="btpto30">
-								<input type="radio" class="rbd-ptos-partida" name="radioPtos" id="rbpto30" value="30"> 30 Puntos
-							</label>
+					<div class="modal-body"> 
+						<div id="txtName" class="form-group">
+							<label for="exampleInputEmail1">Nombre</label>
+							<input type="text" class="form-control" id="userName" placeholder="Ingrese su nombre">
 						</div>
-						 
-					</div>	
-					<label class="checkbox-inline">
-						<input type="checkbox" id="cbxAudio" value="true" checked> Sonido
-					</label>
-					
-				</div>
-				<div class="modal-footer"> 
-					<button type="button" class="btn btn-block btn-primary"  id="btIniciar" >Iniciar</button>
+						<div class="form-group">
+							<label class="control-label">Jugar a: </label>
+							<div class="btn-group" data-toggle="buttons"> 
+								<label class="btn btn-primary active" id="btpto15">
+									<input type="radio" class="rbd-ptos-partida" name="radioPtos" id="rbpto15" value="15" checked> 15 Puntos
+								</label>
+								<label class="btn btn-primary" id="btpto30">
+									<input type="radio" class="rbd-ptos-partida" name="radioPtos" id="rbpto30" value="30"> 30 Puntos
+								</label>
+							</div>
+							 
+						</div>	
+						<label class="checkbox-inline">
+							<input type="checkbox" id="cbxAudio" value="true" checked> Sonido
+						</label>
+						
+					</div>
+					<div class="modal-footer"> 
+						<button type="button" class="btn btn-block btn-primary"  id="btIniciar" >Iniciar</button>
+					</div>
 				</div>
 			</div>
-		  </div>
 		</div>
-		
+		<!-- FINAL Modal -->
+		<div class="modal fade modal-final" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content"> 
+					<div class="modal-header"> 
+						<h3 class="modal-title" id="myModalLabel">Resultado Final</h3>
+					</div>
+					<div class="modal-body"> 
+						<div id="txtName" class="form-group">
+							<label for="exampleInputEmail1">Nombre</label>
+							<input type="text" class="form-control" id="userName" placeholder="Ingrese su nombre">
+						</div>
+						<div class="form-group">
+							<label class="control-label">Jugar a: </label>
+							<div class="btn-group" data-toggle="buttons"> 
+								<label class="btn btn-primary active" id="btpto15">
+									<input type="radio" class="rbd-ptos-partida" name="radioPtos" id="rbpto15" value="15" checked> 15 Puntos
+								</label>
+								<label class="btn btn-primary" id="btpto30">
+									<input type="radio" class="rbd-ptos-partida" name="radioPtos" id="rbpto30" value="30"> 30 Puntos
+								</label>
+							</div>
+							 
+						</div>	
+						<label class="checkbox-inline">
+							<input type="checkbox" id="cbxAudio" value="true" checked> Sonido
+						</label>
+						
+					</div>
+					<div class="modal-footer"> 
+						<button type="button" class="btn btn-block btn-primary"  id="btIniciar" >Jugar de Nuevo</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	</body>
 	<script type="text/javascript" src="js/jquery.min.js"></script> 
 	<script type="text/javascript" src="js/bootstrap.js"></script>

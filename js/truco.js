@@ -1345,7 +1345,7 @@
 			
 		}
 		if(!(this.equipoPrimero.puntos < limitePuntaje && this.equipoSegundo.puntos < limitePuntaje)) {
-		    _log.innerHTML = '<hr />' + '<br /> PUNTAJE FINAL : ' + this.equipoPrimero.jugador.nombre + ' ' + this.equipoPrimero.puntos + ' - '+ this.equipoSegundo.jugador.nombre + ' ' + this.equipoSegundo.puntos + _log.innerHTML ;
+		    _log.innerHTML = 'PUNTAJE FINAL : ' + this.equipoPrimero.jugador.nombre + ' ' + this.equipoPrimero.puntos + ' - '+ this.equipoSegundo.jugador.nombre + ' ' + this.equipoSegundo.puntos + '<hr />' +  '<br>' + _log.innerHTML ;
 		}
 	}
 	
