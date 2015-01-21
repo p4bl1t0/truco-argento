@@ -1346,6 +1346,18 @@
 		}
 		if(!(this.equipoPrimero.puntos < limitePuntaje && this.equipoSegundo.puntos < limitePuntaje)) {
 		    _log.innerHTML = 'PUNTAJE FINAL : ' + this.equipoPrimero.jugador.nombre + ' ' + this.equipoPrimero.puntos + ' - '+ this.equipoSegundo.jugador.nombre + ' ' + this.equipoSegundo.puntos + '<hr />' +  '<br>' + _log.innerHTML ;
+			$('.modal-final').modal({
+				backdrop: 'static',
+				keyboard: false
+			});	
+			if (this.equipoSegundo.puntos < limitePuntaje) {
+				$("#ganaste").show();		
+				$("#perdiste").hide();
+			} else {
+				$("#ganaste").hide();		
+				$("#perdiste").show();
+			}
+			
 		}
 	}
 	
@@ -1368,7 +1380,11 @@
 	}	
 	
 	function Init() { 
-		$('.bs-example-modal-lg').modal("show");	
+		$('.bs-example-modal-lg').modal({
+				backdrop: 'static',
+				keyboard: false
+			});	
+			
 		if (window.localStorage) { 		
 			var puntos = localStorage.getItem("puntos");
 			if (puntos == 15) {
