@@ -1362,6 +1362,14 @@
 	}
 	
 	
+	$('#btReiniciar').click(function (event) {
+			event.preventDefault();
+			_partidaActual = new Partida();
+			_partidaActual.iniciar( $('.human-name').html(), 'Computadora');
+			$('.modal-final').modal("hide");
+		});
+	
+	
 	
 	//******************************************************************
 	//******************************************************************
