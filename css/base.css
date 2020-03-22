@@ -540,6 +540,12 @@ h1 {
 	color:white;
 	font-family:Helvetica;
 }
+.game-header {
+    background: black;
+}
+.game-header table {
+    font-size: 0.9em;
+}
 .game-panel {
 	display:inline-block;
 	width:35%;
@@ -555,7 +561,7 @@ h1 {
 	background: linear-gradient(bottom, #111, #222);
 }
 .game-panel .box {
-	width:80%;
+	width: 80%;
 	margin:.5em auto 0;
 	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
 	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
@@ -565,18 +571,24 @@ h1 {
 .game-action {
     position: absolute;
     bottom: 0;
-    width: 35%;
-    left:0;
+    width: 100%;
+    left: 0;
 }
 .game-action .cantos-panel {
-    width: 80%;
+    max-width: 960px;
+    background: black;
+    width: 100%;
     margin:.5em auto 0;
     border: 1px solid #999;
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
     box-sizing: border-box;         /* Opera/IE 8+ */
     border-bottom: 0;
+    font-size: 0.9em;
 
+}
+.game-action .btn  {
+    font-size: 0.9em;
 }
 #configuraciones {
     position: fixed;
@@ -637,8 +649,8 @@ h1 {
 }
 .game-main {
 	display: inline-block;
-	width:62%;
-    min-width:450px;
+	width: 100%;
+    min-width: 400px;
 	vertical-align:top;
 }
 ul li {
@@ -736,17 +748,16 @@ ul li {
 	position:relative;
 }
 .game-header {
-	height:10%;
+	/* height: 10%; */
 }
 .game-header h1{
 	text-align:center;
 	margin:.3em 0;
 }
 #game-score {
-	height:10%;
-	border:1px solid white;
-	width:80%;
-	margin:auto;
+	border: 1px solid white;
+    margin: .5em auto .2em;
+    width: 100%;
 }
 #game-score td,
 #game-score th {
@@ -815,6 +826,7 @@ ul li {
     border: 0 none;
     padding: 0;
     vertical-align: sub;
+    margin-top: .5em;
 }					
 @-webkit-keyframes inifintyRotate {
   0%   { -webkit-transform: rotate(0deg); }
@@ -831,4 +843,19 @@ ul li {
 @keyframes inifintyRotate {
   0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+.player,
+.game-deck {
+    transform: scale(0.7);
+    margin-top: -30px;
+}
+.game-main {
+    height: 80vh;
+}
+.game-play {
+    background: black;
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
 }

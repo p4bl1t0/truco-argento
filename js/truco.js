@@ -528,6 +528,7 @@
 					// Habilitamos los botones
 					this.enEspera = true;
 					_rondaActual = this;
+					$('.label-cantos-mentira').hide();
 					$("#Quiero").hide();
 					$("#NoQuiero").hide();
 					$('.label-cantos--SN').hide();
@@ -536,6 +537,7 @@
 					//  Envido del Humano
 					if (this.puedeEnvido === true){
 						$(".canto").show();
+						$('.label-cantos-mentira').show();
 						$(".canto").unbind('click').click(function (event){ 
 							var c = $(this).attr('data-envido');
                             _rondaActual.puedeEnvido = false;
@@ -697,7 +699,7 @@
 	//------------------------------------------------------------------
 	
     Ronda.prototype.decidirTruco = function(){
-        if (this.equipoTruco.jugador.esHumano) {
+        if (this.equipoTruco.jugador.esHumano) {q
             var _btnsCantoTruco = $('.cantot').hide();
             $('.boton').show();
 			$('.label-cantos--SN').show();
@@ -1302,13 +1304,20 @@
 		this.equipoSegundo.jugador = maquina;
 		
 		var _$tbl = $('#game-score');
+		var _$gamePlay = $('.game-play');
+		var _$logTitle = $('.log-title');
 		_$tbl.find('.player-one-name').html(jugador1.nombre);
 		_$tbl.find('.player-two-name').html(maquina.nombre);
 		_$tbl.find('.player-one-points').html('0');
 		_$tbl.find('.player-two-points').html('0');
 		$('#player-two').find('.player-name').html(maquina.nombre);
 		$('#player-one').find('.player-name').html(jugador1.nombre);
-		
+		_$tbl.click(function (el) {
+			_$gamePlay.removeClass('hidden');
+		});
+		_$logTitle.click(function (el) {
+			_$gamePlay.addClass('hidden');
+		});
 		this.continuar();
 	}
 	//------------------------------------------------------------------
